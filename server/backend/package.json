@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "typescript": "~4.7.0",
+    "@types/node": "^14.11.2"
+  },
+  "scripts": {
+    "start": "node dist/src/index.js",
+    "build": "tsc"
+  }
+}
