@@ -48,6 +48,11 @@ Install Visual Studio Code and a Github manager like Github Desktop or Gitkraken
 # Frontend
 
 ## Useful commands
+Install all packages
+```bash
+npm install
+```
+
 Bundles the app into static files for production.
 ```bash
 npm run build
@@ -61,6 +66,11 @@ npm start
 # Backend
 
 ## Useful commands
+Install all packages
+```bash
+npm install
+```
+
 Bundles the app into static files for production.
 ```bash
 npm run build
