@@ -10,7 +10,7 @@ export const mockUser: User = {
   faceId: uuid(),
   tfaId: uuid(),
 
-  roles: ['Admin'],
+  roles: ['ADMIN'],
 
   dateCreated: DateTime.fromISO('2022-10-08T20:36:11')
 }
