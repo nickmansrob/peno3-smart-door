@@ -1,0 +1,10 @@
+{
+    "typescript.preferences.importModuleSpecifierEnding": "js",
+    "files.eol": "\n", //make LF default
+    "eslint.enable": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.tabSize": 2,
+  }
+  

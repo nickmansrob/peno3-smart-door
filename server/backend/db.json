@@ -1,0 +1,13 @@
+{
+  "user": {
+    "id": "3d4c835c-9c1c-4bdb-9d16-3e39582cfec7",
+    "firstName": "Rob",
+    "lastName": "Nickmans",
+    "faceId": "db711bce-2fba-4fd1-9851-714f6c8624ba",
+    "tfaId": "a7b2a84c-0727-4e47-846e-539f1c2b1fd9",
+    "roles": [
+      "Admin"
+    ],
+    "dateCreated": "2022-10-08T20:36:11.000+02:00"
+  }
+}
