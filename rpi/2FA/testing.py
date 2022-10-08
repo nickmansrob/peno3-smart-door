@@ -39,5 +39,3 @@ create_qr_from_url(GenerateURL(secret_key, employee_name), employee_name)
 for x in range(10):
     print(GetTOTP(secret_key))
     time.sleep(30)
-
-
