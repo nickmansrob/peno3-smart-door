@@ -29,13 +29,7 @@ def GetTOTP(secret_key):
 #Notitie aan mezelf, de volgende stap is het creëren van een class 'Employee' waarin al deze functionaliteiten gecombineerd worden
 #en die gestructureerd de data bijhoudt per werknemer.
 
+
 #Example code
 
 # In de werkmap komt een PNG met de QR die door de authenticator app gescand dient te worden.
-secret_key = GenerateSecretKey()
-employee_name = 'Martijn'
-create_qr_from_url(GenerateURL(secret_key, employee_name), employee_name)
-
-for x in range(10):
-    print(GetTOTP(secret_key))
-    time.sleep(30)
