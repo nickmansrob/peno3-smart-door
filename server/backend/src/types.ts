@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
 
 export type Data = {
-  user: User,
+  users: User[],
+  records: AuthRecord[],
 }
 
 export type User = {
@@ -36,8 +37,14 @@ export type Access = {
 }
 
 export type AuthRecord = {
-  userId: string,
-  timestamp: string,
+  id: string,
+  timestamp: DateTime,
   method: 'FACE' | 'TFA',
   state: 'ENTER' | 'LEAVE',
+}
+
+export class ValidationError extends Error {
+  constructor(m: string) {
+    super(m)
+  }
 }
