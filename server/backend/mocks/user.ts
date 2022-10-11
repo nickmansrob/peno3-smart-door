@@ -7,8 +7,8 @@ export const mockUser: User = {
   firstName: 'Rob',
   lastName: 'Nickmans',
 
-  faceId: uuid(),
-  tfaId: uuid(),
+  faceToken: {vertices: [+uuid()]},
+  tfaToken: uuid(),
 
   roles: ['ADMIN'],
 

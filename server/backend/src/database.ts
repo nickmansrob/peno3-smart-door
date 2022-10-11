@@ -1,4 +1,5 @@
-import { AuthRecord, Data, User, ValidationError } from './types'
+import { Low, JSONFile } from 'lowdb'
+import { AuthRecord, Data, User, ValidationError } from './types.js'
 import { mockRecord, mockUser } from '../mocks/user.js'
 import { Low, JSONFile } from 'lowdb'
 
