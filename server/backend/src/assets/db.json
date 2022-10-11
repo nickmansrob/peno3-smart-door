@@ -4,19 +4,8 @@
       "id": "b0468e4f-9fd2-496f-892b-ce5ff375a26d",
       "firstName": "Rob",
       "lastName": "Nickmans",
-      "faceId": "342b0bb1-8a1c-4217-89ee-ed0ec41b1e98",
-      "tfaId": "200c94c3-34f0-426f-a6af-045c1d85e1fc",
-      "roles": [
-        "ADMIN"
-      ],
-      "dateCreated": "2022-10-08T20:36:11.000+02:00"
-    },
-    {
-      "id": "c815191d-5e2a-45be-azda-45f33353b789",
-      "firstName": "Rob",
-      "lastName": "Nickmans",
-      "faceId": "ec73727c-73ea-443a-98d9-fc58141d8939",
-      "tfaId": "0ff0a3be-805f-4aa2-8e80-501f270fd4f2",
+      "faceToken": "342b0bb1-8a1c-4217-89ee-ed0ec41b1e98",
+      "tfaToken": "200c94c3-34f0-426f-a6af-045c1d85e1fc",
       "roles": [
         "ADMIN"
       ],
