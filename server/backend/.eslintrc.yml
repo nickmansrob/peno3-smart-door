@@ -12,7 +12,7 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules:
-  indent:
+  '@typescript-eslint/indent':
     - error
     - 2
   linebreak-style:
