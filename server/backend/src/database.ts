@@ -1,5 +1,5 @@
-import { Low, JSONFile } from 'lowdb'
 import { AuthRecord, Data, User, ValidationError } from './types'
+import { Low, JSONFile } from 'lowdb'
 import { mockRecord, mockUser } from '../mocks/user.js'
 
 export async function initializeDatabase(): Promise<Low<Data>> {
