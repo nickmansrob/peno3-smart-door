@@ -1,6 +1,6 @@
 import { mockRecord, mockUser } from '../mocks/user.js'
-import { AuthRecord, Data, User, ValidationError } from './types'
 import { Low, JSONFile } from 'lowdb'
+import { AuthRecord, Data, User, ValidationError } from './types'
 
 export async function initializeDatabase(): Promise<Low<Data>> {
   const adapter = new JSONFile<Data>('./src/assets/db.json')
