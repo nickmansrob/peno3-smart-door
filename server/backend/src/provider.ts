@@ -1,7 +1,8 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './database.js'
-import { AuthRecord, Data, User } from './types.js'
+import { AuthRecord, Data, FaceToken, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
+import { OutgoingMessage } from 'http'
 
 export async function start(): Promise<void> {
   const app: Express = express()
@@ -45,9 +46,60 @@ function handleOTP(req: Request, res: Response): void {
   }
 }
 
-function handleFace(req: Request, res: Response): void {
+async function handleFace(req: Request, res: Response): void {
+  if (JSON.parse(req.body)) {
+    const request = req.body as FaceToken
+    const db = await getDB()
+    const userTable = db.data['users']
+    console.log(userTable)
 
+    const tokens = userTable.map(user => {return user.faceToken.vertices})
+
+    const distances = tokens.map(token => {return euclidDistance(request.vertices, token)})
+    const minimum = Math.min(...distances)
+    const minimum_idx = distances.indexOf(minimum)
+
+    const threshold = 0.7 // TODO: change to actual value
+
+    if(minimum <= threshold) {
+
+      // send user of index to dashboard
+
+      res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', userTable[minimum_idx].firstName)))
+    }
+
+    else{
+      res.status(400).send()
+    }
+  } 
+  
+  else {
+    res.status(400).send()
+  }
+  
+  
 }
+
+
+function evaluateAccess(access: 'GRANTED' | 'DENIED', user: string): OutgoingAccess{
+  const name = user
+  const now = new Date()
+  const date = now.toLocaleString()
+  let outgoing: OutgoingAccess
+  if(access === 'GRANTED'){
+    outgoing = {firstName : user, timestamp: date, access : 'GRANTED'}
+    return outgoing}
+  if(access === 'DENIED'){
+    outgoing= {firstName : user, timestamp: date, access : 'DENIED'}
+    return outgoing
+  }
+}
+  
+
+
+
+
+
 
 async function getDB(): Promise<Low<Data>> {
   return await getDatabase()
