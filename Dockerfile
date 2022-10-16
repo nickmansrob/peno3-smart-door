@@ -4,8 +4,9 @@ WORKDIR /usr/src/build
 ARG package
 COPY ./server/$package .
 RUN ls -la
+RUN pwd
 RUN npm install
-RUN npm run
+RUN npm run build
 
 FROM node:16.15-alpine
 
