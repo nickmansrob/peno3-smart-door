@@ -7,6 +7,7 @@ RUN ls -la
 RUN pwd
 RUN npm install
 RUN npm run build
+RUN ls -la
 
 FROM node:16.15-alpine
 
