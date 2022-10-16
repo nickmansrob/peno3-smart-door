@@ -12,7 +12,7 @@ FROM node:16.15-alpine
 
 WORKDIR /usr/src/app
 ARG package
-COPY --from=builder /usr/src/build/$package/dist ./
+COPY --from=builder /usr/src/build/server/$package/dist ./
 
 EXPOSE 3000
 CMD node --enable-source-maps index.js
