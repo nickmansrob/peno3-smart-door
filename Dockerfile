@@ -3,8 +3,9 @@ FROM node:16.15-alpine AS builder
 WORKDIR /usr/src/build
 ARG package
 COPY ./server/$package .
-RUN npm install --prefix ./server/$package
-RUN npm run --prefix ./server/$package build
+RUN ls -la
+RUN npm install
+RUN npm run
 
 FROM node:16.15-alpine
 
