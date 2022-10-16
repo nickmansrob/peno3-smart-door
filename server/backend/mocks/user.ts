@@ -16,7 +16,7 @@ export const mockUser: User = {
 }
 
 export const mockRecord: AuthRecord = {
-  userId: mockUser.id,
+  id: mockUser.id,
   timestamp: DateTime.fromISO('2022-10-08T20:36:11'),
   method: 'FACE',
   state: 'ENTER'

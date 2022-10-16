@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Backend
 on:
   push:
     branches:
@@ -25,3 +25,5 @@ jobs:
         with:
           tags: nickmansrob1205/peno3:sha-${{ github.run_number }}-${{ github.sha }}
           push: true
+          build-args: |
+            package=backend
