@@ -20,6 +20,11 @@ export type User = {
   dateCreated: DateTime,
 }
 
+export type ComfirmNewUser = {
+  status: 'OK | NOT OK'
+  timestamp: DateTime
+}
+
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 
 // Auth
@@ -31,7 +36,7 @@ export type FaceToken = {
 // RPi
 
 export type OutgoingAccess = {
-  firstName?: string,
+  firstName: string,
   timestamp: DateTime,
   access: 'GRANTED' | 'DENIED',
 }
