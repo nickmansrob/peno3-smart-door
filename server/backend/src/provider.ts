@@ -1,10 +1,14 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './database.js'
-import { AuthRecord, Data, FaceToken, OutgoingAccess, User } from './types.js'
+import { AuthRecord, Data, FaceToken, OutgoingAccess, Role, User } from './types.js'
 import { Low } from 'lowdb'
-import { OutgoingMessage, request } from 'http'
-import { doesNotMatch } from 'assert'
-import { allowedNodeEnvironmentFlags } from 'process'
+import { DateTime } from 'luxon'
+import OTP from 'otp'
+import { mockUser } from '../mocks/user.js'
+import * as exp from 'constants'
+import { OutgoingMessage, RequestListener } from 'http'
+
+
 
 export async function start(): Promise<void> {
   const app: Express = express()
@@ -39,50 +43,65 @@ function handlePostUser(req: Request, res: Response): void {
   }
 }
 
-/*
-remarks handleOTP 
-  very early draft
-  a lot of parameters are not possible to add to the user to register in the database (still needs to be added in some way that the frontend can give this info when registering user or send this info to another function to do the rest of the process)
-    facetoken (seperate function or registration process for this?), complexity with all the waiting for responses, in this or in other function?
-  a way to stop the process when a person can't put in their pin because of some reason needs to be added? so that it can be stopped and won't run for eternity
-  sending info to fronted as well?
-    */
-
-async function handleOTP(req: Request, res: Response): Promise<void> {
+/**
+ * req = {volledige ID van een user buiten secret code}
+ * 1) OTP 6 cijfers maken
+ *    OTP url maken
+ *    secret maken
+ * 2) secret bij user zetten
+ * 3) naar F de url sturen 
+ * 4) krijgt code terug en vergelijk het (dit niet meer dus)
+ * 5) als het juist is:
+ *      zet user in data base
+ *      stuur ok naar F 
+ */
+function handleNewUserOTP(req: Request, res: Response): void{
+  const otp = new OTP()
   if (JSON.parse(req.body)) {
     const stream = req.body
-    res.status(200).send()
+    const user = JSON.parse(stream) as User // user parsen als Jason
+    const expectedCode = otp.totp(Date.now()) //otp in backend, not needed anymore
+    const URLCode = otp.totpURL // otp back to frontend
+    const usertoken = otp.secret // secret for use
+    user.tfaToken = usertoken 
+    addEntity('users', user) // adding user to database 
+    res.status(200).send(URLCode) // outgoing access ipv outgoing messages ok?
+  }
+  else{
+    res.status(400).send()
+  }
+}
 
-    const newcode = otp.totpURL // wrong, because ? 
-    // post request
-    await req.body
-    const usercode = req.body
-    if (usercode === newcode){
-      const usertoken = otp.secret
-      //add to database
-      res.status(200).send('OK')
-      // somthing to fronted too? 
-    }
-    else{
-      while (usercode !== newcode) { // | onderbreking krijgen 
-        res.status(200).send('NOT OK') }
-      if (usercode === newcode){
-        const usertoken = otp.secret
-        //add to database
-        const newUser = {id: usertoken, firstName: 'John', lastName: 'Doe', faceToken: 'facetoken', tfaToken: 'to do', roles: ['SUPERVISOR'], dateCreated: 'to do'}
-        addEntity('users', newUser)
-        res.status(200).send('OK')
-        // somthing to fronted too? 
+function getUser(id: string, property: string ): any {  // maybe only for tfa token seperate function so that any does not need to be used
+  // find user
 
-      // else programma just stops
-      }
-      else {
-        res.status(400).send()
-      }
-        
+  // for ()
+  //   door database?
+  //   if userID = userID out of database Then
+  //     ==) user  = user x? 
+  //     ==) return user.property // met 'tfatoken' werkt het miss niet door de '', dus miss gwn functie enkel voor tfatoken maken
+  //     ==) vb. tfatoken off user = ...
+  return 'fun'
+}
+
+
+// right code to get userID etc.? 
+function handleOTPVerification(req: Request, res: Response): void{
+  if (JSON.parse(req.body)) {
+    const stream = req.body
+    const userID = stream.id // zo ophalen uit req met meerdere inputs?
+    const UserOTP = stream.OTP // zo ophalen uit req met meerdere inputs? 
+    const firstName = getUser(userID, 'firstName')
+    const expectedOTP = getUser(userID, 'tfaToken')
+    if (expectedOTP === UserOTP){
+      res.status(200).send(evaluateAccess('GRANTED', firstName))
     }
-  } else {
-    res.status(400).send(req.body)
+    else {
+      res.status(400).send() // dit terug en dan weet raspberry pi dat het fout is? 
+    }
+  }
+  else{
+    res.status(400).send()
   }
 }
 
@@ -130,8 +149,9 @@ async function handleFace(req: Request, res: Response): Promise<void> {
 //  finding right type for date
 
 function evaluateAccess(access: 'GRANTED' | 'DENIED', user: string): OutgoingAccess{
-  const now = new Date()
-  const date = now.toLocaleString()
+  // const now = new Date()
+  // const date = now.toLocaleString()
+  const date = DateTime.now().setZone('Europe/Brussels')
   let outgoing: OutgoingAccess
   if(access === 'GRANTED'){
     outgoing = {firstName : user, timestamp: date, access : 'GRANTED'}
@@ -145,9 +165,6 @@ function evaluateAccess(access: 'GRANTED' | 'DENIED', user: string): OutgoingAcc
 
 
 
-
-
-
 async function getDB(): Promise<Low<Data>> {
   return await getDatabase()
 }
@@ -157,3 +174,4 @@ async function addEntity(table: 'users' | 'records', value: User | AuthRecord) {
   db.data[table].push(await validate(table, value) as any)
   await db.write()
 }
+
