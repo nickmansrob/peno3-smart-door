@@ -18,6 +18,8 @@ export async function start(): Promise<void> {
   app.post('/access_otp', handleOTP)
 
   app.listen(3000)
+
+  console.log('Server listening on port 3000')
 }
 
 function handleRoot(_req: Request, res: Response) {
@@ -50,10 +52,6 @@ async function handleOTP(req: Request, res: Response): Promise<void>{
   }
 }
 
-// remarks handleFAce
-//  the treshold needs to be set right
-//  info to the dashboard too?
-
 async function handleFace(req: Request, res: Response): Promise<void> {
   if (JSON.parse(req.body)) {
     const stream = req.body as IncomingFace
@@ -61,13 +59,13 @@ async function handleFace(req: Request, res: Response): Promise<void> {
     const db = await getDB()
     const userTable = db.data.users
     const tokens = userTable.map(user => {
-      return user.faceToken.vertices
+      return [user.faceToken.vertices, user.id]
     })
     const distances = tokens.map(token => {
-      return euclidDistance(stream.face.vertices, token)
+      return [euclidDistance(stream.face.vertices, token[0] as number[]), token[1] as string]
     })
 
-    const minimum = Math.min(...distances)
+    const minimum = distances.map(distance => Math.min(distance[0] as number))
     const minimum_idx = distances.indexOf(minimum)
 
     res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', userTable[minimum_idx].firstName)))
