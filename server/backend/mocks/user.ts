@@ -24,5 +24,5 @@ export const mockRecord: AuthRecord = {
 
 export const mockRestriction: Restriction = {
   id: mockUser.id,
-  interval: Interval.fromDateTimes(DateTime.fromISO('2022-10-08T10:36:11'), DateTime.fromISO('2022-10-08T20:36:11'))
+  interval: [Interval.fromDateTimes(DateTime.fromISO('2022-10-08T10:36:11'), DateTime.fromISO('2022-10-08T20:36:11'))]
 }
