@@ -1,7 +1,6 @@
 import { Low, JSONFile } from 'lowdb'
 import { AuthRecord, Data, User, ValidationError } from './types.js'
-import { mockRecord, mockUser } from '../mocks/user.js'
-import { Low, JSONFile } from 'lowdb'
+import { mockRecord, mockRestriction, mockUser } from '../mocks/user.js'
 
 export async function initializeDatabase(): Promise<Low<Data>> {
   const adapter = new JSONFile<Data>('./src/assets/db.json')
@@ -10,7 +9,7 @@ export async function initializeDatabase(): Promise<Low<Data>> {
   await db.read()
 
   if (!db.data) {
-    db.data = { users: [mockUser], records: [mockRecord] } // If db is null, add mockUser
+    db.data = { users: [mockUser], records: [mockRecord], restrictions: [mockRestriction] } // If db is null, add mockUser
     await db.write()
   }
 

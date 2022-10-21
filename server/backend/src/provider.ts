@@ -1,14 +1,9 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './database.js'
-import { AuthRecord, Data, FaceToken, OutgoingAccess, Role, User } from './types.js'
+import { AuthRecord, Data, FaceToken, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
 import { DateTime } from 'luxon'
 import OTP from 'otp'
-import { mockUser } from '../mocks/user.js'
-import * as exp from 'constants'
-import { OutgoingMessage, RequestListener } from 'http'
-
-
 
 export async function start(): Promise<void> {
   const app: Express = express()
