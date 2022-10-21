@@ -1,6 +1,6 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './Database.js'
-import { AuthRecord, Data, FaceToken, IncomingOtp, OutgoingAccess, User } from './types.js'
+import { AuthRecord, Data, FaceToken, IncomingFace, IncomingOtp, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
 import { DateTime } from 'luxon'
 import { handleNewUser } from './UserCreation.js'
@@ -56,32 +56,22 @@ async function handleOTP(req: Request, res: Response): Promise<void>{
 
 async function handleFace(req: Request, res: Response): Promise<void> {
   if (JSON.parse(req.body)) {
-    const request = req.body as FaceToken
+    const stream = req.body as IncomingFace
+
     const db = await getDB()
-    const userTable = db.data['users']
-    console.log(userTable)
+    const userTable = db.data.users
+    const tokens = userTable.map(user => {
+      return user.faceToken.vertices
+    })
+    const distances = tokens.map(token => {
+      return euclidDistance(stream.face.vertices, token)
+    })
 
-    const tokens = userTable.map(user => {return user.faceToken.vertices})
-
-    const distances = tokens.map(token => {return euclidDistance(request.vertices, token)})
     const minimum = Math.min(...distances)
     const minimum_idx = distances.indexOf(minimum)
 
-    const threshold = 0.7 // TODO: change to actual value
-
-    if(minimum <= threshold) {
-
-      // send user of index to dashboard ? 
-
-      res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', userTable[minimum_idx].firstName)))
-    }
-
-    else{
-      res.status(400).send()
-    }
-  } 
-  
-  else {
+    res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', userTable[minimum_idx].firstName)))
+  } else {
     res.status(400).send()
   }
   

@@ -53,6 +53,11 @@ export type IncomingOtp = {
   timestamp: DateTime,
 }
 
+export type IncomingFace = {
+  face: FaceToken,
+  timestamp: DateTime,
+}
+
 // Records
 
 export type AuthRecord = {
