@@ -23,7 +23,7 @@ export type User = {
 
 export type Restriction = {
   id: string,
-  interval: Interval,
+  interval: Interval[],
 }
 
 export type ComfirmNewUser = {

@@ -1,5 +1,5 @@
 import express, { Express, Response, Request } from 'express'
-import { getDatabase, validate } from './database.js'
+import { getDatabase, validate } from './Database.js'
 import { AuthRecord, Data, FaceToken, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
 import { DateTime } from 'luxon'
