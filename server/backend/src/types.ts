@@ -1,10 +1,11 @@
-import { DateTime } from 'luxon'
+import { DateTime, Interval } from 'luxon'
 
 // Database
 
 export type Data = {
   users: User[],
   records: AuthRecord[],
+  restrictions: Restriction[],
 }
 
 export type User = {
@@ -20,9 +21,14 @@ export type User = {
   dateCreated: DateTime,
 }
 
+export type Restriction = {
+  id: string,
+  interval: Interval,
+}
+
 export type ComfirmNewUser = {
-  status: 'OK | NOT OK'
-  timestamp: DateTime
+  status: 'ACCEPTED' | 'DENIED',
+  timestamp: DateTime,
 }
 
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
@@ -30,7 +36,7 @@ export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 // Auth
 
 export type FaceToken = {
-  vertices: number[] // 64
+  vertices: number[], // 64
 }
 
 // RPi
