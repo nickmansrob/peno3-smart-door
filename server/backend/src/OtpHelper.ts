@@ -3,7 +3,7 @@ import * as OTPAuth from 'otpauth'
 
 export function createOtp(firstName: string): OTPAuth.TOTP {
   return new OTPAuth.TOTP({
-    issuer: 'Styx Solutions',
+    issuer: 'Styx Inc.',
     label: firstName,
     algorithm: 'SHA1',
     digits: 6,
