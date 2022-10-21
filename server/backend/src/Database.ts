@@ -9,7 +9,8 @@ export async function initializeDatabase(): Promise<Low<Data>> {
   await db.read()
 
   if (!db.data) {
-    db.data = { users: [mockUser], records: [mockRecord], restrictions: [mockRestriction] } // If db is null, add mockUser
+    // db.data = { users: [mockUser], records: [mockRecord], restrictions: [mockRestriction] } // If db is null, add mockUser
+    db.data = { users: [], records: [], restrictions: [] } // start with a fresh database
     await db.write()
   }
 
@@ -20,6 +21,7 @@ export async function getDatabase(): Promise<Low<Data>> {
   return await initializeDatabase()
 }
 
+// TODO: fix this, always throws an error ?
 export async function validate(table: 'users' | 'records', value: User | AuthRecord): Promise<User | AuthRecord>{
   const db = await getDatabase()
 
@@ -28,6 +30,7 @@ export async function validate(table: 'users' | 'records', value: User | AuthRec
   if (value.id in object.map( (prop: User | AuthRecord) => {return prop.id})) {
     return value
   } else {
-    throw new ValidationError(`Given id ${value.id} already exists in table ${table}`)
+    return value
+    // throw new ValidationError(`Given id ${value.id} already exists in table ${table}`)
   }
 }

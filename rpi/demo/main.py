@@ -64,10 +64,10 @@ while True:
         if largestBoundingBox is None:
             print('Could not find a face, please try again')
         else:
-            faceToken = embedding = calculateEmbedding(rgbImg, largestBoundingBox)
+            faceDescriptor = embedding = calculateEmbedding(rgbImg, largestBoundingBox)
             timestamp = str(datetime.datetime.now(pytz.timezone('Europe/Brussels')))
 
-            body = {"faceToken": faceToken,
+            body = {"faceDescriptor": faceDescriptor,
                     "timestamp": timestamp}
             
             r = requests.post(url=URL+'/access_face', json=body)
@@ -80,7 +80,7 @@ while True:
         else:
             id = str(uuid.uuid1())
             name = names[keyCode - DLIB_ZERO]
-            faceToken = calculateEmbedding(rgbImg, largestBoundingBox)
+            faceDescriptor = calculateEmbedding(rgbImg, largestBoundingBox)
             tfaToken = pyotp.random_base32()
             roles = ["DUMMY"]
             dateCreated = str(datetime.datetime.now(pytz.timezone('Europe/Brussels')))
@@ -88,7 +88,7 @@ while True:
             body = {'id': id,
                         'firstName': name[0],
                         'lastName': name[1],
-                        'faceToken': faceToken,
+                        'faceDescriptor': faceDescriptor,
                         'tfaToken': tfaToken,
                         'roles': roles,
                         'dateCreated': dateCreated}

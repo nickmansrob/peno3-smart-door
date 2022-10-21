@@ -1,15 +1,16 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './Database.js'
-import { AuthRecord, Data, FaceToken, IncomingFace, IncomingOtp, OutgoingAccess, User } from './types.js'
+import { AuthRecord, Data, IncomingFace, IncomingOtp, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
 import { DateTime } from 'luxon'
 import { handleNewUser } from './UserCreation.js'
 import { createOtp, validateToken } from './OtpHelper.js'
+import { euclidDistance } from './Face.js'
 
 export async function start(): Promise<void> {
   const app: Express = express()
   app.use(express.json())
-
+  
   app.get('/', handleRoot)
   app.get('/users', handleUserView)
   app.post('/users', handleNewUser)
@@ -54,21 +55,33 @@ async function handleOTP(req: Request, res: Response): Promise<void>{
 
 async function handleFace(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const stream = req.body as IncomingFace
+    const faceToCompare = req.body as IncomingFace
 
     const db = await getDB()
     const userTable = db.data.users
-    const tokens = userTable.map(user => {
-      return [user.faceToken.vertices, user.id]
-    })
-    const distances = tokens.map(token => {
-      return [euclidDistance(stream.face.vertices, token[0] as number[]), token[1] as string]
+    
+    const distances = userTable.map(user => {
+      return [euclidDistance(faceToCompare.faceDescriptor, user.faceDescriptor), user]
     })
 
-    const minimum = distances.map(distance => Math.min(distance[0] as number))
-    const minimum_idx = distances.indexOf(minimum)
+    if (distances.length == 0) { // When there are no faces in the database nobody can enter :(
 
-    res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', userTable[minimum_idx].firstName)))
+      res.status(200).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+
+    } else {
+
+      // In case of an array with only 1 element this element is returned by reduce (and normally no error will be thrown).
+      const matchedUser = distances.reduce((previous: [number, User], current: [number, User]) => previous[0] < current[0] ? previous : current)
+  
+      const THRESHOLD = 0.6 // As used on http://dlib.net/face_recognition.py.html
+
+      if (matchedUser[0] <= THRESHOLD) {
+        res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', (matchedUser[1] as User).firstName)))
+      } else {
+        res.status(200).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+      }
+    }
+    
   } else {
     res.status(400).send()
   }
