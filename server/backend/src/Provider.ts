@@ -1,9 +1,10 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase, validate } from './Database.js'
-import { AuthRecord, Data, FaceToken, OutgoingAccess, User } from './types.js'
+import { AuthRecord, Data, FaceToken, IncomingOtp, OutgoingAccess, User } from './types.js'
 import { Low } from 'lowdb'
 import { DateTime } from 'luxon'
-import OTP from 'otp'
+import { handleNewUser } from './UserCreation.js'
+import { createOtp, validateToken } from './OtpHelper.js'
 
 export async function start(): Promise<void> {
   const app: Express = express()
@@ -11,7 +12,7 @@ export async function start(): Promise<void> {
 
   app.get('/', handleRoot)
   app.get('/users', handleUserView)
-  app.post('/users', handlePostUser)
+  app.post('/users', handleNewUser)
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOTP)
@@ -28,79 +29,26 @@ async function handleUserView(req: Request, res: Response): Promise<void> {
   res.send(JSON.stringify(db))
 }
 
-function handlePostUser(req: Request, res: Response): void {
+async function handleOTP(req: Request, res: Response): Promise<void>{
   if (JSON.parse(req.body)) {
-    const stream = req.body as User
-    addEntity('users', stream)
-    res.status(200).send()
-  } else {
-    res.status(400).send(req.body)
-  }
-}
+    const stream = JSON.parse(req.body) as IncomingOtp
 
-/**
- * req = {volledige ID van een user buiten secret code}
- * 1) OTP 6 cijfers maken
- *    OTP url maken
- *    secret maken
- * 2) secret bij user zetten
- * 3) naar F de url sturen 
- * 4) krijgt code terug en vergelijk het (dit niet meer dus)
- * 5) als het juist is:
- *      zet user in data base
- *      stuur ok naar F 
- */
-function handleNewUserOTP(req: Request, res: Response): void{
-  const otp = new OTP()
-  if (JSON.parse(req.body)) {
-    const stream = req.body
-    const user = JSON.parse(stream) as User // user parsen als Jason
-    const expectedCode = otp.totp(Date.now()) //otp in backend, not needed anymore
-    const URLCode = otp.totpURL // otp back to frontend
-    const usertoken = otp.secret // secret for use
-    user.tfaToken = usertoken 
-    addEntity('users', user) // adding user to database 
-    res.status(200).send(URLCode) // outgoing access ipv outgoing messages ok?
-  }
-  else{
-    res.status(400).send()
-  }
-}
+    const db = await getDB()
+    const user = db.data.users.filter(user => user.id === stream.id)[0] // TODO: Fix non null assertion
 
-function getUser(id: string, property: string ): any {  // maybe only for tfa token seperate function so that any does not need to be used
-  // find user
+    const otpHelper = createOtp(user.tfaToken)
 
-  // for ()
-  //   door database?
-  //   if userID = userID out of database Then
-  //     ==) user  = user x? 
-  //     ==) return user.property // met 'tfatoken' werkt het miss niet door de '', dus miss gwn functie enkel voor tfatoken maken
-  //     ==) vb. tfatoken off user = ...
-  return 'fun'
-}
-
-
-// right code to get userID etc.? 
-function handleOTPVerification(req: Request, res: Response): void{
-  if (JSON.parse(req.body)) {
-    const stream = req.body
-    const userID = stream.id // zo ophalen uit req met meerdere inputs?
-    const UserOTP = stream.OTP // zo ophalen uit req met meerdere inputs? 
-    const firstName = getUser(userID, 'firstName')
-    const expectedOTP = getUser(userID, 'tfaToken')
-    if (expectedOTP === UserOTP){
-      res.status(200).send(evaluateAccess('GRANTED', firstName))
+    if (validateToken(otpHelper, stream.otp, stream.timestamp)){
+      res.status(200).send(evaluateAccess('GRANTED', user.firstName))
     }
     else {
-      res.status(400).send() // dit terug en dan weet raspberry pi dat het fout is? 
+      res.status(401).send()
     }
   }
-  else{
+  else {
     res.status(400).send()
   }
 }
-
-
 
 // remarks handleFAce
 //  the treshold needs to be set right
@@ -139,34 +87,17 @@ async function handleFace(req: Request, res: Response): Promise<void> {
   
 }
 
-
-// TO-DO evaluateAcces:
-//  finding right type for date
-
-function evaluateAccess(access: 'GRANTED' | 'DENIED', user: string): OutgoingAccess{
-  // const now = new Date()
-  // const date = now.toLocaleString()
+function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess{
   const date = DateTime.now().setZone('Europe/Brussels')
-  let outgoing: OutgoingAccess
-  if(access === 'GRANTED'){
-    outgoing = {firstName : user, timestamp: date, access : 'GRANTED'}
-    return outgoing}
-  if(access === 'DENIED'){
-    outgoing= {firstName : user, timestamp: date, access : 'DENIED'}
-    return outgoing
-  }
+  return {firstName, timestamp: date, access}
 }
-  
-
-
 
 async function getDB(): Promise<Low<Data>> {
   return await getDatabase()
 }
 
-async function addEntity(table: 'users' | 'records', value: User | AuthRecord) {
+export async function addEntity(table: 'users' | 'records', value: User | AuthRecord) {
   const db = await getDB()
   db.data[table].push(await validate(table, value) as any)
   await db.write()
 }
-

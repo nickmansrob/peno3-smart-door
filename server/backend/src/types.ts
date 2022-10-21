@@ -47,6 +47,12 @@ export type OutgoingAccess = {
   access: 'GRANTED' | 'DENIED',
 }
 
+export type IncomingOtp = {
+  id: string;
+  otp: string,
+  timestamp: DateTime,
+}
+
 // Records
 
 export type AuthRecord = {

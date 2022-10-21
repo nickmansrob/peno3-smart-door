@@ -1,19 +1,14 @@
 import { DateTime } from 'luxon'
 import * as OTPAuth from 'otpauth'
 
-export function createOtp(firstName: string): OTPAuth.TOTP {
+export function createOtp(secret: string): OTPAuth.TOTP {
   return new OTPAuth.TOTP({
     issuer: 'Styx Inc.',
-    label: firstName,
     algorithm: 'SHA1',
     digits: 6,
     period: 30,
-    secret: new OTPAuth.Secret,
+    secret,
   })
-}
-
-export function getToken(otp: OTPAuth.TOTP): string {
-  return otp.generate()
 }
 
 export function validateToken(otp: OTPAuth.TOTP, token: string, timestamp: DateTime) {
@@ -22,8 +17,4 @@ export function validateToken(otp: OTPAuth.TOTP, token: string, timestamp: DateT
     timestamp: timestamp.toMillis(),
     window: 1,
   })
-}
-
-export function getUrl(otp: OTPAuth.TOTP): string {
-  return otp.toString()
 }
