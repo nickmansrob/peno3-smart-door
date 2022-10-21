@@ -32,8 +32,8 @@ async function handleUserView(req: Request, res: Response): Promise<void> {
 }
 
 async function handleOTP(req: Request, res: Response): Promise<void>{
-  if (JSON.parse(req.body)) {
-    const stream = JSON.parse(req.body) as IncomingOtp
+  if (req.body) {
+    const stream = req.body as IncomingOtp
 
     const db = await getDB()
     const user = db.data.users.filter(user => user.id === stream.id)[0] // TODO: Fix non null assertion
@@ -53,7 +53,7 @@ async function handleOTP(req: Request, res: Response): Promise<void>{
 }
 
 async function handleFace(req: Request, res: Response): Promise<void> {
-  if (JSON.parse(req.body)) {
+  if (req.body) {
     const stream = req.body as IncomingFace
 
     const db = await getDB()
