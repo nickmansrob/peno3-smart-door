@@ -1,8 +1,11 @@
-import { DateTime } from 'luxon'
+import { DateTime, Interval } from 'luxon'
+
+// Database
 
 export type Data = {
   users: User[],
   records: AuthRecord[],
+  restrictions: Restriction[],
 }
 
 export type User = {
@@ -10,31 +13,46 @@ export type User = {
   firstName: string,
   lastName: string,
 
-  faceId: string,
-  tfaId: string,
+  faceDescriptor: number[],
+  tfaToken: string,
 
   roles: Role[],
 
   dateCreated: DateTime,
 }
 
+export type Restriction = {
+  id: string,
+  interval: Interval[],
+}
+
+export type ComfirmNewUser = {
+  status: 'ACCEPTED' | 'DENIED',
+  timestamp: DateTime,
+}
+
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 
-export type FaceId = {
-  id: string,
-  timestamp: DateTime,
-}
+// RPi
 
-export type TfaId = {
-  id: string,
-  timestamp: DateTime,
-}
-
-export type Access = {
-  userId: string,
+export type OutgoingAccess = {
+  firstName: string,
   timestamp: DateTime,
   access: 'GRANTED' | 'DENIED',
 }
+
+export type IncomingOtp = {
+  id: string;
+  otp: string,
+  timestamp: DateTime,
+}
+
+export type IncomingFace = {
+  faceDescriptor: number[],
+  timestamp: DateTime,
+}
+
+// Records
 
 export type AuthRecord = {
   id: string,
@@ -43,6 +61,8 @@ export type AuthRecord = {
   state: 'ENTER' | 'LEAVE',
 }
 
+
+// Errors
 export class ValidationError extends Error {
   constructor(m: string) {
     super(m)

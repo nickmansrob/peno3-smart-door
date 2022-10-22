@@ -1,3 +1,3 @@
-import { start } from './provider.js'
+import { start } from './Provider.js'
 
 await start()
