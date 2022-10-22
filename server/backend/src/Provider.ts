@@ -66,7 +66,7 @@ async function handleFace(req: Request, res: Response): Promise<void> {
 
     if (distances.length == 0) { // When there are no faces in the database nobody can enter :(
 
-      res.status(200).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+      res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
 
     } else {
 
@@ -78,7 +78,7 @@ async function handleFace(req: Request, res: Response): Promise<void> {
       if (matchedUser[0] <= THRESHOLD) {
         res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', (matchedUser[1] as User).firstName)))
       } else {
-        res.status(200).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+        res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
       }
     }
     
