@@ -13,7 +13,7 @@ export type User = {
   firstName: string,
   lastName: string,
 
-  faceToken: FaceToken,
+  faceDescriptor: number[],
   tfaToken: string,
 
   roles: Role[],
@@ -33,12 +33,6 @@ export type ComfirmNewUser = {
 
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 
-// Auth
-
-export type FaceToken = {
-  vertices: number[], // 64
-}
-
 // RPi
 
 export type OutgoingAccess = {
@@ -54,7 +48,7 @@ export type IncomingOtp = {
 }
 
 export type IncomingFace = {
-  face: FaceToken,
+  faceDescriptor: number[],
   timestamp: DateTime,
 }
 
