@@ -4,6 +4,7 @@ import { AuthRecord, OutgoingAccess, Restriction, User } from './types.js'
 import { DateTime } from 'luxon'
 import { handleNewUser } from './UserCreation.js'
 import { handleFace, handleOTP } from './Access.js'
+import { handleUserRecords, handleUserRestriction } from './UserInfo.js'
 
 export async function start(): Promise<void> {
   const app: Express = express()
@@ -15,6 +16,10 @@ export async function start(): Promise<void> {
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOTP)
+
+  app.post('/userresctriction', handleUserRestriction)
+  app.post('/userrecods', handleUserRecords)
+
 
   app.listen(3000)
 
