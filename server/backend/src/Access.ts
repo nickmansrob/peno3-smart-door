@@ -1,8 +1,9 @@
 import { Response, Request } from 'express'
+import { DateTime } from 'luxon'
 import { getDatabase } from './Database.js'
 import { createOtp, validateToken } from './OtpHelper.js'
-import { evaluateAccess } from './Provider.js'
-import { IncomingFace, IncomingOtp, User } from './types.js'
+import { addEntity, evaluateAccess } from './Provider.js'
+import { AuthRecord, IncomingFace, IncomingOtp, User } from './types.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
   const sum = point1.map((point, index) => {
@@ -35,6 +36,8 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 
       if (matchedUser[0] <= THRESHOLD) {
         res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', (matchedUser[1] as User).firstName)))
+        const Records: AuthRecord = {id: (matchedUser[1] as User).id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'FACE', state: 'LEAVE'}
+        addEntity('records', Records)
       } else {
         res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
       }
@@ -48,7 +51,6 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 export async function handleOTP(req: Request, res: Response): Promise<void>{
   if (req.body) {
     const stream = req.body as IncomingOtp
-
     const db = await getDatabase()
     const user = db.data.users.filter(user => user.id === stream.id)[0] // TODO: Fix non null assertion
 
@@ -56,6 +58,9 @@ export async function handleOTP(req: Request, res: Response): Promise<void>{
 
     if (validateToken(otpHelper, stream.otp, stream.timestamp)){
       res.status(200).send(evaluateAccess('GRANTED', user.firstName))
+      const Records: AuthRecord = {id: user.id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'TFA', state: 'LEAVE'}
+      addEntity('records', Records)
+      
     }
     else {
       res.status(401).send()
