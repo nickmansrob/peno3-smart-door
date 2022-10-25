@@ -53,7 +53,7 @@ export type IncomingFace = {
 export type AuthRecord = {
   id: string,
   timestamp: DateTime,
-  method: 'FACE' | 'TFA',
+  method?: 'FACE' | 'TFA',
   state: 'ENTER' | 'LEAVE',
 }
 
