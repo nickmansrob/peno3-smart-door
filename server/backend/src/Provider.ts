@@ -31,8 +31,14 @@ function handleRoot(_req: Request, res: Response) {
 }
 
 async function handleUserView(req: Request, res: Response): Promise<void> {
-  const db = getDatabase()
-  res.send(JSON.stringify(db))
+  const db = await getDatabase()
+  res.send(JSON.stringify(db.data['users']))
+
+}
+
+async function handleRecordsView(req: Request, res: Response): Promise<void> {
+  const db = await getDatabase()
+  res.send(JSON.stringify(db.data['records']))
 }
 
 export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess{
