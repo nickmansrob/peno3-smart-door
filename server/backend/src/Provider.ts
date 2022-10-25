@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import { handleNewUser } from './UserCreation.js'
 import { handleFace, handleOTP } from './Access.js'
 import { handleUserRecords, handleUserRestriction } from './UserInfo.js'
+import { validateAuthRecord, validateRestriction, validateUser } from './Validate.js'
 
 export async function start(): Promise<void> {
   const app: Express = express()
@@ -44,14 +45,13 @@ export async function addEntity(table: 'users' | 'records' | 'restrictions', val
   const db = await getDatabase()
 
   if (table === 'users') {
-    db.data['users'].push(value as User)
+    db.data['users'].push(validateUser(value as User))
   } else if (table === 'records') {
-    db.data['records'].push(value as AuthRecord) 
+    db.data['records'].push(validateAuthRecord(value as AuthRecord))
   } else if (table === 'restrictions') {
-    db.data['restrictions'].push(value as Restriction) 
+    db.data['restrictions'].push(validateRestriction(value as Restriction))
   } else {
     throw new Error('Table not defined in database')
   }
-
   await db.write()
 }
