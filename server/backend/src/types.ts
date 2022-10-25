@@ -1,7 +1,6 @@
 import { DateTime, Interval } from 'luxon'
 
-// Database
-
+// Models
 export type Data = {
   users: User[],
   records: AuthRecord[],
@@ -21,10 +20,7 @@ export type User = {
   dateCreated: DateTime,
 }
 
-export type Restriction = {
-  id: string,
-  interval: Interval[],
-}
+// Users
 
 export type ComfirmNewUser = {
   status: 'ACCEPTED' | 'DENIED',
@@ -33,7 +29,7 @@ export type ComfirmNewUser = {
 
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 
-// RPi
+// Access
 
 export type OutgoingAccess = {
   firstName: string,
@@ -61,10 +57,8 @@ export type AuthRecord = {
   state: 'ENTER' | 'LEAVE',
 }
 
-
-// Errors
-export class ValidationError extends Error {
-  constructor(m: string) {
-    super(m)
-  }
+// Restrictions
+export type Restriction = {
+  id: string,
+  interval: Interval[],
 }
