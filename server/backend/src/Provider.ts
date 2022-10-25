@@ -17,8 +17,8 @@ export async function start(): Promise<void> {
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOTP)
 
-  app.post('/userresctriction', handleUserRestriction)
-  app.post('/userrecods', handleUserRecords)
+  app.post('/user_restriction', handleUserRestriction)
+  app.post('/user_records', handleUserRecords)
 
 
   app.listen(3000)
