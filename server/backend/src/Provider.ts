@@ -19,8 +19,9 @@ export async function start(): Promise<void> {
   app.post('/access_otp', handleOTP)
 
   app.post('/user_restriction', handleUserRestriction)
-  app.post('/user_records', handleUserRecords)
 
+  app.get('/user_records', handleRecordsView)
+  app.post('/user_records', handleUserRecords)
 
   app.listen(3000)
 
@@ -31,13 +32,13 @@ function handleRoot(_req: Request, res: Response) {
   res.send('Running backend')
 }
 
-async function handleUserView(req: Request, res: Response): Promise<void> {
+async function handleUserView(_req: Request, res: Response): Promise<void> {
   const db = await getDatabase()
   res.send(JSON.stringify(db.data['users']))
 
 }
 
-async function handleRecordsView(req: Request, res: Response): Promise<void> {
+async function handleRecordsView(_req: Request, res: Response): Promise<void> {
   const db = await getDatabase()
   res.send(JSON.stringify(db.data['records']))
 }
