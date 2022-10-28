@@ -1,11 +1,10 @@
-import { DateTime, Interval } from 'luxon'
+import { Interval } from 'luxon'
 import { getDatabase } from './Database.js'
-import { AuthRecord } from './types.js'
 
-//abstract function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): void
-
-//function getEntries
-
+async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): Promise<void> {
+  const records = (await getDatabase()).data.records.filter((record) => range.contains(record.timestamp))
+  const
+}
 
 export async function stateUser(id: string): Promise<string> {
   const db = await getDatabase()
@@ -29,3 +28,17 @@ export async function stateUser(id: string): Promise<string> {
     }
   }
 }
+
+// Hourly data
+
+function amountEntries()
+
+// Amount of employees inside
+
+function getEntries(range: Interval)
+
+// Latest entries
+
+function getEmployees(): void {}
+
+// All users including state

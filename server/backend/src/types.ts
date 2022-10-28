@@ -2,29 +2,29 @@ import { DateTime, Interval } from 'luxon'
 
 // Models
 export type Data = {
-  users: User[],
-  records: AuthRecord[],
-  restrictions: Restriction[],
+  users: User[]
+  records: AuthRecord[]
+  restrictions: Restriction[]
 }
 
 export type User = {
-  id: string,
-  firstName: string,
-  lastName: string,
+  id: string
+  firstName: string
+  lastName: string
 
-  faceDescriptor: number[],
-  tfaToken: string,
+  faceDescriptor: number[]
+  tfaToken: string
 
-  roles: Role[],
+  roles: Role[]
 
-  dateCreated: DateTime,
+  dateCreated: DateTime
 }
 
 // Users
 
 export type ComfirmNewUser = {
-  status: 'ACCEPTED' | 'DENIED',
-  timestamp: DateTime,
+  status: 'ACCEPTED' | 'DENIED'
+  timestamp: DateTime
 }
 
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
@@ -32,33 +32,33 @@ export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 // Access
 
 export type OutgoingAccess = {
-  firstName: string,
-  timestamp: DateTime,
-  access: 'GRANTED' | 'DENIED',
+  firstName: string
+  timestamp: DateTime
+  access: 'GRANTED' | 'DENIED'
 }
 
 export type IncomingOtp = {
-  id: string;
-  otp: string,
-  timestamp: DateTime,
+  id: string
+  otp: string
+  timestamp: DateTime
 }
 
 export type IncomingFace = {
-  faceDescriptor: number[],
-  timestamp: DateTime,
+  faceDescriptor: number[]
+  timestamp: DateTime
 }
 
 // Records
 
 export type AuthRecord = {
-  id: string,
-  timestamp: DateTime,
-  method?: 'FACE' | 'TFA',
-  state: 'ENTER' | 'LEAVE',
+  id: string
+  timestamp: DateTime
+  method?: 'FACE' | 'TFA'
+  state: 'ENTER' | 'LEAVE'
 }
 
 // Restrictions
 export type Restriction = {
-  id: string,
-  interval: Interval[],
+  id: string
+  interval: Interval[]
 }

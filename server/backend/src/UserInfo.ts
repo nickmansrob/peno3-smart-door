@@ -8,8 +8,7 @@ export function handleUserRestriction(req: Request, res: Response): void {
 
     addEntity('restrictions', Restrictions)
     res.status(200).send()
-  }
-  else{
+  } else {
     res.status(400).send()
   }
 }

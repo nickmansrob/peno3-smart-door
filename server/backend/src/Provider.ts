@@ -10,7 +10,7 @@ import { validateAuthRecord, validateRestriction, validateUser } from './Validat
 export async function start(): Promise<void> {
   const app: Express = express()
   app.use(express.json())
-  
+
   app.get('/', handleRoot)
   app.get('/users', handleUserView)
   app.post('/users', handleNewUser)
@@ -34,7 +34,6 @@ function handleRoot(_req: Request, res: Response) {
 async function handleUserView(_req: Request, res: Response): Promise<void> {
   const db = await getDatabase()
   res.send(JSON.stringify(db.data['users']))
-
 }
 
 async function handleRecordsView(_req: Request, res: Response): Promise<void> {
@@ -42,9 +41,9 @@ async function handleRecordsView(_req: Request, res: Response): Promise<void> {
   res.send(JSON.stringify(db.data['records']))
 }
 
-export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess{
+export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels')
-  return {firstName, timestamp: date, access}
+  return { firstName, timestamp: date, access }
 }
 
 export async function addEntity(table: 'users' | 'records' | 'restrictions', value: User | AuthRecord | Restriction) {
