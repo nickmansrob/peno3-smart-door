@@ -5,6 +5,7 @@ import { createOtp, validateToken } from './OtpHelper.js'
 import { addEntity, evaluateAccess } from './Provider.js'
 import { stateUser } from './Queries.js'
 import { AuthRecord, IncomingFace, IncomingOtp, User } from './types.js'
+import {userRestrictions} from './Restriction.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
   const sum = point1.map((point, index) => {
@@ -35,7 +36,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
   
       const THRESHOLD = 0.6 // As used on http://dlib.net/face_recognition.py.html
 
-      if (matchedUser[0] <= THRESHOLD) {
+      if (matchedUser[0] <= THRESHOLD && (await (userRestrictions((matchedUser[1]) as User))).access === 'GRANTED') {
         res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', (matchedUser[1] as User).firstName)))
         const currentState = await stateUser((matchedUser[1] as User).id)
 
@@ -66,7 +67,7 @@ export async function handleOTP(req: Request, res: Response): Promise<void>{
 
     const otpHelper = createOtp(user.tfaToken)
 
-    if (validateToken(otpHelper, stream.otp, stream.timestamp)){
+    if (validateToken(otpHelper, stream.otp, stream.timestamp) && (await userRestrictions(user)).access === 'GRANTED'){
       res.status(200).send(evaluateAccess('GRANTED', user.firstName))
 
       const currentState = await stateUser(user.id)
