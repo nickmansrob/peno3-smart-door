@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { getDatabase } from './Database.js'
 import { createOtp, validateToken } from './OtpHelper.js'
 import { addEntity, evaluateAccess } from './Provider.js'
+import { stateUser } from './Queries.js'
 import { AuthRecord, IncomingFace, IncomingOtp, User } from './types.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
@@ -36,8 +37,17 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 
       if (matchedUser[0] <= THRESHOLD) {
         res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', (matchedUser[1] as User).firstName)))
-        const Records: AuthRecord = {id: (matchedUser[1] as User).id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'FACE', state: 'LEAVE'}
-        addEntity('records', Records)
+        const currentState = await stateUser((matchedUser[1] as User).id)
+
+        if (currentState === 'ENTER' || currentState === 'LEAVE'){
+          const record: AuthRecord = {id: (matchedUser[1] as User).id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'FACE', state: currentState}
+          addEntity('records', record)
+        }
+
+        else {
+          throw new Error ('State is in the wrong format')
+        }
+
       } else {
         res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
       }
@@ -58,9 +68,17 @@ export async function handleOTP(req: Request, res: Response): Promise<void>{
 
     if (validateToken(otpHelper, stream.otp, stream.timestamp)){
       res.status(200).send(evaluateAccess('GRANTED', user.firstName))
-      const Records: AuthRecord = {id: user.id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'TFA', state: 'LEAVE'}
-      addEntity('records', Records)
-      
+
+      const currentState = await stateUser(user.id)
+    
+      if (currentState === 'ENTER' || currentState === 'LEAVE'){
+        
+        const record: AuthRecord = {id: user.id, timestamp: DateTime.now().setZone('Europe/Brussels'), method: 'TFA', state: currentState}
+        addEntity('records', record)
+      }
+      else {
+        throw new Error ('State is in the wrong format')
+      }
     }
     else {
       res.status(401).send()
