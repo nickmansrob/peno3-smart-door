@@ -1,6 +1,6 @@
 import express, { Express, Response, Request } from 'express'
 import { getDatabase } from './Database.js'
-import { AuthRecord, OutgoingAccess, Restriction, User } from './types.js'
+import { AuthRecord, Day, GroupRestriction, OutgoingAccess, RestrictionKind, User, UserRestriction } from './types.js'
 import { DateTime } from 'luxon'
 import { handleNewUser } from './UserCreation.js'
 import { handleFace, handleOTP } from './Access.js'
@@ -46,17 +46,28 @@ export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string):
   return { firstName, timestamp: date, access }
 }
 
-export async function addEntity(table: 'users' | 'records' | 'restrictions', value: User | AuthRecord | Restriction) {
+export async function addEntity(table: 'users' | 'records', value: User | AuthRecord): Promise<void> {
   const db = await getDatabase()
 
   if (table === 'users') {
     db.data['users'].push(validateUser(value as User))
   } else if (table === 'records') {
     db.data['records'].push(validateAuthRecord(value as AuthRecord))
-  } else if (table === 'restrictions') {
-    db.data['restrictions'].push(validateRestriction(value as Restriction))
   } else {
     throw new Error('Table not defined in database')
+  }
+  await db.write()
+}
+
+export async function addRestriction(day: Day, restriction: UserRestriction | GroupRestriction, kind: RestrictionKind): Promise<void> {
+  const db = await getDatabase()
+
+  if (kind === 'USER') {
+    db.data.restrictions[day].users.push(validateRestriction(restriction, 'USER') as UserRestriction)
+  } else if (kind === 'GROUP') {
+    db.data.restrictions[day].groups.push(validateRestriction(restriction, 'GROUP') as GroupRestriction)
+  } else {
+    throw new Error('Unknown restriction kind')
   }
   await db.write()
 }

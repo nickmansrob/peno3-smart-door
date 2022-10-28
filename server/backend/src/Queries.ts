@@ -3,7 +3,7 @@ import { getDatabase } from './Database.js'
 
 async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): Promise<void> {
   const records = (await getDatabase()).data.records.filter((record) => range.contains(record.timestamp))
-  const
+  
 }
 
 export async function stateUser(id: string): Promise<string> {
@@ -31,14 +31,14 @@ export async function stateUser(id: string): Promise<string> {
 
 // Hourly data
 
-function amountEntries()
+//function amountEntries()
 
 // Amount of employees inside
 
-function getEntries(range: Interval)
+//function getEntries(range: Interval)
 
 // Latest entries
 
-function getEmployees(): void {}
+//function getEmployees(): void {}
 
 // All users including state

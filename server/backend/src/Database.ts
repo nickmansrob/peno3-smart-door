@@ -1,4 +1,5 @@
 import { Low, JSONFile } from 'lowdb'
+import { MockRestriction } from './assets/mockRestriction.js'
 import { Data } from './types.js'
 
 export async function initializeDatabase(): Promise<Low<Data>> {
@@ -8,7 +9,7 @@ export async function initializeDatabase(): Promise<Low<Data>> {
   await db.read()
 
   if (!db.data) {
-    db.data = { users: [], records: [], restrictions: [] } // Start with a fresh database
+    db.data = { users: [], records: [], restrictions: MockRestriction } // Start with a fresh database
     await db.write()
   }
 

@@ -1,4 +1,4 @@
-import { AuthRecord, Restriction, User } from './types.js'
+import { AuthRecord, GroupRestriction, Restriction, RestrictionKind, User, UserRestriction } from './types.js'
 
 export function validateUser(user: User): User {
   try {
@@ -34,14 +34,30 @@ export function validateAuthRecord(record: AuthRecord): AuthRecord {
   return record
 }
 
-export function validateRestriction(restriction: Restriction): Restriction {
-  try {
-    const _validateRestriction = {
-      id: restriction.id,
-      interval: restriction.interval,
+export function validateRestriction(kindRestriction: UserRestriction | GroupRestriction, kind: RestrictionKind): UserRestriction | GroupRestriction{
+  if (kind === 'USER') {
+    try {
+      const restriction = kindRestriction as UserRestriction
+      const _validateUserRestriction = {
+        id: restriction.id,
+        interval: restriction.interval,
+      }
+    } catch (error) {
+      throw new Error('Restriction not following model')
     }
-  } catch (error) {
-    throw new Error('Restriction not following model')
+    return kindRestriction
+  } else if (kind === 'GROUP') {
+    try {
+      const restriction = kindRestriction as GroupRestriction
+      const _validateUserRestriction = {
+        role: restriction.group,
+        interval: restriction.interval,
+      }
+    } catch (error) {
+      throw new Error('Restriction not following model')
+    }
+    return kindRestriction
+  } else {
+    throw new Error('Unknown restriction kind')
   }
-  return restriction
 }

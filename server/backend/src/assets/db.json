@@ -291,5 +291,30 @@
               {"id": "822d181f-5176-11ed-84c7-005k39bds41b", "state": "ENTER", "method": "FACE", "timestamp": "2022-07-21T21:27:26+02:00"},             
               {"id": "822d181f-5176-11ed-84c7-00155d7cf41b", "state": "LEAVE", "method": "TFA", "timestamp": "2022-08-21T21:27:26+02:00"}, 
               {"id": "822d181f-5176-11ed-84c7-00155d7cf41b", "state": "ENTER", "method": "FACE", "timestamp": "2022-09-21T21:27:26+02:00"}],
-  "restrictions": []
+  "restrictions": {
+    "MON": {
+      "users": [
+        {
+          "id": "blabla",
+          "interval": {
+            "s": "2022-10-21T21:28:15.000+02:00",
+            "e": "2022-10-28T21:28:15.000+02:00",
+            "invalid": null,
+            "isLuxonInterval": true
+          }
+        }
+      ],
+      "groups": [
+        {
+          "group": ["ADMIN"],
+          "interval": {
+            "s": "2022-10-21T21:28:15.000+02:00",
+            "e": "2022-10-28T21:28:15.000+02:00",
+            "invalid": null,
+            "isLuxonInterval": true
+          }
+        }
+      ]
+    }
+  }
 }
