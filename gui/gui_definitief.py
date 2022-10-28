@@ -2,8 +2,10 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import Qt
 from PyQt5.QtCore import *
-#import traceback
 import keyboard
+import os
+
+current_dir = os.path.dirname(__file__)
 
 authorize = False
 ui_window = "main"
@@ -58,7 +60,7 @@ class Home(object):
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(0, 0, 800, 480))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("/Users/milor/background.png"))
+        self.label.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background.png")))
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(Dialog)
         self.label_2.setGeometry(QtCore.QRect(400, 30, 400, 51))
@@ -144,7 +146,7 @@ class OTP(object):
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(0, 0, 800, 480))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("/Users/milor/background.png"))
+        self.label.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background.png")))
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(Dialog)
         self.label_2.setGeometry(QtCore.QRect(400, 30, 400, 51))
@@ -298,7 +300,7 @@ class Verified(object):
         self.label_2.setGeometry(QtCore.QRect(0, 50, 800, 300))
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setText("")
-        self.label_2.setPixmap(QtGui.QPixmap("C:/Users/milor/verified.png"))
+        self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "verified.png")))
         self.label_2.setObjectName("label_2")
         self.textlabel = QtWidgets.QLabel(Dialog)
         self.textlabel.setGeometry(QtCore.QRect(0, 350, 800, 130))
@@ -339,7 +341,7 @@ class Denied(object):
         self.label_2.setGeometry(QtCore.QRect(0, 0, 800, 480))
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setText("")
-        self.label_2.setPixmap(QtGui.QPixmap("C:/Users/milor/no_access.webp"))
+        self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.webp")))
         self.label_2.setObjectName("label_2")
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
