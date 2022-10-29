@@ -9,7 +9,6 @@ export function validateUser(user: User): User {
 
       faceDescriptor: user.faceDescriptor,
       tfaToken: user.tfaToken,
-
       roles: user.roles,
 
       dateCreated: user.dateCreated,
