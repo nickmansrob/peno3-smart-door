@@ -14,6 +14,8 @@ FROM node:16.15-alpine
 WORKDIR /usr/src/app
 ARG package
 COPY --from=builder /usr/src/build/dist ./
+RUN ls -la
+RUN pwd
 
 EXPOSE 3000
 CMD node --enable-source-maps index.js
