@@ -24,7 +24,6 @@ export async function start(): Promise<void> {
   // app.post('/user_records', handleUserRecords)
 
   app.listen(3000)
-
 }
 
 function handleRoot(_req: Request, res: Response) {
@@ -59,7 +58,11 @@ export async function addEntity(table: 'users' | 'records', value: User | AuthRe
   await db.write()
 }
 
-export async function addRestriction(day: Day, restriction: UserRestriction | GroupRestriction, kind: RestrictionKind): Promise<void> {
+export async function addRestriction(
+  day: Day,
+  restriction: UserRestriction | GroupRestriction,
+  kind: RestrictionKind,
+): Promise<void> {
   const db = await getDatabase()
 
   if (kind === 'USER') {

@@ -1,4 +1,4 @@
-import { AuthRecord, GroupRestriction, Restriction, RestrictionKind, User, UserRestriction } from './types.js'
+import { AuthRecord, GroupRestriction, RestrictionKind, User, UserRestriction } from './types.js'
 
 export function validateUser(user: User): User {
   try {
@@ -34,7 +34,10 @@ export function validateAuthRecord(record: AuthRecord): AuthRecord {
   return record
 }
 
-export function validateRestriction(kindRestriction: UserRestriction | GroupRestriction, kind: RestrictionKind): UserRestriction | GroupRestriction{
+export function validateRestriction(
+  kindRestriction: UserRestriction | GroupRestriction,
+  kind: RestrictionKind,
+): UserRestriction | GroupRestriction {
   if (kind === 'USER') {
     try {
       const restriction = kindRestriction as UserRestriction
