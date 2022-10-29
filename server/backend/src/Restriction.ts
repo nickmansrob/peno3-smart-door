@@ -1,15 +1,15 @@
-import { DateTime } from "luxon";
-import { getDatabase } from "./Database.js";
-import { OutgoingAccess, User } from "./types.js";
+import { DateTime } from 'luxon'
+import { getDatabase } from './Database.js'
+import { OutgoingAccess, User } from './types.js'
 
 export async function userRestrictions(user: User): Promise<OutgoingAccess>{
-  const day = DateTime.now().weekdayShort.toUpperCase
+  const day = DateTime.now().weekdayShort.toUpperCase()
   const time = DateTime.now()
   const id = user.id
   const role = user.roles
   const db = await getDatabase()
-  const restrictionsByUser = db.data.restrictions.filter(restriction[day].user.interval => restriction[day].user.id === id)
-  const restrictionsByGroup = db.data.restrictions.filter(restriction[day].group.interval => restriction[day].group.id === role)
+  const restrictionsByUser = db.data.restrictions[day].filter(restriction => restriction[day].users.id === id)
+  const restrictionsByGroup = db.data.restrictions[day].filter(restriction => restriction[day].group.group === role)
   const allRestrictions = [...restrictionsByUser, ...restrictionsByGroup]
   // const intervals = allRestrictions.map(allRestrictions.interval)
   const check = (allRestrictions.map(interval => interval.contains(time))).filter(x => x === false)
