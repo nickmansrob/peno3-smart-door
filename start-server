@@ -1,0 +1,10 @@
+#/bin/sh
+
+echo "Starting $1 server"
+
+if [ $1 == "frontend" ]
+then
+    serve -s build
+else
+    node --enable-source-maps dist/index.js
+fi
