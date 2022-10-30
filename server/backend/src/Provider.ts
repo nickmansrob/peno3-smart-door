@@ -8,7 +8,11 @@ import { handleUserRestriction } from './UserInfo.js'
 import { validateAuthRecord, validateRestriction, validateUser } from './Validate.js'
 
 export async function start(): Promise<void> {
-  const app: Express = express()
+  const server: Express = express()
+  const app = express.Router()
+
+  server.use('/api/', app)
+
   app.use(express.json())
 
   app.get('/', handleRoot)
@@ -23,7 +27,7 @@ export async function start(): Promise<void> {
   app.get('/user_records', handleRecordsView)
   // app.post('/user_records', handleUserRecords)
 
-  app.listen(3000)
+  server.listen(3000, () => console.log('Backend running!'))
 }
 
 function handleRoot(_req: Request, res: Response) {

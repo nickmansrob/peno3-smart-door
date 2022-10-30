@@ -3,7 +3,7 @@ import { MockRestriction } from './assets/mockRestriction.js'
 import { Data } from './types.js'
 
 export async function initializeDatabase(): Promise<Low<Data>> {
-  const dbPath = process.env.ENV === 'dev' ? './src/assets/db.json' : './src/data/db.json'
+  const dbPath = process.env.ENV == 'dev' ? './src/assets/db.json' : './src/data/db.json'
 
   const adapter = new JSONFile<Data>(dbPath)
   const db = new Low<Data>(adapter)
