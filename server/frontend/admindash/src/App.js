@@ -3,6 +3,7 @@ import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
 import Test from "./test";
+import Calender from"./pages/calender/Calender";
 
 
 import {
@@ -10,6 +11,7 @@ import {
   Routes,
   Route,
 } from 'react-router-dom'
+//import { Schema } from "@mui/icons-material";
 
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
               <Route path = 'new' element = {<New/>}></Route>
             </Route>
             <Route path = 'test' element= {<Test/>}>
+            </Route>
+            <Route path = 'calender' element= {<Calender/>}>
             </Route>
           </Route>
         </Routes>

@@ -40,13 +40,17 @@ const Single = () => {
                   <span className="itemKey">Land:</span>
                   <span className="itemValue">USA</span>
                 </div>
+                <div className="detailItem">
+                  <span className="itemKey">Age</span>
+                  <span className="itemValue">33</span>
+                </div>
               </div>
             </div>
           </div>
           <div className="right"></div>
         </div>
         <div className="bottom"></div>
-        single
+        
       </div>
     </div>
   );

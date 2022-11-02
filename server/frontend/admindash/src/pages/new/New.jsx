@@ -49,8 +49,12 @@ const New = () => {
                 <input type="text" placeholder="John Doe" />
               </div>
               <div className="formInput">
-                <label>Groep</label>
+                <label>Group</label>
                 <input type="text" placeholder="Administration" />
+              </div>
+              <div className="formInput">
+                <label>Age</label>
+                <input type="text" placeholder="33 years old" />
               </div>
               <button>Send</button>
             </form>
