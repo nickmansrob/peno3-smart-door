@@ -4,7 +4,10 @@ const Test = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("https://styx.rndevelopment.be/api/users")
+    fetch("https://styx.rndevelopment.be/api/users", {
+      method: "GET",
+      headers: { Host: "https://styx.rndevelopment.be" },
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
