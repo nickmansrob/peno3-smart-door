@@ -1,6 +1,7 @@
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import "./single.scss";
+import { Link } from "react-router-dom";
 
 const Single = () => {
   return (
@@ -44,10 +45,15 @@ const Single = () => {
                   <span className="itemKey">Age</span>
                   <span className="itemValue">33</span>
                 </div>
+                <Link to="/users/calender" style={{ textDecoration: "none" }}>
+            <div className="schedulerButton"> Click to see scheduler</div>
+            </Link>
               </div>
             </div>
           </div>
-          <div className="right"></div>
+          <div className="right">
+          
+          </div>
         </div>
         <div className="bottom"></div>
         
