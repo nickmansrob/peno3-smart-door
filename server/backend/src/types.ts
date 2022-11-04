@@ -69,7 +69,7 @@ export type UserRestriction = {
 }
 
 export type GroupRestriction = {
-  group: Role
+  role: Role[]
   interval: Interval[]
 }
 
