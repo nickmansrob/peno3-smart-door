@@ -4,7 +4,7 @@ const Test = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/employee_arrivals")
+    fetch("https://styx.rndevelopment.be/api/users")
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

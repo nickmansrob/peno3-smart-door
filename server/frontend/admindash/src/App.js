@@ -3,7 +3,7 @@ import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
 import Test from "./test";
-import Calender from"./pages/calender/Calender";
+
 
 
 import {
@@ -11,7 +11,7 @@ import {
   Routes,
   Route,
 } from 'react-router-dom'
-import Weekly from "./pages/weekly/Weekly";
+
 //import { Schema } from "@mui/icons-material";
 
 
@@ -26,13 +26,11 @@ function App() {
               <Route index element = {<List/>}></Route>
               <Route path = ':userId' element = {<Single/>}></Route>
               <Route path = 'new' element = {<New/>}></Route>
-              <Route path = 'calender' element= {<Calender/>}>
-            </Route>
+
             </Route>
             <Route path = 'test' element= {<Test/>}>
             </Route>
-            <Route path = 'weekly' element= {<Weekly/>}>
-            </Route>
+
           </Route>
         </Routes>
       </BrowserRouter>
