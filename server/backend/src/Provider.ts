@@ -53,13 +53,16 @@ export async function addEntity(table: 'users' | 'records', value: User | AuthRe
   const db = await getDatabase()
 
   if (table === 'users') {
+    console.log('Executing table change')
     db.data['users'].push(validateUser(value as User))
+    console.log(`User ${ (value as User).firstName} written to cache`)
   } else if (table === 'records') {
     db.data['records'].push(validateAuthRecord(value as AuthRecord))
   } else {
     throw new Error('Table not defined in database')
   }
   await db.write()
+  console.log('Succesfully written to database')
 }
 
 export async function addRestriction(

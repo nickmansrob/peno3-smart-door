@@ -6,6 +6,7 @@ export function handleNewUser(req: Request, res: Response): void {
   if (req.body) {
     const user = req.body as User
 
+    console.log('Adding user to database')
     addEntity('users', user)
     res.status(200).send()
   } else {
