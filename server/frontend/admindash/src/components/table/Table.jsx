@@ -7,69 +7,25 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const List = () => {
-  const rows = [
-    {
-      id: 234,
-      name: "Martijn",
-      surname: "Spaepen",
-      timestamp: "17:03:456",
-      date: "13/03/2022",
-      group: "IT",
-    },
-    {
-      id: 456,
-      name: "Kevin",
-      surname: "Maes",
-      timestamp: "15:01:456",
-      date: "13/03/2022",
-      group: "Logistics",
-    },
-    {
-      id: 567,
-      name: "Rob",
-      surname: "Nickmans",
-      timestamp: "12:01:456",
-      date: "13/03/2022",
-      group: "Development",
-    },
-    {
-      id: 124,
-      name: "Robin",
-      surname: "Vandenhoeck",
-      timestamp: "10:07:456",
-      date: "13/03/2022",
-      group: "Sales",
-    },
+  const [posts, setPosts] = useState([]);
 
-    {
-      id: 984,
-      name: "Milo",
-      surname: "Rogge",
-      timestamp: "16:47:456",
-      date: "12/03/2022",
-      group: "Sales",
-    },
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setPosts(data);
+      });
+  }, []);
 
-    {
-      id: 498,
-      name: "Milo",
-      surname: "Rogge",
-      timestamp: "16:47:456",
-      date: "12/03/2022",
-      group: "Sales",
-    },
-
-    {
-      id: 176,
-      name: "Wouter",
-      surname: "Strobbe",
-      timestamp: "14:33:456",
-      date: "12/03/2022",
-      group: "Consulting",
-    },
-  ];
+  const rows = posts;
 
   return (
     <TableContainer component={Paper} className="table">
@@ -88,8 +44,8 @@ const List = () => {
           {rows.map((row) => (
             <TableRow key={row.id}>
               <TableCell>{row.id}</TableCell>
-              <TableCell className="tableCell">{row.name}</TableCell>
-              <TableCell className="tableCell">{row.surname}</TableCell>
+              <TableCell className="tableCell">{row.firstName}</TableCell>
+              <TableCell className="tableCell">{row.lastName}</TableCell>
               <TableCell className="tableCell">{row.date}</TableCell>
               <TableCell className="tableCell">{row.timestamp}</TableCell>
               <TableCell className="tableCell">{row.group}</TableCell>

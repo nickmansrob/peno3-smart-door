@@ -34,10 +34,10 @@ function App() {
             </Route>
             </Route>
             <Route path = 'test' element= {<Test/>}>
+           
+            </Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             </Route>
-            </Route>
-            
           </Route>
         </Routes>
       </BrowserRouter>

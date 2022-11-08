@@ -4,15 +4,19 @@ const Test = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/employee_arrivals")
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         setPosts(data);
-      })
-      .catch((err) => {
-        console.log(err.message);
       });
+
+    //  .catch((err) => {
+    //   console.log(err.message);
+    //  }) ;
   }, []);
 
   const render = posts.map((post, id) => {
