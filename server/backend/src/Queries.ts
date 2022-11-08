@@ -7,7 +7,7 @@ async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): P
 
 export async function stateUser(id: string): Promise<string> {
   const db = await getDatabase()
-  const userRecords = db.data.records.filter((record) => record.id === id)
+  const userRecords = db.chain.get('records').find( {id: id} ).value()
   if (userRecords.length === 0) {
     return 'ENTER'
   } else {
