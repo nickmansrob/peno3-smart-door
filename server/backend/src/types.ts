@@ -1,4 +1,4 @@
-import { DateTime, Interval } from 'luxon'
+import { DateTime } from 'luxon'
 
 // Models
 export type Data = {
@@ -65,23 +65,28 @@ export type Restriction = {
 
 export type UserRestriction = {
   id: string
-  interval: Interval[]
+  interval: CustomInterval
 }
 
 export type GroupRestriction = {
   role: Role[]
-  interval: Interval[]
+  interval: CustomInterval
 }
 
 export type IncomingRestriction = {
   day: Day
   kind: RestrictionKind
-  interval: Interval[]
+  interval: CustomInterval
   restriction: UserRestriction | GroupRestriction
 }
 
 export type RestrictionKind = 'USER' | 'GROUP'
 
 export type DayInterval<T> = Record<Day, T>
+
+export type CustomInterval = {
+  s: string // '17:30'
+  e: string
+}
 
 export type Day = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'

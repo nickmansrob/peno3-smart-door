@@ -1,29 +1,78 @@
 import { DateTime, Interval } from 'luxon'
 import { exitCode } from 'process'
 import { getDatabase } from './Database.js'
-import { GroupRestriction, OutgoingAccess, Role, User, UserRestriction } from './types.js'
+import { CustomInterval, GroupRestriction, OutgoingAccess, Role, User, UserRestriction } from './types.js'
 
-export async function userRestrictions(user: User): Promise<OutgoingAccess> {
-  const day = DateTime.now().weekdayShort.toUpperCase()
-  const time = DateTime.now()
-  const id = user.id
-  const role = user.roles
+
+
+/**
+ * Na een eerste test is er een fout gebleken in de functie intersectArrays, hij kan de lengte of zo niet lezen
+ * ik kon er niets meer aan aanpassen in de sessie zelf. De test user lijkt ok te werken en deze staat in index
+ * er zijn ook meerde logs per deel geplaats die achteraf bijna allemaal weggaan.
+ * 
+ */
+export async function userRestrictions(accessUser: User): Promise<OutgoingAccess> {
   const db = await getDatabase()
-
+  
+  const currentTime = (DateTime.now().hour * 100 + DateTime.now().minute).toString()
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
   const userRestrictions = db.data.restrictions[currentDay].users.filter(
     (restriction: UserRestriction) => restriction.id === accessUser.id,
-  )?.map( (entry: UserRestriction) => {return entry.interval})
+  )?.map( (entry: UserRestriction) => {return entry.interval})  // Array of Costum intervals
+
+  console.log(userRestrictions) // test
 
   const groupRestrictions = db.data.restrictions[currentDay].groups.filter((restriction: GroupRestriction) =>
     intersectingArrays(restriction.role, accessUser.roles),
-  )?.map( (entry: GroupRestriction) => {return entry.interval})
+  )?.map( (entry: GroupRestriction) => {return entry.interval})  // Array of Costum intervals
 
-  // TODO: Check if in interval but not with contains as this includes the date and we only want the hour.
-  // TODO: Check for empty restriction, allow if empty
+  console.log(groupRestrictions) // test
 
-  return { firstName: accessUser.firstName, timestamp: DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED' }
+  const Restrictions = [...userRestrictions, ...groupRestrictions]  // Array of Costum intervals
+
+  console.log(Restrictions) // test
+  console.log(Restrictions.length) // test
+
+  if (Restrictions.length ===0){
+    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED'}
+
+    console.log(Access) // test
+
+    return Access
+  }
+  const booleanRestrictions = Restrictions.map(x => inInterval(currentTime, x))  // Array of booleans
+  if (booleanRestrictions.includes(false)){
+    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED'}
+
+    console.log(Access) // test
+
+    return Access
+  }
+  else {
+    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'DENIED'}
+
+    console.log(Access) // test
+
+    return Access
+  }
+
+  // OK?: Check if in interval but not with contains as this includes the date and we only want the hour.
+  // OK?: Check for empty restriction, allow if empty
 }
+
+
+function inInterval(currentTime: string, restrictionInterval: CustomInterval): boolean {
+  const currentTimeNumber: string = currentTime.replace(':', '')
+  const minimumEntry : string= restrictionInterval.s.replace(':', '')
+  const maxEntry : string= restrictionInterval.e.replace(':', '')
+  if (currentTimeNumber >= minimumEntry && currentTime <= maxEntry){
+    return true
+  }
+  else {
+    return false
+  }
+}
+
 
 
 /*
@@ -36,26 +85,3 @@ function intersectingArrays(arr1: Role[], arr2: Role[]): boolean {
   return biggestArray.filter(value => smallestArray.includes(value)).length !== 0
 }
 
-// const day = DateTime.now().weekdayShort.toUpperCase()
-// const time = DateTime.now()
-// const id = user.id
-// const role = user.roles
-// const db = await getDatabase()
-// console.log('test log', db.data.restrictions['MON'])
-// const restrictionsByUser = db.data.restrictions['MON'].users.filter(restriction => restriction['MON'].users.id === id)
-// console.log('restriction user', restrictionsByUser)
-// const restrictionsByUsertime = (db.data.restrictions['MON'].users.filter(restriction => restriction['MON'].users.id === id)).map(restriction => restriction.interval) // test if map function would work
-// console.log(restrictionsByUsertime) // byUsertime, gebruiken we niet maar had ik even erbij gezet voor de map te proberen
-// const restrictionsByGroup = db.data.restrictions['MON'].groups.filter(restriction => restriction['MON'].group.group === role)
-// return restrictionsByUsertime
-//   const allRestrictions = [...restrictionsByUser, ...restrictionsByGroup]
-//   // const intervals = allRestrictions.map(allRestrictions.interval)
-//   const check = (allRestrictions.map(interval => interval.contains(time))).filter(x => x === false)
-//   if (check.length===0){
-//     const Access : OutgoingAccess = {firstName : user.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED'}
-//     return Access
-//   }
-//   else {
-//     const Access : OutgoingAccess = {firstName : user.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'DENIED'}
-//     return Access
-//   }
