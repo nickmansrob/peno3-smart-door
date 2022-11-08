@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon'
+import { getDatabase } from './Database.js'
 import { start } from './Provider.js'
 import { userRestrictions } from './Restriction.js'
 import { User } from './types.js'
@@ -43,3 +44,4 @@ const testUser = {
 } as User
 
 userRestrictions(testUser)
+console.log(userRestrictions(testUser))
