@@ -24,15 +24,20 @@ function App() {
             <Route index element = {<Home/>}/>
             <Route path = 'users'>
               <Route index element = {<List/>}></Route>
-              <Route path = ':userId' element = {<Single/>}></Route>
+              <Route path = ':userId' element = {<Single/>}>
+              <Route path = 'weekly' element= {<Weekly/>}>
+            </Route>
+              </Route>
               <Route path = 'new' element = {<New/>}></Route>
+              
               <Route path = 'calender' element= {<Calender/>}>
             </Route>
             </Route>
             <Route path = 'test' element= {<Test/>}>
-            </Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             </Route>
+            </Route>
+            
           </Route>
         </Routes>
       </BrowserRouter>

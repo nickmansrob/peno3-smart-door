@@ -1,9 +1,12 @@
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import "./single.scss";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Single = () => {
+  const id = useParams()
+    console.log(id)
+  
   return (
     <div className="single">
       <Sidebar></Sidebar>
@@ -45,7 +48,7 @@ const Single = () => {
                   <span className="itemKey">Age</span>
                   <span className="itemValue">33</span>
                 </div>
-                <Link to="/users/calender" style={{ textDecoration: "none" }}>
+                <Link to= { `/users/${id.userId}/weekly` } style={{ textDecoration: "none" }}>
             <div className="schedulerButton"> Click to see scheduler</div>
             </Link>
               </div>
