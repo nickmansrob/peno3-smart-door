@@ -41,45 +41,80 @@ const columns = [
       );
     },
   },
-  
-
+  {
+    field: "action",
+    headerName: "Action",
+    width: 200,
+    renderCell: (params) => {
+      return (
+        <div className="cellAction">
+          <Link
+            to={`/users/${params.row.id}`}
+            style={{ textDecoration: "none" }}
+          >
+            <div className="viewButton"> View</div>
+          </Link>
+          <div className="deleteButton">Delete</div>
+        </div>
+      );
+    },
+  },
 ];
 
 const rows = [
   { id: 1, lastName: "Snow", firstName: "Jon", age: 35, status: "active" },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 , status: "active"},
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45, status: "passive"  },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16, status: "passive"  },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null , status: "active" },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150, status: "passive"  },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 , status: "passive" },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 , status: "passive" },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 , status: "passive" },
+  {
+    id: 2,
+    lastName: "Lannister",
+    firstName: "Cersei",
+    age: 42,
+    status: "active",
+  },
+  {
+    id: 3,
+    lastName: "Lannister",
+    firstName: "Jaime",
+    age: 45,
+    status: "passive",
+  },
+  { id: 4, lastName: "Stark", firstName: "Arya", age: 16, status: "passive" },
+  {
+    id: 5,
+    lastName: "Targaryen",
+    firstName: "Daenerys",
+    age: null,
+    status: "active",
+  },
+  {
+    id: 6,
+    lastName: "Melisandre",
+    firstName: null,
+    age: 150,
+    status: "passive",
+  },
+  {
+    id: 7,
+    lastName: "Clifford",
+    firstName: "Ferrara",
+    age: 44,
+    status: "passive",
+  },
+  {
+    id: 8,
+    lastName: "Frances",
+    firstName: "Rossini",
+    age: 36,
+    status: "passive",
+  },
+  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65, status: "passive" },
 ];
 
 const Datatable = () => {
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: () => {
-        return (
-          <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="viewButton"> View</div>
-            </Link>
-            <div className="deleteButton">Delete</div>
-          </div>
-        );
-      },
-    },
-  ];
   return (
     <div className="datatable">
       <DataGrid
         rows={rows}
-        columns={columns.concat(actionColumn)}
+        columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
         checkboxSelection
