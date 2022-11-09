@@ -7,8 +7,7 @@ export type Data = {
   restrictions: DayInterval<Restriction>
 }
 
-export type User = {
-  id: string
+export type User = Id & {
   firstName: string
   lastName: string
 
@@ -18,6 +17,8 @@ export type User = {
   roles: Role[]
 
   dateCreated: DateTime
+
+  enabled: boolean
 }
 
 // Users
@@ -37,8 +38,7 @@ export type OutgoingAccess = {
   access: 'GRANTED' | 'DENIED'
 }
 
-export type IncomingOtp = {
-  id: string
+export type IncomingOtp = Id & {
   otp: string
   timestamp: DateTime
 }
@@ -50,8 +50,7 @@ export type IncomingFace = {
 
 // Records
 
-export type AuthRecord = {
-  id: string
+export type AuthRecord = Id & {
   timestamp: DateTime
   method?: 'FACE' | 'TFA'
   state: 'ENTER' | 'LEAVE'
@@ -90,3 +89,7 @@ export type CustomInterval = {
 }
 
 export type Day = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'
+
+export type Id = {
+  id: string
+}

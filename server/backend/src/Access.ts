@@ -21,7 +21,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
     const faceToCompare = req.body as IncomingFace
 
     const db = await getDatabase()
-    const userTable = db.data.users
+    const userTable = db.chain.get('users')
 
     const distances = userTable.map((user) => {
       return [euclidDistance(faceToCompare.faceDescriptor, user.faceDescriptor), user]
@@ -67,7 +67,7 @@ export async function handleOTP(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const stream = req.body as IncomingOtp
     const db = await getDatabase()
-    const user = db.data.users.filter((user) => user.id === stream.id)[0] // TODO: Fix non null assertion
+    const user = db.chain.get('users').find( {id: stream.id} ).value() as User
 
     const otpHelper = createOtp(user.tfaToken)
 

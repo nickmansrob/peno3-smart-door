@@ -2,9 +2,9 @@ import express, { Express, Response, Request } from 'express'
 import { getDatabase } from './Database.js'
 import { AuthRecord, Day, GroupRestriction, OutgoingAccess, RestrictionKind, User, UserRestriction } from './types.js'
 import { DateTime } from 'luxon'
-import { handleNewUser } from './UserCreation.js'
+import { handleDeleteUser, handleNewUser } from './User.js'
 import { handleFace, handleOTP } from './Access.js'
-import { handleUserRestriction } from './UserInfo.js'
+import { handleUserRestriction } from './User.js'
 import { validateAuthRecord, validateRestriction, validateUser } from './Validate.js'
 
 export async function start(): Promise<void> {
@@ -16,8 +16,10 @@ export async function start(): Promise<void> {
   app.use(express.json())
 
   app.get('/', handleRoot)
+
   app.get('/users', handleUserView)
   app.post('/users', handleNewUser)
+  app.delete('/users', handleDeleteUser)
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOTP)
@@ -36,12 +38,12 @@ function handleRoot(_req: Request, res: Response) {
 
 async function handleUserView(_req: Request, res: Response): Promise<void> {
   const db = await getDatabase()
-  res.send(JSON.stringify(db.data['users']))
+  res.send(JSON.stringify(db.chain.get('users').value()))
 }
 
 async function handleRecordsView(_req: Request, res: Response): Promise<void> {
   const db = await getDatabase()
-  res.send(JSON.stringify(db.data['records']))
+  res.send(JSON.stringify(db.chain.get('records').value()))
 }
 
 export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess {
@@ -57,7 +59,7 @@ export async function addEntity(table: 'users' | 'records', value: User | AuthRe
     db.data['users'].push(validateUser(value as User))
     console.log(`User ${(value as User).firstName} written to cache`)
   } else if (table === 'records') {
-    db.data['records'].push(validateAuthRecord(value as AuthRecord))
+    db.chain['records'].push(validateAuthRecord(value as AuthRecord))
   } else {
     throw new Error('Table not defined in database')
   }
@@ -73,9 +75,9 @@ export async function addRestriction(
   const db = await getDatabase()
 
   if (kind === 'USER') {
-    db.data.restrictions[day].users.push(validateRestriction(restriction, 'USER') as UserRestriction)
+    db.chain.restrictions[day].users.push(validateRestriction(restriction, 'USER') as UserRestriction)
   } else if (kind === 'GROUP') {
-    db.data.restrictions[day].groups.push(validateRestriction(restriction, 'GROUP') as GroupRestriction)
+    db.chain.restrictions[day].groups.push(validateRestriction(restriction, 'GROUP') as GroupRestriction)
   } else {
     throw new Error('Unknown restriction kind')
   }
