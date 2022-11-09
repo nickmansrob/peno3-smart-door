@@ -4,9 +4,9 @@ import "./single.scss";
 import { Link, useParams } from "react-router-dom";
 
 const Single = () => {
-  const id = useParams()
-    console.log(id)
-  
+  const id = useParams();
+  console.log(id);
+
   return (
     <div className="single">
       <Sidebar></Sidebar>
@@ -14,13 +14,13 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-          <Link to= { `/edit/${id.userId}` } style={{ textDecoration: "none" }}>
-            <div className="editButton"> Edit</div>
+            <Link to={`/edit/${id.userId}`} style={{ textDecoration: "none" }}>
+              <div className="editButton"> Edit</div>
             </Link>
             <h1 className="title"> Information</h1>
             <div className="item">
               <img
-                src="https://images.pexels.com/photos/874158/pexels-photo-874158.jpeg"
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
                 alt=""
                 className="itemImg"
               />
@@ -37,19 +37,18 @@ const Single = () => {
                   <span className="itemValue">Logistics</span>
                 </div>
 
-                
-                <Link to= { `/weekly/${id.userId}` } style={{ textDecoration: "none" }}>
-            <div className="schedulerButton"> Click to see scheduler</div>
-            </Link>
+                <Link
+                  to={`/weekly/${id.userId}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div className="schedulerButton"> Click to see scheduler</div>
+                </Link>
               </div>
             </div>
           </div>
-          <div className="right">
-          
-          </div>
+          <div className="right"></div>
         </div>
         <div className="bottom"></div>
-        
       </div>
     </div>
   );

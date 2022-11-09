@@ -5,6 +5,7 @@ import Single from "./pages/single/Single"
 import Calender from"./pages/calender/Calender";
 import Weekly from "./pages/weekly/Weekly";
 import Edit from "./pages/edit/Edit";
+import Qr from "./components/qr/Qr";
 
 import {
   BrowserRouter,
@@ -26,8 +27,8 @@ function App() {
               <Route index element = {<List/>}></Route>
               <Route path = ':userId' element = {<Single/>}>
               </Route>
-              <Route path = 'new' element = {<New/>}></Route>
-              
+              <Route path = 'new' element = {<New/>}>
+              </Route>
               <Route path = 'calender' element= {<Calender/>}>
             </Route>
             </Route>

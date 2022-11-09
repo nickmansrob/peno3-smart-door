@@ -3,6 +3,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
+import Qr from "../../components/qr/Qr";
 
 const New = () => {
   const [file, setFile] = useState("");
@@ -16,7 +17,7 @@ const New = () => {
         <div className="top">
           <h1>Add new user</h1>
         </div>
-        <div className="bottom">
+        <div className="middle">
           <div className="left">
             <img
               src={
@@ -58,6 +59,12 @@ const New = () => {
               </div>
               <button>Send</button>
             </form>
+          </div>
+        </div>
+
+        <div className="bottom">
+          <div className="qrcontainer">
+            <Qr secret_key="TEST"></Qr>
           </div>
         </div>
       </div>

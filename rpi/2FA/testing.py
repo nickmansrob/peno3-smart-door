@@ -26,6 +26,8 @@ def GetTOTP(secret_key):
     totp = pyotp.TOTP(secret_key)
     return totp.now()
 
+
+print(GenerateURL('FZKAKFARK23', 'Martijn'))
 #Notitie aan mezelf, de volgende stap is het creëren van een class 'Employee' waarin al deze functionaliteiten gecombineerd worden
 #en die gestructureerd de data bijhoudt per werknemer.
 
