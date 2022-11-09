@@ -14,7 +14,9 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-            <div className="editButton">Edit</div>
+          <Link to= { `/edit/${id.userId}` } style={{ textDecoration: "none" }}>
+            <div className="editButton"> Edit</div>
+            </Link>
             <h1 className="title"> Information</h1>
             <div className="item">
               <img
@@ -36,7 +38,7 @@ const Single = () => {
                 </div>
 
                 
-                <Link to= { `/users/${id.userId}/weekly` } style={{ textDecoration: "none" }}>
+                <Link to= { `/weekly/${id.userId}` } style={{ textDecoration: "none" }}>
             <div className="schedulerButton"> Click to see scheduler</div>
             </Link>
               </div>

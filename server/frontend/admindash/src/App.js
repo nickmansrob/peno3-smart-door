@@ -3,14 +3,15 @@ import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
 import Calender from"./pages/calender/Calender";
-
+import Weekly from "./pages/weekly/Weekly";
+import Edit from "./pages/edit/Edit";
 
 import {
   BrowserRouter,
   Routes,
   Route,
 } from 'react-router-dom'
-import Weekly from "./pages/weekly/Weekly";
+
 //import { Schema } from "@mui/icons-material";
 
 
@@ -24,8 +25,6 @@ function App() {
             <Route path = 'users'>
               <Route index element = {<List/>}></Route>
               <Route path = ':userId' element = {<Single/>}>
-              <Route path = 'weekly' element= {<Weekly/>}>
-            </Route>
               </Route>
               <Route path = 'new' element = {<New/>}></Route>
               
@@ -33,7 +32,13 @@ function App() {
             </Route>
             </Route>
             <Route path = 'weekly' element= {<Weekly/>}>
+            <Route path = ':userId' element = {<Weekly/>}>
+              </Route>
             </Route>
+            <Route path = 'edit' element= {<Edit/>}>
+            <Route path = ':userId' element = {<Edit/>}>
+            </Route>
+              </Route>
           </Route>
         </Routes>
       </BrowserRouter>
