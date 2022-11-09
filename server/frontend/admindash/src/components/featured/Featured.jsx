@@ -4,6 +4,9 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 const Featured = () => {
+  const Total_employees =70
+  const Employees_in = 49
+  const percentage = 100 * Employees_in / Total_employees
   return (
     <div className="featured">
       <div className="top">
@@ -12,7 +15,7 @@ const Featured = () => {
       </div>
       <div className="bottom">
         <div className="featuredChart">
-          <CircularProgressbar value={70} text="70" strokeWidth={5} />
+          <CircularProgressbar value={percentage} text={Employees_in} strokeWidth={5} />
         </div>
       </div>
     </div>

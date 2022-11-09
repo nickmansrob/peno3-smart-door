@@ -26,28 +26,16 @@ const Single = () => {
                 <h1 className="itemTitle">Jane Doe</h1>
 
                 <div className="detailItem">
-                  <span className="itemKey">Email:</span>
-                  <span className="itemValue">janedoe@gmail.com</span>
+                  <span className="itemKey">ID:</span>
+                  <span className="itemValue">1</span>
                 </div>
 
                 <div className="detailItem">
-                  <span className="itemKey">Phone:</span>
-                  <span className="itemValue">0898765</span>
+                  <span className="itemKey">Group:</span>
+                  <span className="itemValue">Logistics</span>
                 </div>
 
-                <div className="detailItem">
-                  <span className="itemKey">Adres:</span>
-                  <span className="itemValue">Germeer 16</span>
-                </div>
-
-                <div className="detailItem">
-                  <span className="itemKey">Land:</span>
-                  <span className="itemValue">USA</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Age</span>
-                  <span className="itemValue">33</span>
-                </div>
+                
                 <Link to= { `/users/${id.userId}/weekly` } style={{ textDecoration: "none" }}>
             <div className="schedulerButton"> Click to see scheduler</div>
             </Link>
