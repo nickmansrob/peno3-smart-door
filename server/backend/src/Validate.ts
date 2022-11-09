@@ -1,4 +1,4 @@
-import { AuthRecord, GroupRestriction, RestrictionKind, User, UserRestriction } from './types.js'
+import { GroupRestriction, RestrictionKind, User, UserRecord, UserRestriction } from './types.js'
 
 export function validateUser(user: User): User {
   if (
@@ -7,7 +7,7 @@ export function validateUser(user: User): User {
     user.lastName &&
     user.faceDescriptor &&
     user.tfaToken &&
-    user.roles &&
+    user.role &&
     user.dateCreated
   ) {
     return user
@@ -16,7 +16,7 @@ export function validateUser(user: User): User {
   }
 }
 
-export function validateAuthRecord(record: AuthRecord): AuthRecord {
+export function validateAuthRecord(record: UserRecord): UserRecord {
   if (record.id && record.timestamp && record.method && record.state) {
     return record
   } else {
@@ -39,7 +39,7 @@ export function validateRestriction(
   } else if (kind === 'GROUP') {
     const restriction = kindRestriction as GroupRestriction
 
-    if (restriction.group && restriction.interval) {
+    if (restriction.role && restriction.interval) {
       return kindRestriction
     } else {
       console.error('Restriction not following model')

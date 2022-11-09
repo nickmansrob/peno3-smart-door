@@ -4,7 +4,7 @@ import { getDatabase } from './Database.js'
 import { createOtp, validateToken } from './OtpHelper.js'
 import { addEntity, evaluateAccess } from './Provider.js'
 import { stateUser } from './Queries.js'
-import { AuthRecord, IncomingFace, IncomingOtp, User } from './types.js'
+import { IncomingFace, IncomingOtp, User, UserRecord } from './types.js'
 import { userRestrictions } from './Restriction.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
@@ -23,7 +23,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
     const db = await getDatabase()
     const userTable = db.chain.get('users')
 
-    const distances = userTable.map((user) => {
+    const distances = userTable.map(user => {
       return [euclidDistance(faceToCompare.faceDescriptor, user.faceDescriptor), user]
     })
 
@@ -44,9 +44,9 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
         const currentState = await stateUser((matchedUser[1] as User).id)
 
         if (currentState === 'ENTER' || currentState === 'LEAVE') {
-          const record: AuthRecord = {
+          const record: UserRecord = {
             id: (matchedUser[1] as User).id,
-            timestamp: DateTime.now().setZone('Europe/Brussels'),
+            timestamp: DateTime.now().setZone('Europe/Brussels').toString(),
             method: 'FACE',
             state: currentState,
           }
@@ -67,19 +67,22 @@ export async function handleOTP(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const stream = req.body as IncomingOtp
     const db = await getDatabase()
-    const user = db.chain.get('users').find( {id: stream.id} ).value() as User
+    const user = db.chain.get('users').find({ id: stream.id }).value() as User
 
     const otpHelper = createOtp(user.tfaToken)
 
-    if (validateToken(otpHelper, stream.otp, stream.timestamp) && (await userRestrictions(user)).access === 'GRANTED') {
+    if (
+      validateToken(otpHelper, stream.otp, DateTime.fromISO(stream.timestamp)) &&
+      (await userRestrictions(user)).access === 'GRANTED'
+    ) {
       res.status(200).send(evaluateAccess('GRANTED', user.firstName))
 
       const currentState = await stateUser(user.id)
 
       if (currentState === 'ENTER' || currentState === 'LEAVE') {
-        const record: AuthRecord = {
+        const record: UserRecord = {
           id: user.id,
-          timestamp: DateTime.now().setZone('Europe/Brussels'),
+          timestamp: DateTime.now().setZone('Europe/Brussels').toString(),
           method: 'TFA',
           state: currentState,
         }

@@ -1,13 +1,8 @@
-import { Interval } from 'luxon'
 import { getDatabase } from './Database.js'
-
-async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): Promise<void> {
-  const records = (await getDatabase()).data.records.filter((record) => range.contains(record.timestamp))
-}
 
 export async function stateUser(id: string): Promise<string> {
   const db = await getDatabase()
-  const userRecords = db.chain.get('records').find( {id: id} ).value()
+  const userRecords = db.chain.get('records').find({ id: id }).value()
   if (userRecords.length === 0) {
     return 'ENTER'
   } else {

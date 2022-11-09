@@ -142,3 +142,22 @@ return restrictionsByUsertime
     return Access
   }
 
+
+  /*
+@returns true if arrays intersect, false if not
+*/
+ 
+function intersectingArrays(arr1: Role[], arr2: Role[]): boolean {
+
+  console.log(arr1) // test
+  console.log(arr2) // test
+
+  const biggestArray = arr1.length > arr2.length ? arr1 : arr2
+  const smallestArray = arr1.length <= arr2.length ? arr1 : arr2
+  return biggestArray.filter(value => smallestArray.includes(value)).length !== 0
+}
+
+async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): Promise<void> {
+  const records = (await getDatabase()).data.records.filter((record) => range.contains(DateTime.fromISO(record.timestamp)))
+}
+

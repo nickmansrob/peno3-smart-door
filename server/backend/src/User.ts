@@ -30,7 +30,6 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
     const db = await getDatabase()
     const id = req.body as Id
 
-    db.chain.get('users').find( {id: id} ).assign(generateStaleUser(id))
-
+    // db.chain.get('users').find( {id: id} ).assign(generateStaleUser(id))
   }
 }

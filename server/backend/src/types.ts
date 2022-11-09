@@ -12,7 +12,7 @@ export type User = Id & {
   faceDescriptor: number[]
   tfaToken: string
 
-  roles: Role
+  role: Role
 
   dateCreated: string
 
@@ -67,7 +67,7 @@ export type UserRestriction = Id & {
 }
 
 export type GroupRestriction = {
-  role: Role[]
+  role: Role
   interval: CustomInterval
 }
 
