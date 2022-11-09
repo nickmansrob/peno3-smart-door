@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "firstName": "Robin",
       "lastName": "Vandenhoeck",
       "faceDescriptor": [
@@ -141,7 +141,7 @@
       "dateCreated": "2022-11-09T10:09:26+01:00"
     },
     {
-      "id": 2,
+      "id": "2",
       "firstName": "Martijn",
       "lastName": "Spaepen",
       "faceDescriptor": [
@@ -285,13 +285,13 @@
     "1": {
       "records": [
         {
-          "id": 1,
+          "id": "1",
           "state": "ENTER",
           "method": "FACE",
           "timestamp": "2022-11-09T10:27:26+01:00"
         },
         {
-          "id": 1,
+          "id": "1",
           "state": "LEAVE",
           "method": "FACE",
           "timestamp": "2022-11-09T12:56:43+01:00"
@@ -306,7 +306,7 @@
     },
     "TUE": {
       "users": [{
-        "id": 1,
+        "id": "1",
         "interval": {
           "s": "11:40",
           "e": "20:10"
@@ -322,7 +322,7 @@
     },
     "WED": {
       "users": [{
-        "id": 1,
+        "id": "1",
         "interval": {
           "s": "11:40",
           "e": "20:10"
