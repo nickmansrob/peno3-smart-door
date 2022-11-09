@@ -1,5 +1,3 @@
-import { DateTime } from 'luxon'
-
 // Models
 export type Data = {
   users: User[]
@@ -14,9 +12,9 @@ export type User = Id & {
   faceDescriptor: number[]
   tfaToken: string
 
-  roles: Role[]
+  roles: Role
 
-  dateCreated: DateTime
+  dateCreated: string
 
   enabled: boolean
 }
@@ -25,7 +23,7 @@ export type User = Id & {
 
 export type ComfirmNewUser = {
   status: 'ACCEPTED' | 'DENIED'
-  timestamp: DateTime
+  timestamp: string
 }
 
 export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
@@ -34,24 +32,26 @@ export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
 
 export type OutgoingAccess = {
   firstName: string
-  timestamp: DateTime
+  timestamp: string
   access: 'GRANTED' | 'DENIED'
 }
 
 export type IncomingOtp = Id & {
   otp: string
-  timestamp: DateTime
+  timestamp: string
 }
 
 export type IncomingFace = {
   faceDescriptor: number[]
-  timestamp: DateTime
+  timestamp: string
 }
 
 // Records
 
-export type AuthRecord = Id & {
-  timestamp: DateTime
+export type AuthRecord = Record<Id['id'], Record<'records', UserRecord>>
+
+export type UserRecord = Id & {
+  timestamp: string
   method?: 'FACE' | 'TFA'
   state: 'ENTER' | 'LEAVE'
 }
@@ -62,8 +62,7 @@ export type Restriction = {
   groups: GroupRestriction[]
 }
 
-export type UserRestriction = {
-  id: string
+export type UserRestriction = Id & {
   interval: CustomInterval
 }
 

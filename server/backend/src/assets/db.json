@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": "1",
+      "id": 1,
       "firstName": "Robin",
       "lastName": "Vandenhoeck",
       "faceDescriptor": [
@@ -141,7 +141,7 @@
       "dateCreated": "2022-11-09T10:09:26+01:00"
     },
     {
-      "id": "2",
+      "id": 2,
       "firstName": "Martijn",
       "lastName": "Spaepen",
       "faceDescriptor": [
@@ -281,20 +281,24 @@
       "dateCreated": "2022-11-09T10:09:26+01:00"
     }
   ],
-  "records": [
-    {
-      "id": "1",
-      "state": "ENTER",
-      "method": "FACE",
-      "timestamp": "2022-11-09T10:27:26+01:00"
-    },
-    {
-      "id": "1",
-      "state": "LEAVE",
-      "method": "FACE",
-      "timestamp": "2022-11-09T12:56:43+01:00"
+  "records": {
+    "1": {
+      "records": [
+        {
+          "id": 1,
+          "state": "ENTER",
+          "method": "FACE",
+          "timestamp": "2022-11-09T10:27:26+01:00"
+        },
+        {
+          "id": 1,
+          "state": "LEAVE",
+          "method": "FACE",
+          "timestamp": "2022-11-09T12:56:43+01:00"
+        }
+      ]
     }
-  ],
+  },
   "restrictions": {
     "MON": {
       "users": [],
@@ -302,41 +306,33 @@
     },
     "TUE": {
       "users": [{
-        "id": "822d181f-5176-11ed-84c7-00155d7cf41b",
+        "id": 1,
         "interval": {
           "s": "11:40",
-          "e": "20:10",
-          "invalid": null,
-          "isLuxonInterval": true
+          "e": "20:10"
         }
       }],
       "groups": [{
         "role": ["ADMIN"],
         "interval": {
           "s": "11:40",
-          "e": "20:10",
-          "invalid": null,
-          "isLuxonInterval": true
+          "e": "20:10"
         }
       }]
     },
     "WED": {
       "users": [{
-        "id": "822d181f-5176-11ed-84c7-00155d7cf41b",
+        "id": 1,
         "interval": {
           "s": "11:40",
-          "e": "20:10",
-          "invalid": null,
-          "isLuxonInterval": true
+          "e": "20:10"
         }
       }],
       "groups": [{
         "role": ["ADMIN"],
         "interval": {
           "s": "11:40",
-          "e": "20:10",
-          "invalid": null,
-          "isLuxonInterval": true
+          "e": "20:10"
         }
       }]
     },
