@@ -35,7 +35,6 @@ function App() {
               <Route path = 'calender' element= {<Calender/>}>
             </Route>
             </Route>
-            <Route path = 'qr' element = {<Qr/>}></Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             <Route path = ':userId' element = {<Weekly/>}>
               </Route>

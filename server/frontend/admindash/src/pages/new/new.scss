@@ -4,7 +4,7 @@
   .newContainer {
     flex: 6;
     .top,
-    .bottom {
+    .middle {
       -webkit-box-shadow: -2px 5px 23px 4px rgba(0, 0, 0, 0.55);
       -moz-box-shadow: -2px 5px 23px 4px rgba(0, 0, 0, 0.55);
       box-shadow: -2px 5px 23px 4px rgba(0, 0, 0, 0.55);
@@ -51,15 +51,17 @@
               border-bottom: 1px solid;
             }
           }
-          
-        }
-        button{
-          width: 50%;
-          background-color: rgb(11, 11, 163);
-          color: white;
-          cursor:pointer;
         }
       }
+      button {
+        width: 50%;
+        background-color: rgb(11, 11, 163);
+        color: white;
+        cursor: pointer;
+      }
+    }
+    .bottom {
+      justify-content: center;
     }
   }
 }
