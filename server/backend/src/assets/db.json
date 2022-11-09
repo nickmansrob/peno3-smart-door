@@ -297,6 +297,22 @@
           "timestamp": "2022-11-09T12:56:43+01:00"
         }
       ]
+    },
+    "2": {
+      "records": [
+        {
+          "id": "2",
+          "state": "ENTER",
+          "method": "FACE",
+          "timestamp": "2022-11-09T10:27:26+01:00"
+        },
+        {
+          "id": "2",
+          "state": "LEAVE",
+          "method": "FACE",
+          "timestamp": "2022-11-09T12:56:43+01:00"
+        }
+      ]
     }
   },
   "restrictions": {

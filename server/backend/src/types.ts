@@ -1,7 +1,7 @@
 // Models
 export type Data = {
   users: User[]
-  records: AuthRecord[]
+  records: AuthRecord
   restrictions: DayInterval<Restriction>
 }
 
@@ -48,7 +48,7 @@ export type IncomingFace = {
 
 // Records
 
-export type AuthRecord = Record<Id['id'], Record<'records', UserRecord>>
+export type AuthRecord = Record<Id['id'], Record<'records', UserRecord[]>>
 
 export type UserRecord = Id & {
   timestamp: string
