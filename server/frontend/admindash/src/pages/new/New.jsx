@@ -3,7 +3,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
-import Qr from "../qrpage/Qr";
+import Qr from "../../components/qr/Qr";
 
 const New = () => {
   const [file, setFile] = useState("");
