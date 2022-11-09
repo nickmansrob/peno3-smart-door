@@ -17,6 +17,8 @@ export async function start(): Promise<void> {
 
   app.get('/', handleRoot)
 
+  app.post('/test', (_req: Request, res: Response) => res.status(200).send())
+
   app.get('/users', handleUserView)
   app.post('/users', handleNewUser)
   app.delete('/users', handleDeleteUser)
