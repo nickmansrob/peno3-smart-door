@@ -2,7 +2,6 @@ import Home from "./pages/home/Home";
 import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
-import Test from "./test";
 import Calender from"./pages/calender/Calender";
 
 
@@ -32,9 +31,6 @@ function App() {
               
               <Route path = 'calender' element= {<Calender/>}>
             </Route>
-            </Route>
-            <Route path = 'test' element= {<Test/>}>
-           
             </Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             </Route>

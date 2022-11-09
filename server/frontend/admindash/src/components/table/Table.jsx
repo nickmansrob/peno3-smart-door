@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 const List = () => {
-  const [posts, setPosts] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const requestOptions = {
@@ -21,11 +21,11 @@ const List = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setPosts(data);
+        setUsers(data);
       });
   }, []);
 
-  const rows = posts;
+  const rows = users;
 
   return (
     <TableContainer component={Paper} className="table">
