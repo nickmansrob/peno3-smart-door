@@ -42,14 +42,14 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
   }
   const booleanRestrictions = Restrictions.map(x => inInterval(currentTime, x))  // Array of booleans
   if (booleanRestrictions.includes(false)){
-    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED'}
+    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'DENIED'}
 
     console.log(Access) // test
 
     return Access
   }
   else {
-    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'DENIED'}
+    const Access : OutgoingAccess = {firstName : accessUser.firstName, timestamp : DateTime.now().setZone('Europe/Brussels'), access: 'GRANTED'}
 
     console.log(Access) // test
 
@@ -80,6 +80,10 @@ function inInterval(currentTime: string, restrictionInterval: CustomInterval): b
 */
  
 function intersectingArrays(arr1: Role[], arr2: Role[]): boolean {
+
+  console.log(arr1) // test
+  console.log(arr2) // test
+
   const biggestArray = arr1.length > arr2.length ? arr1 : arr2
   const smallestArray = arr1.length <= arr2.length ? arr1 : arr2
   return biggestArray.filter(value => smallestArray.includes(value)).length !== 0

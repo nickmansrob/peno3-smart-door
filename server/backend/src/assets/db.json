@@ -311,7 +311,7 @@
         }
       }],
       "groups": [{
-        "id": "822d181f-5176-11ed-84c7-00155d7cf41b",
+        "role": ["ADMIN"],
         "interval": {
           "s": "11:40",
           "e": "20:10",
@@ -321,8 +321,24 @@
       }]
     },
     "WED": {
-      "users": [],
-      "groups": []
+      "users": [{
+        "id": "822d181f-5176-11ed-84c7-00155d7cf41b",
+        "interval": {
+          "s": "11:40",
+          "e": "20:10",
+          "invalid": null,
+          "isLuxonInterval": true
+        }
+      }],
+      "groups": [{
+        "role": ["ADMIN"],
+        "interval": {
+          "s": "11:40",
+          "e": "20:10",
+          "invalid": null,
+          "isLuxonInterval": true
+        }
+      }]
     },
     "THU": {
       "users": [],
