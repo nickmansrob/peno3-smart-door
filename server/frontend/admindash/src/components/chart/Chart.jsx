@@ -9,52 +9,73 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-
 const Chart = () => {
+  var dayminusone = new Date();
+  var dd = String(dayminusone.getDate() - 1).padStart(2, "0");
+  var mm = String(dayminusone.getMonth() + 1).padStart(2, "0");
+  dayminusone = dd + "/" + mm;
+
+  var dayminustwo = new Date();
+  var dd = String(dayminustwo.getDate() - 2).padStart(2, "0");
+  var mm = String(dayminustwo.getMonth() + 1).padStart(2, "0");
+  dayminustwo = dd + "/" + mm;
+
+  var dayminusthree = new Date();
+  var dd = String(dayminusthree.getDate() - 3).padStart(2, "0");
+  var mm = String(dayminusthree.getMonth() + 1).padStart(2, "0");
+  dayminusthree = dd + "/" + mm;
+
+  var dayminusfour = new Date();
+  var dd = String(dayminusfour.getDate() - 4).padStart(2, "0");
+  var mm = String(dayminusfour.getMonth() + 1).padStart(2, "0");
+  dayminusfour = dd + "/" + mm;
+
+  var dayminusfive = new Date();
+  var dd = String(dayminusfive.getDate() - 5).padStart(2, "0");
+  var mm = String(dayminusfive.getMonth() + 1).padStart(2, "0");
+  dayminusfive = dd + "/" + mm;
+
+  var dayminussix = new Date();
+  var dd = String(dayminussix.getDate() - 6).padStart(2, "0");
+  var mm = String(dayminussix.getMonth() + 1).padStart(2, "0");
+  dayminussix = dd + "/" + mm;
+
+  var dayminusseven = new Date();
+  var dd = String(dayminusseven.getDate() - 7).padStart(2, "0");
+  var mm = String(dayminusseven.getMonth() + 1).padStart(2, "0");
+  dayminusseven = dd + "/" + mm;
+
+  const data = [
+    {
+      name: dayminusseven.toLocaleString(),
+      uv: 4000,
+    },
+    {
+      name: dayminussix.toLocaleString(),
+      uv: 3000,
+    },
+    {
+      name: dayminusfive.toLocaleString(),
+      uv: 2000,
+    },
+    {
+      name: dayminusfour.toLocaleString(),
+      uv: 2780,
+    },
+    {
+      name: dayminusthree.toLocaleString(),
+      uv: 1890,
+    },
+    {
+      name: dayminustwo.toLocaleString(),
+      uv: 2390,
+    },
+    {
+      name: dayminusone.toLocaleString(),
+      uv: 3490,
+    },
+  ];
+
   return (
     <div className="chart">
       <ResponsiveContainer width="100%" aspect={2 / 1}>
