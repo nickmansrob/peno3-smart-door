@@ -38,7 +38,7 @@ function handleRoot(_req: Request, res: Response) {
   res.send('Running backend')
 }
 
-async function handleUserView(_req: Request, res: Response): Promise<void> {
+async function handleUserView(_req: Request, res: Response): Promise<void> {   // TO-DO: meer meegeven
   const db = await getDatabase()
   res.send(JSON.stringify(db.chain.get('users').value()))
 }

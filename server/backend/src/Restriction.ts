@@ -72,7 +72,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
   // OK?: Check for empty restriction, allow if empty
 }
 
-function inInterval(currentTime: string, restrictionInterval: CustomInterval): boolean {
+export function inInterval(currentTime: string, restrictionInterval: CustomInterval): boolean {
   const currentTimeNumber: string = currentTime.replace(':', '')
   const minimumEntry: string = restrictionInterval.s.replace(':', '')
   const maxEntry: string = restrictionInterval.e.replace(':', '')
