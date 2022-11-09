@@ -14,8 +14,8 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-          <Link to= { `/edit/${id.userId}` } style={{ textDecoration: "none" }}>
-            <div className="editButton"> Edit</div>
+            <Link to={`/edit/${id.userId}`} style={{ textDecoration: "none" }}>
+              <div className="editButton"> Edit</div>
             </Link>
             <h1 className="title"> Information</h1>
             <div className="item">
@@ -37,19 +37,12 @@ const Single = () => {
                   <span className="itemValue">Logistics</span>
                 </div>
 
-<<<<<<< HEAD
                 <Link
-                  to={`/users/${id.userId}/weekly`}
+                  to={`/weekly/${id.userId}`}
                   style={{ textDecoration: "none" }}
                 >
                   <div className="schedulerButton"> Click to see scheduler</div>
                 </Link>
-=======
-                
-                <Link to= { `/weekly/${id.userId}` } style={{ textDecoration: "none" }}>
-            <div className="schedulerButton"> Click to see scheduler</div>
-            </Link>
->>>>>>> 0e6575eda570283e8bdda44c008aaad7e314ecf7
               </div>
             </div>
           </div>
