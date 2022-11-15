@@ -1,3 +1,4 @@
+import { group } from 'console'
 import { DateTime } from 'luxon'
 import { inInterval } from './CheckFunctions.js'
 import { getDatabase } from './Database.js'
@@ -20,7 +21,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       return entry.interval
     }) // Array of Custom intervals
 
-  console.log(userRestrictions) // test
+  // console.log('user restrictions', userRestrictions) // test
 
   const groupRestrictions = db.data.restrictions[currentDay].groups
     .filter((restriction: GroupRestriction) => restriction.role === accessUser.role)
@@ -28,12 +29,12 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       return entry.interval
     }) // Array of Custom intervals
 
-  console.log(groupRestrictions) // test
+  // console.log('group restrictions', groupRestrictions) // test
 
   const Restrictions = [...userRestrictions, ...groupRestrictions] // Array of Custom intervals
 
-  console.log(Restrictions) // test
-  console.log(Restrictions.length) // test
+  // console.log('alle restrictions', Restrictions) // test
+  // console.log(Restrictions.length) // test
 
   if (Restrictions.length === 0) {
     const Access: OutgoingAccess = {
@@ -42,7 +43,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'GRANTED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   }
@@ -54,7 +55,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'DENIED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   } else {
@@ -64,7 +65,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'GRANTED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   }
