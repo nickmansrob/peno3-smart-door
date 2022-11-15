@@ -83,8 +83,8 @@ export type RestrictionKind = 'USER' | 'GROUP'
 export type DayInterval<T> = Record<Day, T>
 
 export type CustomInterval = {
-  s: string // '17:30'
-  e: string
+  s: number // '1730'
+  e: number
 }
 
 export type Day = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'
