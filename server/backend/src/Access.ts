@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 import { getDatabase } from './Database.js'
 import { createOtp, validateToken } from './OtpHelper.js'
 import { addEntity, evaluateAccess } from './Provider.js'
-import { stateUser } from './Queries.js'
+import { stateUser } from './CheckFunctions.js'
 import { IncomingFace, IncomingOtp, User, UserRecord } from './types.js'
 import { userRestrictions } from './Restriction.js'
 
