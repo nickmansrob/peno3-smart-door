@@ -19,7 +19,14 @@ const Edit = () => {
           <h1>Edit user</h1>
         </div>
         <div className="bottom">
-          <div className="left"></div>
+          <div className="left">
+            <img
+              src={
+                "https://cdn.vectorstock.com/i/preview-1x/48/06/image-preview-icon-picture-placeholder-vector-31284806.jpg"
+              }
+              alt=""
+            />
+          </div>
           <div className="right">
             <form>
               <div className="formInput">
