@@ -8,12 +8,45 @@ import base32Encode from "base32-encode";
 
 const New = () => {
   const [file, setFile] = useState("");
-  const array = new Int8Array(5);
-  const data = crypto.getRandomValues(array);
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [group, setGroup] = useState("");
+  const [isShown, setIsShown] = useState(false);
 
+  const array = new Int8Array(5);
+  const [data, setData] = useState(array);
   const key = base32Encode(data, "Crockford");
 
-  console.log(key);
+  const buttonPressed = () => {
+    setData(crypto.getRandomValues(array));
+    setIsShown(true);
+    console.log(name);
+    console.log(surname);
+    console.log(group);
+
+    const bodydata = {
+      firstName: name,
+      lastName: surname,
+      role: group,
+      tfaToken: key,
+    };
+
+    // fetch("", {
+    //   method: "POST",
+    //   body: JSON.stringify(bodydata),
+    // })
+    //   .then((response) => response.json())
+    //   .then((bodydata) => {
+    //     console.log("Success:", bodydata);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error:", error);
+    //   });
+
+    setName("");
+    setGroup("");
+    setSurname("");
+  };
 
   return (
     <div className="new">
@@ -48,29 +81,42 @@ const New = () => {
                 />
               </div>
               <div className="formInput">
-                <label>ID</label>
-                <input type="text" placeholder="1" />
-              </div>
-              <div className="formInput">
                 <label>First name</label>
-                <input type="text" placeholder="John" />
+                <input
+                  type="text"
+                  placeholder="John"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
               <div className="formInput">
                 <label>Group</label>
-                <input type="text" placeholder="Administration" />
+                <input
+                  type="text"
+                  placeholder="Administration"
+                  value={group}
+                  onChange={(e) => setGroup(e.target.value)}
+                />
               </div>
               <div className="formInput">
                 <label>Surname</label>
-                <input type="text" placeholder="Doe" />
+                <input
+                  type="text"
+                  placeholder="Doe"
+                  value={surname}
+                  onChange={(e) => setSurname(e.target.value)}
+                />
               </div>
-              <button>Send</button>
+              <button type="button" onClick={buttonPressed}>
+                Send
+              </button>
             </form>
           </div>
         </div>
 
         <div className="bottom">
           <div className="qrcontainer">
-            <Qr secret_key={key}></Qr>
+            {isShown && <Qr secret_key={key}></Qr>}
           </div>
         </div>
       </div>
