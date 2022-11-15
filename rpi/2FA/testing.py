@@ -3,6 +3,7 @@ import pyqrcode
 import time
 
 
+
 def create_qr_from_url(QRstring, employee_name):
     # Deze functie kan QR-codes maken van een url
     url = pyqrcode.create(QRstring)
@@ -16,10 +17,10 @@ def GenerateSecretKey():
     secret_key = pyotp.random_base32()
     return secret_key
 
-def GenerateURL(secret_key, employee_name):
+def GenerateURL(secret_key):
     #Deze functie maakt op basis van de base32 token een url, die kan worden omgezet naar een URL zodat een cliëntele app
     #zoals Google Authenticator deze kan scannen.
-    return pyotp.totp.TOTP(secret_key, interval=30).provisioning_uri(name=employee_name, issuer_name='Styx Security')
+    return pyotp.totp.TOTP(secret_key, interval=30).provisioning_uri()
 
 def GetTOTP(secret_key):
     #Deze functie genereert de huidige OTP, op basis van de base32 key
@@ -27,7 +28,7 @@ def GetTOTP(secret_key):
     return totp.now()
 
 
-print(GenerateURL('FZKAKFARK23', 'Martijn'))
+print(GenerateURL('FZKAKFARK23'))
 #Notitie aan mezelf, de volgende stap is het creëren van een class 'Employee' waarin al deze functionaliteiten gecombineerd worden
 #en die gestructureerd de data bijhoudt per werknemer.
 

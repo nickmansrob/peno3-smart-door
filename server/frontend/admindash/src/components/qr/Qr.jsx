@@ -1,12 +1,14 @@
 import React from "react";
+import QRCode from "react-qr-code";
 
 const Qr = ({ secret_key }) => {
-  const totp = require("totp-generator");
+  const qruri = "otpauth://totp/Secret?secret=" + secret_key;
 
-  const token = totp("JBSWY3DPEHPK3PXP");
-
-  console.log(token);
-  return <div>{secret_key}</div>;
+  return (
+    <div>
+      <QRCode value={qruri}></QRCode>
+    </div>
+  );
 };
 
 export default Qr;

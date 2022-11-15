@@ -4,40 +4,25 @@ import Navbar from "../../components/navbar/Navbar";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import { useEffect } from "react";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-
-
-
-
-
-
-
-
-
-
-
-const Edit= () => {
-
-  
-
+const Edit = () => {
   function removeObjectWithId(arr, id) {
     const objWithIdIndex = arr.findIndex((obj) => obj.id === id);
-    const newarr = arr[objWithIdIndex]
-    
-  
+    const newarr = arr[objWithIdIndex];
+
     return newarr;
   }
-  
+
   const arr = [
-    { id: 1, name: 'John', department: 'HHG' },
-    { id: 2, name: 'Kate' , department: 'jdj'},
-    { id: 3, name: 'Peter', department: 'FJJg' },
+    { id: 1, name: "John", department: "HHG" },
+    { id: 2, name: "Kate", department: "jdj" },
+    { id: 3, name: "Peter", department: "FJJg" },
   ];
-  console.log(arr)
+  console.log(arr);
   const id = useParams();
-    console.log(id);
-  const [user, setUser] = useState({})
+  console.log(id);
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     const requestOptions = {
@@ -47,25 +32,22 @@ const Edit= () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("TEST" + data);
-        console.log("TEST2" + Object.values(data))
+        console.log("TEST2" + Object.values(data));
         setUser(data);
       });
   }, []);
-const ness = Object.values(user)
-console.log(ness)
-const final = []
-for (let i = 0; i < ness.length; i++) { 
-  final.push(ness[i][1]);
-}
-console.log(final)
-const found = ness.find(obj => {
-  return obj.id === 0;
-});
+  const ness = Object.values(user);
+  console.log(ness);
+  const final = [];
+  for (let i = 0; i < ness.length; i++) {
+    final.push(ness[i][1]);
+  }
+  console.log(final);
+  const found = ness.find((obj) => {
+    return obj.id === 0;
+  });
 
-console.log(found)
-
-
- 
+  console.log(found);
 
   //const newdata = removeObjectWithId(arr,id)
   //console.log(newdata)
@@ -79,21 +61,14 @@ console.log(found)
           <h1>Edit user</h1>
         </div>
         <div className="bottom">
-          <div className="left">
-            
-          </div>
+          <div className="left"></div>
           <div className="right">
             <form>
               <div className="formInput">
                 <label htmlFor="file">
                   Image: <FileUploadIcon className="icon" />
                 </label>
-                <input
-                  
-                  type="file"
-                  id="file"
-                  style={{ display: "none" }}
-                />
+                <input type="file" id="file" style={{ display: "none" }} />
               </div>
               <div className="formInput">
                 <label>ID</label>

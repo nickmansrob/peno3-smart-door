@@ -4,10 +4,16 @@ import Navbar from "../../components/navbar/Navbar";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import Qr from "../../components/qr/Qr";
+import base32Encode from "base32-encode";
 
 const New = () => {
   const [file, setFile] = useState("");
-  console.log(file);
+  const array = new Int8Array(5);
+  const data = crypto.getRandomValues(array);
+
+  const key = base32Encode(data, "Crockford");
+
+  console.log(key);
 
   return (
     <div className="new">
@@ -64,7 +70,7 @@ const New = () => {
 
         <div className="bottom">
           <div className="qrcontainer">
-            <Qr secret_key="TEST"></Qr>
+            <Qr secret_key={key}></Qr>
           </div>
         </div>
       </div>
