@@ -55,6 +55,15 @@ export type UserRecord = Id & {
   method?: 'FACE' | 'TFA'
   state: 'ENTER' | 'LEAVE'
 }
+// Queries
+
+export type LatestEntry = {
+  id: string
+  timestamp: string
+  role: Role
+  firstName: string
+  lastName: string
+}
 
 // Restrictions
 export type Restriction = {
