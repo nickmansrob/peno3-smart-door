@@ -55,7 +55,7 @@ class FragmentManager:
   
   def start(self, width, height):
     self.stackedWidget.resize(width, height)
-    self.stackedWidget.showFullScreen()
+    self.stackedWidget.show()
 
     keyPad = KeyPad()
     keyPad.keyPressed.connect(lambda key: self.stackedWidget.currentWidget().onKeyPress(key))
@@ -111,7 +111,7 @@ class Home(Fragment):
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.label_1.setFont(font)
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_1.setText("Press any key to start ...")
@@ -137,7 +137,7 @@ class FaceRecognition(Fragment):
 
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_2.setText("Please stand in front of the camera")
@@ -163,13 +163,13 @@ class ID(Fragment):
     
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_2.setText("Fill in your employee-ID please")
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
-    font2 = QtGui.QFont("Roboto", 36)
+    font2 = QtGui.QFont("Roboto", 24)
 
     labelPositions = [(44, 250), (163, 250), (282, 250), (422, 250), (541, 250), (660, 250)]
 
@@ -240,7 +240,7 @@ class OTP(Fragment):
     
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 50, 800, 51))
-    font = QtGui.QFont("Roboto", 36)
+    font = QtGui.QFont("Roboto", 24)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_2.setText("Hello {}".format(name))
@@ -248,7 +248,7 @@ class OTP(Fragment):
 
     self.label_3 = QtWidgets.QLabel(self)
     self.label_3.setGeometry(QtCore.QRect(0, 100, 800, 51))
-    font2 = QtGui.QFont("Roboto", 24)
+    font2 = QtGui.QFont("Roboto", 16)
     self.label_3.setFont(font2)
     self.label_3.setStyleSheet("color: rgb(162, 198, 234);")
     self.label_3.setText("Enter the 6-digit code from your authenticator app")
@@ -331,7 +331,7 @@ class Verified(Fragment):
     self.textlabel = QtWidgets.QLabel(self)
     self.textlabel.setGeometry(QtCore.QRect(0, 330, 800, 130))
     self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
-    font = QtGui.QFont("Roboto", 30)
+    font = QtGui.QFont("Roboto", 20)
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
     self.textlabel.setText(welcome_string)
@@ -354,7 +354,7 @@ class Denied(Fragment):
     self.label_2.setGeometry(QtCore.QRect(0, 0, 800, 480))
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
     self.label_2.setText("")
-    self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.png")))
+    self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.webp")))
   
   def onActivate(self):
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
