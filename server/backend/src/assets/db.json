@@ -313,6 +313,22 @@
           "timestamp": "2022-11-09T12:56:43+01:00"
         }
       ]
+    },
+    "3": {
+      "records": [
+        {
+          "id": "3",
+          "state": "ENTER",
+          "method": "FACE",
+          "timestamp": "2022-11-14T10:27:26+01:00"
+        },
+        {
+          "id": "3",
+          "state": "ENTER",
+          "method": "FACE",
+          "timestamp": "2022-11-12T10:27:26+01:00"
+        }
+      ]
     }
   },
   "restrictions": {
