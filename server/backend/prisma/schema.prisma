@@ -11,12 +11,21 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  firstName String 
-  lastName      String
-  faceDescriptor Int[]
-  tfaToken String
-  role String
-  dateCreated String
-  enabled Boolean @default(false)
+  id             BigInt   @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  faceDescriptor String
+  tfaToken       String
+  role           String
+  dateCreated    DateTime @default(now())
+  enabled        Boolean  @default(false)
+  records        Record[]
+}
+
+model Record {
+  id     BigInt  @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [id])
+  userId BigInt
+  method String?
+  state  String
 }

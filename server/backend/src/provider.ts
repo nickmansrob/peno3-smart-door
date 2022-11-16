@@ -1,11 +1,11 @@
 import express, { Express, Response, Request } from 'express'
-import { getDatabase } from './Database.js'
-import { Day, GroupRestriction, OutgoingAccess, RestrictionKind, User, UserRecord, UserRestriction } from './types.js'
+import { getDatabase } from './old/Database.js'
+import { Day, GroupRestriction, OutgoingAccess, RestrictionKind, User, UserRecord, UserRestriction } from './old/types.js'
 import { DateTime } from 'luxon'
-import { handleDeleteUser, handleNewUser } from './User.js'
-import { handleFace, handleOTP } from './Access.js'
-import { handleUserRestriction } from './User.js'
-import { validateAuthRecord, validateRestriction, validateUser } from './Validate.js'
+import { handleDeleteUser, handleNewUser } from './old/User.js'
+import { handleFace, handleOTP } from './old/Access.js'
+import { handleUserRestriction } from './old/User.js'
+import { validateAuthRecord, validateRestriction, validateUser } from './old/Validate.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()

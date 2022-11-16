@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 import { getDatabase } from './Database.js'
-import { addEntity, addRestriction } from './Provider.js'
+import { addEntity, addRestriction } from '../provider.js'
 import { Id, IncomingRestriction, User } from './types.js'
 
 export function handleNewUser(req: Request, res: Response): void {
