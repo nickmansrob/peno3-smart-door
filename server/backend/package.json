@@ -16,7 +16,8 @@
   "scripts": {
     "start": "node -r dotenv/config --enable-source-maps dist/index.js",
     "build": "rm -rf ./dist && tsc",
-    "lint": "prettier --config .prettierrc 'src/*.ts' --write"
+    "lint": "prettier --config .prettierrc 'src/*.ts' --write",
+    "migrate": "prisma migrate dev --name init"
   },
   "dependencies": {
     "@prisma/client": "^4.6.1",

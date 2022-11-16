@@ -7,14 +7,6 @@ import { stateUser } from './Queries.js'
 import { IncomingFace, IncomingOtp, User, UserRecord } from './types.js'
 import { userRestrictions } from './Restriction.js'
 
-export function euclidDistance(point1: number[], point2: number[]): number {
-  const sum = point1
-    .map((point, index) => {
-      return Math.pow(point - point2[index], 2)
-    })
-    .reduce((previous, current) => previous + current, 0)
-  return Math.sqrt(sum)
-}
 
 export async function handleFace(req: Request, res: Response): Promise<void> {
   if (req.body) {
