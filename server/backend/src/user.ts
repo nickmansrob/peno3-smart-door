@@ -3,11 +3,12 @@ import { prisma } from './database.js'
 import { User } from './types.js'
 import { validateFaceDescriptor } from './util.js'
 
-export async function handleUserView(_req: Request, res: Response): Promise<void> {
-  res.json(await getUsers())
+export async function handleUserView(req: Request, res: Response): Promise<void> {
+  res.json(await getUsers(req))
 }
 
-async function getUsers(id?: number) {
+async function getUsers(req: Request) {
+  const id = parseInt(req.query.id as string)
   if (id) {
     return await prisma.user.findUnique({
       where: {

@@ -1,11 +1,12 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 
-export async function handleUserRestrictionView(_req: Request, res: Response): Promise<void> {
-  res.json(await getUserRestrictions())
+export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
+  res.json(await getUserRestrictions(req))
 }
 
-async function getUserRestrictions(id?: number) {
+async function getUserRestrictions(req: Request) {
+  const id = parseInt(req.query.id as string)
   if (id) {
     return (await prisma.user.findUnique({
       where: {
