@@ -17,8 +17,10 @@ export function serializeFaceDescriptor(arr: string): number[] {
 export function validateFaceDescriptor(arr: string): boolean {
   const array = serializeFaceDescriptor(arr)
 
-  return array.length === 64
+  return array.length === 128
 }
+
+// TODO: Add custom type constraints validation
 
 export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()

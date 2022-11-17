@@ -2,7 +2,16 @@ import express, { Express, Response, Request } from 'express'
 import { DateTime } from 'luxon'
 import { handleFace, handleOtp } from './access.js'
 import { handleEditRecord, handleNewRecord, handleRecordView } from './record.js'
-import { handleDeleteRoleRestriction, handleDeleteUserRestriction, handleEditRoleRestriction, handleEditUserRestriction, handleNewRoleRestriction, handleNewUserRestriction, handleRoleRestrictionView, handleUserRestrictionView } from './restriction.js'
+import {
+  handleDeleteRoleRestriction,
+  handleDeleteUserRestriction,
+  handleEditRoleRestriction,
+  handleEditUserRestriction,
+  handleNewRoleRestriction,
+  handleNewUserRestriction,
+  handleRoleRestrictionView,
+  handleUserRestrictionView,
+} from './restriction.js'
 import { handleDeleteUser, handleEditUser, handleNewUser, handleUserView } from './user.js'
 
 export async function start(): Promise<void> {

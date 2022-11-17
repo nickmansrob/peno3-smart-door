@@ -4,16 +4,15 @@ import { User } from './types.js'
 import { validateFaceDescriptor } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
-  res.json(await getUsers(req))
+  res.json(await getUsers(parseInt(req.query.id as string)))
 }
 
-async function getUsers(req: Request) {
-  const id = parseInt(req.query.id as string)
+export async function getUsers(id?: number) {
   if (id) {
     return await prisma.user.findUnique({
       where: {
-        id: id
-      }
+        id: id,
+      },
     })
   } else {
     return await prisma.user.findMany()
@@ -34,13 +33,13 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
             role: {
               connectOrCreate: {
                 where: {
-                  name: user.role.name
+                  name: user.role.name,
                 },
                 create: {
-                  name: user.role.name
-                }
-              }
-            }
+                  name: user.role.name,
+                },
+              },
+            },
           },
         })
         res.json(result)
@@ -49,7 +48,8 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
         res.status(409).json({
           error: 'User could not be created.',
         })
-      }} else {
+      }
+    } else {
       console.error('faceDescriptor invalid')
       res.status(400).json({
         error: 'faceDescriptor invalid',

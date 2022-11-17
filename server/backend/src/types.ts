@@ -61,5 +61,5 @@ export type IncomingFace = {
 // Util
 
 export type Id = {
-  id: bigint
+  id: number
 }
