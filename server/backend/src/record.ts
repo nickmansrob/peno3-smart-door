@@ -2,7 +2,7 @@ import { Response, Request } from 'express'
 import { prisma } from './database.js'
 
 export async function handleRecordView(_req: Request, res: Response): Promise<void> {
-  res.json(getRecords())
+  res.json(await getRecords())
 }
 
 async function getRecords(id?: number) {

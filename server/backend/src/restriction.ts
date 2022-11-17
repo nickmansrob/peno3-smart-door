@@ -1,9 +1,8 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
-import { RoleRestriction, UserRestriction } from './types.js'
 
 export async function handleUserRestrictionView(_req: Request, res: Response): Promise<void> {
-  res.json(getUserRestrictions())
+  res.json(await getUserRestrictions())
 }
 
 async function getUserRestrictions(id?: number) {

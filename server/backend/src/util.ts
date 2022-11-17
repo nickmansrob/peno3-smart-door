@@ -14,6 +14,12 @@ export function serializeFaceDescriptor(arr: string): number[] {
   return Array.from(JSON.parse(arr))
 }
 
+export function validateFaceDescriptor(arr: string): boolean {
+  const array = serializeFaceDescriptor(arr)
+
+  return array.length === 64
+}
+
 export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access }

@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id             BigInt            @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   firstName      String
   lastName       String
   faceDescriptor String
@@ -19,40 +19,40 @@ model User {
   role           Role              @relation(fields: [roleName], references: [name])
   roleName       String
   dateCreated    DateTime          @default(now())
-  enabled        Boolean           @default(false)
+  enabled        Boolean           @default(true)
   records        UserRecord[]
   restrictions   UserRestriction[]
 }
 
 model Role {
-  id           BigInt            @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   name         String            @unique
   restrictions RoleRestriction[]
   members      User[]
 }
 
 model UserRecord {
-  id        BigInt   @id @default(autoincrement())
+  id        Int   @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
-  userId    BigInt
+  userId    Int
   timestamp DateTime @default(now())
   method    String?
   state     String
 }
 
 model UserRestriction {
-  id      BigInt @id @default(autoincrement())
+  id      Int @id @default(autoincrement())
   user    User   @relation(fields: [userId], references: [id])
-  userId  BigInt
+  userId  Int
   start   Int
   end     Int
   weekday String
 }
 
 model RoleRestriction {
-  id      BigInt @id @default(autoincrement())
+  id      Int @id @default(autoincrement())
   role    Role   @relation(fields: [roleId], references: [id])
-  roleId  BigInt
+  roleId  Int
   start   Int
   end     Int
   weekday String

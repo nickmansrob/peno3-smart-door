@@ -1,26 +1,26 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" BIGINT NOT NULL PRIMARY KEY,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "faceDescriptor" TEXT NOT NULL,
     "tfaToken" TEXT NOT NULL,
     "roleName" TEXT NOT NULL,
     "dateCreated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "enabled" BOOLEAN NOT NULL DEFAULT false,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
     CONSTRAINT "User_roleName_fkey" FOREIGN KEY ("roleName") REFERENCES "Role" ("name") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Role" (
-    "id" BIGINT NOT NULL PRIMARY KEY,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "UserRecord" (
-    "id" BIGINT NOT NULL PRIMARY KEY,
-    "userId" BIGINT NOT NULL,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
     "timestamp" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "method" TEXT,
     "state" TEXT NOT NULL,
@@ -29,8 +29,8 @@ CREATE TABLE "UserRecord" (
 
 -- CreateTable
 CREATE TABLE "UserRestriction" (
-    "id" BIGINT NOT NULL PRIMARY KEY,
-    "userId" BIGINT NOT NULL,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
     "start" INTEGER NOT NULL,
     "end" INTEGER NOT NULL,
     "weekday" TEXT NOT NULL,
@@ -39,8 +39,8 @@ CREATE TABLE "UserRestriction" (
 
 -- CreateTable
 CREATE TABLE "RoleRestriction" (
-    "id" BIGINT NOT NULL PRIMARY KEY,
-    "roleId" BIGINT NOT NULL,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "roleId" INTEGER NOT NULL,
     "start" INTEGER NOT NULL,
     "end" INTEGER NOT NULL,
     "weekday" TEXT NOT NULL,
