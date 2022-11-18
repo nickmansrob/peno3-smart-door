@@ -1,4 +1,6 @@
+import { group } from 'console'
 import { DateTime } from 'luxon'
+import { inInterval } from './CheckFunctions.js'
 import { getDatabase } from './Database.js'
 import { CustomInterval, GroupRestriction, OutgoingAccess, User, UserRestriction } from './types.js'
 
@@ -11,7 +13,7 @@ import { CustomInterval, GroupRestriction, OutgoingAccess, User, UserRestriction
 export async function userRestrictions(accessUser: User): Promise<OutgoingAccess> {
   const db = await getDatabase()
 
-  const currentTime = (DateTime.now().hour * 100 + DateTime.now().minute).toString()
+  const currentTime = DateTime.now().hour * 100 + DateTime.now().minute
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
   const userRestrictions = db.data.restrictions[currentDay].users
     .filter((restriction: UserRestriction) => restriction.id === accessUser.id)
@@ -19,7 +21,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       return entry.interval
     }) // Array of Custom intervals
 
-  console.log(userRestrictions) // test
+  // console.log('user restrictions', userRestrictions) // test
 
   const groupRestrictions = db.data.restrictions[currentDay].groups
     .filter((restriction: GroupRestriction) => restriction.role === accessUser.role)
@@ -27,12 +29,12 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       return entry.interval
     }) // Array of Custom intervals
 
-  console.log(groupRestrictions) // test
+  // console.log('group restrictions', groupRestrictions) // test
 
   const Restrictions = [...userRestrictions, ...groupRestrictions] // Array of Custom intervals
 
-  console.log(Restrictions) // test
-  console.log(Restrictions.length) // test
+  // console.log('alle restrictions', Restrictions) // test
+  // console.log(Restrictions.length) // test
 
   if (Restrictions.length === 0) {
     const Access: OutgoingAccess = {
@@ -41,7 +43,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'GRANTED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   }
@@ -53,7 +55,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'DENIED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   } else {
@@ -63,7 +65,7 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
       access: 'GRANTED',
     }
 
-    console.log(Access) // test
+    // console.log(Access) // test
 
     return Access
   }
@@ -72,13 +74,4 @@ export async function userRestrictions(accessUser: User): Promise<OutgoingAccess
   // OK?: Check for empty restriction, allow if empty
 }
 
-function inInterval(currentTime: string, restrictionInterval: CustomInterval): boolean {
-  const currentTimeNumber: string = currentTime.replace(':', '')
-  const minimumEntry: string = restrictionInterval.s.replace(':', '')
-  const maxEntry: string = restrictionInterval.e.replace(':', '')
-  if (currentTimeNumber >= minimumEntry && currentTime <= maxEntry) {
-    return true
-  } else {
-    return false
-  }
-}
+
