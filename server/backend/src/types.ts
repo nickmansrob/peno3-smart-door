@@ -1,7 +1,7 @@
 // Models
 export type Data = {
   users: User[]
-  records: AuthRecord[]
+  records: AuthRecord
   restrictions: DayInterval<Restriction>
 }
 
@@ -48,12 +48,21 @@ export type IncomingFace = {
 
 // Records
 
-export type AuthRecord = Record<Id['id'], Record<'records', UserRecord>>
+export type AuthRecord = Record<Id['id'], Record<'records', UserRecord[]>>
 
 export type UserRecord = Id & {
   timestamp: string
   method?: 'FACE' | 'TFA'
   state: 'ENTER' | 'LEAVE'
+}
+// Queries
+
+export type LatestEntry = {
+  id: string
+  timestamp: string
+  role: Role
+  firstName: string
+  lastName: string
 }
 
 // Restrictions
@@ -83,8 +92,8 @@ export type RestrictionKind = 'USER' | 'GROUP'
 export type DayInterval<T> = Record<Day, T>
 
 export type CustomInterval = {
-  s: string // '17:30'
-  e: string
+  s: number // '1730'
+  e: number
 }
 
 export type Day = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'

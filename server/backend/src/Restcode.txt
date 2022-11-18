@@ -116,7 +116,13 @@ function handleOTP(req: Request, res: Response): void{
 //                                                                                               //Oude Restriction functie//                                                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+juiste map deel voor grouprestriction, er zat nog een fout in!!!
+  const role = accessUser.role
+  
+  const restrictionsByGroup: GroupRestriction[] = db.data.restrictions[currentDay].groups.filter(restriction => restriction.role === role)
+  const groupRestrictions2 = restrictionsByGroup.map(groupRestriction => groupRestriction.interval)
 
+  console.log('andere versie group restructions', groupRestrictions2)
 
 const day = DateTime.now().weekdayShort.toUpperCase()
 const time = DateTime.now()
@@ -160,4 +166,31 @@ function intersectingArrays(arr1: Role[], arr2: Role[]): boolean {
 async function getRecords(range: Interval, order: 'ASCENDING' | 'DESCENDING'): Promise<void> {
   const records = (await getDatabase()).data.records.filter((record) => range.contains(DateTime.fromISO(record.timestamp)))
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                               //Dubbele stateUser//                                                                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+export async function stateUser(id: string): Promise<string> {
+  const db = await getDatabase()
+  const userRecords = db.chain.get('records').find({ id: id }).value()
+  if (userRecords.length === 0) {
+    return 'ENTER'
+  } else {
+    let recordCompare = userRecords[0]
+    for (let i = 1; i < userRecords.length; i++) {
+      const record = userRecords[i]
+      if (record.timestamp.toUnixInteger > recordCompare.timestamp.toUnixInteger) {
+        recordCompare = record
+      }
+    }
+    if (recordCompare.state === 'LEAVE') {
+      return 'ENTER'
+    } else {
+      return 'LEAVE'
+    }
+  }
+}
+
 
