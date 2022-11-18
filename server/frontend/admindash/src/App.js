@@ -6,7 +6,7 @@ import Calender from"./pages/calender/Calender";
 import Weekly from "./pages/weekly/Weekly";
 import Edit from "./pages/edit/Edit";
 import Qr from "./components/qr/Qr";
-
+import Login from "./pages/login/Login"
 
 import {
   BrowserRouter,
@@ -34,7 +34,8 @@ function App() {
             </Route>
             
             </Route>
-
+            <Route path = 'login' element = {<Login/>}
+            ></Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             <Route path = ':userId' element = {<Weekly/>}>
               </Route>
