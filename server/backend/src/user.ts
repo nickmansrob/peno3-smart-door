@@ -4,7 +4,7 @@ import { User } from './types.js'
 import { validateFaceDescriptor } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
-  res.json(await getUsers(parseInt(req.query.id as string)))
+  res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
 }
 
 export async function getUsers(id?: number) {
@@ -45,7 +45,7 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
         res.json(result)
       } catch (e) {
         console.error(e)
-        res.status(409).json({
+        res.status(500).json({
           error: 'User could not be created.',
         })
       }

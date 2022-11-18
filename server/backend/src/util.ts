@@ -22,7 +22,7 @@ export function validateFaceDescriptor(arr: string): boolean {
 
 // TODO: Add custom type constraints validation
 
-export function evaluateAccess(access: 'GRANTED' | 'DENIED', firstName: string): OutgoingAccess {
+export function evaluateAccess(access: 'GRANTED' | 'DENIED' | 'ERROR', firstName: string): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access }
 }

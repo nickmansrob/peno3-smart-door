@@ -40,12 +40,24 @@ export type RoleRestriction = {
   weekday: string
 }
 
+export type CustomInterval = {
+  s: number // '1730'
+  e: number
+}
+
+export type IncomingRestriction = {
+  s: number
+  e : number
+  id: number
+  weekday: string
+}
+
 // Access
 
 export type OutgoingAccess = {
   firstName: string
   timestamp: string
-  access: 'GRANTED' | 'DENIED'
+  access: 'GRANTED' | 'DENIED' | 'ERROR'
 }
 
 export type IncomingOtp = Id & {

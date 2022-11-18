@@ -1,7 +1,6 @@
 import express, { Express, Response, Request } from 'express'
-import { DateTime } from 'luxon'
 import { handleFace, handleOtp } from './access.js'
-import { handleEditRecord, handleNewRecord, handleRecordView } from './record.js'
+import { handleRecordView } from './record.js'
 import {
   handleDeleteRoleRestriction,
   handleDeleteUserRestriction,
@@ -32,8 +31,6 @@ export async function start(): Promise<void> {
   app.delete('/users', handleDeleteUser)
 
   app.get('/records', handleRecordView)
-  app.post('/records', handleNewRecord)
-  app.put('/records', handleEditRecord)
 
   app.get('/user_restrictions', handleUserRestrictionView)
   app.post('/user_restrictions', handleNewUserRestriction)

@@ -1,5 +1,7 @@
+import { Request, Response } from 'express'
 import { DateTime } from 'luxon'
 import * as OTPAuth from 'otpauth'
+import { IncomingOtp } from './types.js'
 
 export function createOtp(secret: string): OTPAuth.TOTP {
   return new OTPAuth.TOTP({
