@@ -138,7 +138,8 @@
       "role": 
         "ADMIN"
       ,
-      "dateCreated": "2022-11-09T10:09:26+01:00"
+      "dateCreated": "2022-11-09T10:09:26+01:00",
+      "enabled": true
     },
     {
       "id": "2",
@@ -278,7 +279,8 @@
       "role": 
         "EMPLOYEE"
       ,
-      "dateCreated": "2022-11-09T10:09:26+01:00"
+      "dateCreated": "2022-11-09T10:09:26+01:00",
+      "enabled": true
     },
     {
       "id": "3",
@@ -418,7 +420,8 @@
       "role": 
         "EMPLOYEE"
       ,
-      "dateCreated": "2022-11-08T10:09:26+01:00"
+      "dateCreated": "2022-11-08T10:09:26+01:00",
+      "enabled": true
     }
   ],
   "records": {
