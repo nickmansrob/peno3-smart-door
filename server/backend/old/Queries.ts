@@ -2,8 +2,6 @@ import { getDatabase } from './Database.js'
 import { AuthRecord, CustomInterval, UserRecord, LatestEntry, User } from './types.js'
 import { DateTime, Interval} from 'luxon'
 import { inInterval, checkEnter, checkDate, recordToLatestEntry, checkDayEnter} from './CheckFunctions.js'
-import { start } from 'repl'
-import { listenerCount } from 'process'
 
 
 

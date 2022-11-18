@@ -1,6 +1,7 @@
 import express, { Express, Response, Request } from 'express'
 import { handleFace, handleOtp } from './access.js'
-import { handleRecordView } from './record.js'
+import { getEntries } from './queries.js'
+import { handleEditRecord, handleNewRecord, handleRecordView } from './record.js'
 import {
   handleDeleteRoleRestriction,
   handleDeleteUserRestriction,
@@ -45,9 +46,25 @@ export async function start(): Promise<void> {
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)
 
+  app.get('/entries', handleGetEntries)
+  app.get('/latest_entries', handleLatestEntries)
+  app.get('/range_entries', handleRangeEntries)
+
   server.listen(3000, () => console.log('Backend running!'))
 }
 
 function handleRoot(_req: Request, res: Response) {
   res.send('Running backend')
+}
+
+async function handleGetEntries(_req: Request, res: Response) {
+  res.status(200).json(await getEntries())
+}
+
+async function handleLatestEntries(_req: Request, res: Response) {
+  res.status(200).json(await getLatestEntries())
+}
+
+async function handleRangeEntries(_req: Request, res: Response) {
+  res.status(200).json(await getEntries())
 }

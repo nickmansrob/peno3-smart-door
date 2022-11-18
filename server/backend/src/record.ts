@@ -6,7 +6,7 @@ export async function handleRecordView(req: Request, res: Response): Promise<voi
   res.json(await getRecords(parseInt(req.query.id as string)))
 }
 
-async function getRecords(id?: number) {
+export async function getRecords(id?: number) {
   if (id) {
     return (
       await prisma.user.findUnique({

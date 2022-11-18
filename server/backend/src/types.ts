@@ -25,6 +25,13 @@ export type UserRecord = Id & {
   state: 'ENTER' | 'LEAVE'
 }
 
+export type LatestEntry = Id & {
+  firstName: string
+  lastName: string
+  timestamp: string
+  role: string
+}
+
 // Restrictions
 
 export type UserRestriction = Id & {
