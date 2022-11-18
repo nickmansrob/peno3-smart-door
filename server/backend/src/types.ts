@@ -40,8 +40,7 @@ export type UserRestriction = Id & {
   weekday: string
 }
 
-export type RoleRestriction = {
-  role: string
+export type RoleRestriction = Id & {
   start: number
   end: number
   weekday: string
@@ -54,7 +53,7 @@ export type CustomInterval = {
 
 export type IncomingRestriction = {
   s: number
-  e : number
+  e: number
   id: number
   weekday: string
 }

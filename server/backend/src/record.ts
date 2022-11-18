@@ -29,43 +29,38 @@ export async function getRecords(id?: number) {
  * @param method The way the user got in
  * @returns The success state of the creation
  */
-export async function createRecord(userId: number, method: 'TFA'| 'FACE'): Promise<boolean> {
+export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Promise<boolean> {
   // TODO: implement
   const latestUserRecords = getLatestUserRecords() as UserRecord[]
-  if (latestUserRecords){
+  if (latestUserRecords) {
     const lastState = latestUserRecords.filter(record => record.id === userId)[0].state
-    try{
+    try {
       await prisma.record.create({
-        data:{
+        data: {
           userId: userId,
           method: method,
-          state: lastState
-        }
+          state: lastState,
+        },
       })
-    }
-    catch(e) {
+    } catch (e) {
       console.error(e)
       return false
-    } 
+    }
     return true
-  }
-  else {
+  } else {
     const laststate = 'ENTER'
-    try{
+    try {
       await prisma.record.create({
-        data:{
+        data: {
           userId: userId,
           method: method,
-          state: laststate
-        }
+          state: laststate,
+        },
       })
-    }
-    catch(e) {
+    } catch (e) {
       console.error(e)
       return false
-    } 
+    }
     return true
   }
-
 }
-

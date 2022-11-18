@@ -1,7 +1,8 @@
 import express, { Express, Response, Request } from 'express'
+import { DateTime } from 'luxon'
 import { handleFace, handleOtp } from './access.js'
-import { getEntries } from './queries.js'
-import { handleEditRecord, handleNewRecord, handleRecordView } from './record.js'
+import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
+import { handleRecordView } from './record.js'
 import {
   handleDeleteRoleRestriction,
   handleDeleteUserRestriction,
@@ -61,10 +62,23 @@ async function handleGetEntries(_req: Request, res: Response) {
   res.status(200).json(await getEntries())
 }
 
-async function handleLatestEntries(_req: Request, res: Response) {
-  res.status(200).json(await getLatestEntries())
+async function handleLatestEntries(req: Request, res: Response) {
+  const amount = parseInt(req.query.amount as string)
+
+  if (amount) {
+    res.status(200).json(await getLatestEntries(amount))
+  } else {
+    res.status(400).send()
+  }
 }
 
-async function handleRangeEntries(_req: Request, res: Response) {
-  res.status(200).json(await getEntries())
+async function handleRangeEntries(req: Request, res: Response) {
+  const s = DateTime.fromISO(req.query.s as string)
+  const e = DateTime.fromISO(req.query.e as string)
+
+  if (s.isValid && e.isValid) {
+    res.status(200).json(await getRangeEntries(s, e))
+  } else {
+    res.status(400).send()
+  }
 }

@@ -14,9 +14,9 @@ export async function getEntries(): Promise<{inside: number, total: number}> {
   }
 }
 
-export async function getRangeEntries(range: {s: DateTime, e: DateTime}): Promise<number[]> {
+export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[]> {
   const records = await getLatestUserRecords()
-  const interval = Interval.fromDateTimes(range.s, range.e)
+  const interval = Interval.fromDateTimes(s, e)
 
   if (records) {
     const rangeEntries = records.filter(record => interval.contains(DateTime.fromISO(record.timestamp)))
@@ -27,7 +27,7 @@ export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
   const records = await getLatestUserRecords()
 
   if (records) {
-    return await Promise.all(records.filter(record => record.state === 'ENTER').slice(amount).map(async record => {
+    return await Promise.all(records.filter(record => record.state === 'ENTER').slice(0, amount).map(async record => {
       const user = await getUsers(record.id)
       if (user) {
         const userObject = [user].flat()[0]
