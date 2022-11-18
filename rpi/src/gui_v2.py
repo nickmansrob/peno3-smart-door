@@ -452,6 +452,35 @@ class Denied(Fragment):
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
 
 
+class Error(Fragment):
+
+  def __init__(self) -> None:
+    super().__init__("error")
+
+    self.label_1 = QtWidgets.QLabel(self)
+    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
+    self.label_1.setStyleSheet("background-color: rgb(208, 0, 0);")
+    self.label_1.setText("")
+    
+    self.label_2 = QtWidgets.QLabel(self)
+    self.label_2.setGeometry(QtCore.QRect(250, 150, 300, 300))
+    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+    self.label_2.setText("")
+    self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.png")))
+    self.label_2.setScaledContents(True)
+
+    self.textlabel = QtWidgets.QLabel(self)
+    self.textlabel.setGeometry(QtCore.QRect(0, 0, 800, 150))
+    self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
+    font = QtGui.QFont("Roboto", 24)
+    self.textlabel.setFont(font)
+    self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
+    self.textlabel.setText("Something went wrong, please contact the helpdesk.")  
+
+  def onActivate(self):
+    QtCore.QTimer.singleShot(5000, lambda: Fragment.manager.activate("home"))  
+
+
 def main():
 
     QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf")) # fontname: ' oboto'
@@ -463,6 +492,7 @@ def main():
     otp = OTP()
     verified = Verified()
     denied = Denied()
+    error = Error()
 
     Fragment.manager.start(800, 480)
 
