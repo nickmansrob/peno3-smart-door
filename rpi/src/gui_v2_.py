@@ -2,9 +2,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import Qt
 import keyboard
 import os
-import numpy as np
-from picamera import PiCamera
-import RPi.GPIO as GPIO
 
 current_dir = os.path.dirname(__file__)
 name = "Milo"
@@ -12,9 +9,6 @@ welcome_string = "Welcome " + name + "!"
 received_id = "000000"
 received_otp = "123456"
 recognised = False # temporary face recognition check
-
-camera = PiCamera()
-camera.resolution = (320, 320)
 
 class KeyPad(QtCore.QThread):
 
@@ -28,38 +22,21 @@ class KeyPad(QtCore.QThread):
 
   def __init__(self) -> None:
     super().__init__()
-    
-    self.row_pins = [21, 20, 16, 12]
-    self.col_pins = [7, 8, 25]
-    
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-
-    for pin in self.col_pins:
-        GPIO.setup(pin, GPIO.OUT)
-
-    for pin in self.row_pins:
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    
-    self.keys = [[self.Key('1'), self.Key('4'), self.Key('7'), self.Key('*')],
-                 [self.Key('2'), self.Key('5'), self.Key('8'), self.Key('0')],
-                 [self.Key('3'), self.Key('6'), self.Key('9'), self.Key('#')]]
+    self.keys = [self.Key('0'), self.Key('1'), self.Key('2'), 
+                 self.Key('3'), self.Key('4'), self.Key('5'), 
+                 self.Key('6'), self.Key('7'), self.Key('8'),
+                 self.Key('9'), self.Key('+'), self.Key('-')]
 
   def run(self):
     while True:
-      for col in range(3):
-        GPIO.output(self.col_pins[col], GPIO.HIGH)
-        for row in range(4):
-          key = self.keys[col][row]
-          if GPIO.input(self.row_pins[row]) == 1:
-            if not key.pressed:
-              key.pressed = True
-              self.keyPressed.emit(key.code)
-          elif key.pressed:
-            key.pressed = False
-              
-        GPIO.output(self.col_pins[col], GPIO.LOW)
-      self.msleep(10)
+      for key in self.keys:
+        if keyboard.is_pressed(key.code): # replace with keypad specific check
+          if not key.pressed:
+            key.pressed = True
+            self.keyPressed.emit(key.code)
+        elif key.pressed:
+          key.pressed = False
+      self.msleep(5)
 
 
 class FragmentManager:
@@ -148,35 +125,6 @@ class Home(Fragment):
     self.movie.setPaused(False)
 
 
-
-class Signals(QtCore.QObject):
-  image_ready = QtCore.pyqtSignal(QtGui.QImage)
-  exit_loop = QtCore.pyqtSignal()
-  access_response = QtCore.pyqtSignal(bool, str)
-
-class CameraReader(QtCore.QRunnable):
-
-  def __init__(self) -> None:
-    super().__init__()
-    self.signals = Signals()
-    self.running = True
-    self.signals.exit_loop.connect(self._exit)
-    self.img = np.empty((320, 320, 3), dtype=np.uint8)
-
-  def _exit(self):
-    self.running = False
-
-  def run(self):
-    while self.running:
-      camera.capture(self.img, "rgb")
-
-      height, width, channel = self.img.shape
-      bytesPerLine = 3 * width
-      qImg = QtGui.QImage(self.img.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-      
-      self.signals.image_ready.emit(qImg)
-
-
 class FaceRecognition(Fragment):
 
   def __init__(self) -> None:
@@ -189,47 +137,7 @@ class FaceRecognition(Fragment):
 
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 16)
-    self.label_2.setFont(font)
-    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Please stand in front of the camera")
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-
-    self.label_3 = QtWidgets.QLabel(self)
-    self.label_3.setGeometry(QtCore.QRect(240, 160, 320, 320))
-    self.label_3.setScaledContents(True)
-    
-
-  def handleAccessRepsonse(self, canEnter, firstName):
-    self.cameraRunnable.signals.exit_loop.emit()
-    if canEnter:
-      global welcome_string
-      welcome_string = "Welcome " + firstName
-      Fragment.manager.activate("verified")
-    else:
-      Fragment.manager.activate("id")
-
-  def onActivate(self):
-    self.cameraRunnable = CameraReader()
-    self.cameraRunnable.signals.image_ready.connect(lambda img: self.label_3.setPixmap(QtGui.QPixmap(img)))
-    self.cameraRunnable.signals.access_response.connect(self.handleAccessRepsonse)
-    QtCore.QThreadPool.globalInstance().start(self.cameraRunnable)
-    QtCore.QTimer.singleShot(5000, lambda: self.handleAccessRepsonse(False, ""))
-
-"""
-class FaceRecognition(Fragment):
-
-  def __init__(self) -> None:
-    super().__init__("face_recognition")
-
-    self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setText("")
-    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
-
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 16)
+    font = QtGui.QFont("Roboto", 24)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_2.setText("Please stand in front of the camera")
@@ -241,7 +149,7 @@ class FaceRecognition(Fragment):
       QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("verified"))
     else:
       QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("id"))
-"""
+
 
 class ID(Fragment):
 
@@ -300,7 +208,7 @@ class ID(Fragment):
     self.idCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '#':
+    if key == '+':
       if len(self.idCode) == 6:
         if self.idCode == received_id: # replace with backend check
           Fragment.manager.activate("otp")
@@ -308,7 +216,7 @@ class ID(Fragment):
           Fragment.manager.activate("denied")
       else:
         print("Fill in your employee-ID")
-    elif key == '*':
+    elif key == '-':
       if len(self.idCode) > 0:
         self.idCode = self.idCode[:-1]
         self.resetLabel(self.labels[len(self.idCode)])
@@ -383,7 +291,7 @@ class OTP(Fragment):
     self.otpCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '#':
+    if key == '+':
       if len(self.otpCode) == 6:
         if self.otpCode == received_otp: # replace with backend check
           Fragment.manager.activate("verified")
@@ -391,7 +299,7 @@ class OTP(Fragment):
           Fragment.manager.activate("denied")
       else:
         print("Fill in your otp")
-    elif key == '*':
+    elif key == '-':
       if len(self.otpCode) > 0:
         self.otpCode = self.otpCode[:-1]
         self.resetLabel(self.labels[len(self.otpCode)])
@@ -449,12 +357,39 @@ class Denied(Fragment):
     self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.png")))
   
   def onActivate(self):
-    QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
+    QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("error"))
 
+class Error(Fragment):
+
+  def __init__(self) -> None:
+    super().__init__("error")
+
+    self.label_1 = QtWidgets.QLabel(self)
+    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
+    self.label_1.setStyleSheet("background-color: rgb(208, 0, 0);")
+    self.label_1.setText("")
+    
+    self.label_2 = QtWidgets.QLabel(self)
+    self.label_2.setGeometry(QtCore.QRect(250, 90, 300, 300))
+    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+    self.label_2.setText("")
+    self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.png")))
+    self.label_2.setScaledContents(True)
+
+    self.textlabel = QtWidgets.QLabel(self)
+    self.textlabel.setGeometry(QtCore.QRect(0, 0, 800, 200))
+    self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
+    font = QtGui.QFont("Roboto", 24)
+    self.textlabel.setFont(font)
+    self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
+    self.textlabel.setText("Something went wrong, please contact the helpdesk.")  
+
+  def onActivate(self):
+    QtCore.QTimer.singleShot(5000, lambda: Fragment.manager.activate("home"))  
 
 def main():
 
-    QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf")) # fontname: ' oboto'
+    QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf"))
 
     # splash = Splash() # must be defined first
     home = Home()
@@ -463,6 +398,7 @@ def main():
     otp = OTP()
     verified = Verified()
     denied = Denied()
+    error = Error()
 
     Fragment.manager.start(800, 480)
 
