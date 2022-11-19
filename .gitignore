@@ -29,5 +29,4 @@ sketch
 
 **/npm-debug.log*
 
-**/prisma
-!**/prisma/schema.prisma
+**/prisma/dev.db*
