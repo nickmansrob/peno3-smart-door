@@ -7,6 +7,6 @@ then
     npm install -g serve
     serve -s build
 else
-    npm run migrate
+    npm run migrate:prod
     node --enable-source-maps dist/index.js
 fi
