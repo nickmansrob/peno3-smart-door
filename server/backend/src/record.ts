@@ -1,6 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { UserRecord } from './types.js'
+import { getLatestUserRecords } from './user.js'
 
 export async function handleRecordView(req: Request, res: Response): Promise<void> {
   res.json(await getRecords(parseInt(req.query.id as string)))
@@ -30,12 +31,11 @@ export async function getRecords(id?: number) {
  * @returns The success state of the creation
  */
 export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Promise<boolean> {
-  // TODO: implement
-  const latestUserRecords = getLatestUserRecords() as UserRecord[]
+  const latestUserRecords = await getLatestUserRecords() as UserRecord[]
   if (latestUserRecords) {
     const lastState = latestUserRecords.filter(record => record.id === userId)[0].state
     try {
-      await prisma.record.create({
+      await prisma.userRecord.create({
         data: {
           userId: userId,
           method: method,
@@ -50,7 +50,7 @@ export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Prom
   } else {
     const laststate = 'ENTER'
     try {
-      await prisma.record.create({
+      await prisma.userRecord.create({
         data: {
           userId: userId,
           method: method,

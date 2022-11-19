@@ -29,7 +29,7 @@ export type LatestEntry = Id & {
   firstName: string
   lastName: string
   timestamp: string
-  role: string
+  role: number
 }
 
 // Restrictions

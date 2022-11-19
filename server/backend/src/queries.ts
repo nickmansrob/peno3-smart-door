@@ -20,6 +20,17 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 
   if (records) {
     const rangeEntries = records.filter(record => interval.contains(DateTime.fromISO(record.timestamp)))
+    
+    let currentDay = interval.start
+    const dateRange = []
+    while (interval.contains(currentDay)) {
+      dateRange.push(currentDay)
+      currentDay = currentDay.plus({days: 1})
+    }
+
+    return dateRange.map(day => rangeEntries.filter(record => DateTime.fromISO(record.timestamp) === day).length)
+  } else {
+    return []
   }
 }
 
@@ -36,7 +47,7 @@ export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
           firstName: userObject.firstName,
           lastName: userObject.lastName,
           timestamp: record.timestamp,
-          role: userObject.roleName
+          role: userObject.roleId
         } as LatestEntry
       } else {
         return {} as LatestEntry

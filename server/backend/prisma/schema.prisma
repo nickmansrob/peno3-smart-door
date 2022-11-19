@@ -16,8 +16,8 @@ model User {
   lastName       String
   faceDescriptor String
   tfaToken       String
-  role           Role              @relation(fields: [roleName], references: [name])
-  roleName       String
+  role           Role              @relation(fields: [roleId], references: [id])
+  roleId         Int
   dateCreated    DateTime          @default(now())
   enabled        Boolean           @default(true)
   records        UserRecord[]
@@ -50,10 +50,10 @@ model UserRestriction {
 }
 
 model RoleRestriction {
-  id       Int    @id @default(autoincrement())
-  role     Role   @relation(fields: [roleName], references: [name])
-  roleName String
-  start    Int
-  end      Int
-  weekday  String
+  id      Int    @id @default(autoincrement())
+  role    Role   @relation(fields: [roleId], references: [id])
+  roleId  Int
+  start   Int
+  end     Int
+  weekday String
 }

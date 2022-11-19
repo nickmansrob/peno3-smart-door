@@ -1,6 +1,5 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
-import { getRecords } from './record.js'
 import { User, UserRecord } from './types.js'
 import { validateFaceDescriptor } from './util.js'
 

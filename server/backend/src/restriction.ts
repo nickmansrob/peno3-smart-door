@@ -57,15 +57,15 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
 // Role restrictions
 
 export async function handleRoleRestrictionView(req: Request, res: Response): Promise<void> {
-  res.json(getRoleRestrictions(req.query.name as string))
+  res.json(getRoleRestrictions(parseInt(req.query.name as string)))
 }
 
-export async function getRoleRestrictions(name?: string) {
-  if (name) {
+export async function getRoleRestrictions(id?: number) {
+  if (id) {
     return (
       await prisma.role.findUnique({
         where: {
-          name: name,
+          id: id,
         },
         include: {
           restrictions: true,
@@ -149,7 +149,7 @@ export function inInterval(currentTime: number, restrictionInterval: CustomInter
  * @param role  the role of the user to be checked
  * @returns false if no restrictions are active
  */
-export async function isRestricted(userId: number, role: string): Promise<boolean> {
+export async function isRestricted(userId: number, role: number): Promise<boolean> {
   // general used information
   const currentTime = DateTime.now().hour * 100 + DateTime.now().minute
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
