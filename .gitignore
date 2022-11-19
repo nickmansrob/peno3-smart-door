@@ -28,3 +28,6 @@ thumb
 sketch
 
 **/npm-debug.log*
+
+**/prisma
+!**/prisma/schema.prisma
