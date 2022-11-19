@@ -6,7 +6,10 @@ if [ $1 == "frontend" ]
 then
     npm install -g serve
     serve -s build
-else
+elif [ $1 == "backend" ]
+then
     npm run migrate:prod
     node --enable-source-maps dist/index.js
+else
+    npm run studio
 fi
