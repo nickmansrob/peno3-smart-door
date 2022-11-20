@@ -29,7 +29,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
       res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
     } else {
       // Find the closest user
-      const matchedUser = distances.reduce((prev, curr) => (prev.id < curr.id ? prev : curr))
+      const matchedUser = distances.reduce((prev, curr) => (prev.distance < curr.distance ? prev : curr))
 
       if (matchedUser.distance <= THRESHOLD && !isRestricted(matchedUser.id, matchedUser.roleId)) {
         createRecord(matchedUser.id, 'FACE')
