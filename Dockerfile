@@ -15,5 +15,5 @@ COPY --from=builder /usr/src/build ./
 
 COPY start-server /usr/bin/
 
-EXPOSE 3000
+EXPOSE 3000 5555
 CMD start-server $package

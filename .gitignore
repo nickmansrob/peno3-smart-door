@@ -28,3 +28,5 @@ thumb
 sketch
 
 **/npm-debug.log*
+
+**/prisma/dev.db*

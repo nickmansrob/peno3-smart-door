@@ -1,39 +1,70 @@
-// Models
-export type Data = {
-  users: User[]
-  records: AuthRecord
-  restrictions: DayInterval<Restriction>
-}
-
+// User
 export type User = Id & {
   firstName: string
   lastName: string
 
-  faceDescriptor: number[]
+  faceDescriptor: string
   tfaToken: string
 
   role: Role
 
-  dateCreated: string
+  dateCreated: Date
 
   enabled: boolean
 }
 
-// Users
-
-export type ComfirmNewUser = {
-  status: 'ACCEPTED' | 'DENIED'
-  timestamp: string
+export type Role = Id & {
+  name: string
 }
 
-export type Role = 'ADMIN' | 'MANAGER' | 'EMPLOYEE' | 'VISITOR' | 'SERVICES'
+// Records
+
+export type UserRecord = Id & {
+  timestamp: string
+  method?: 'FACE' | 'TFA'
+  state: 'ENTER' | 'LEAVE'
+}
+// Queries
+
+export type LatestEntry = Id & {
+  firstName: string
+  lastName: string
+  timestamp: string
+  role: number
+}
+
+// Restrictions
+
+export type UserRestriction = Id & {
+  start: number
+  end: number
+  weekday: string
+}
+
+export type RoleRestriction = Id & {
+  start: number
+  end: number
+  weekday: string
+}
+
+export type CustomInterval = {
+  s: number // '1730'
+  e: number
+}
+
+export type IncomingRestriction = {
+  s: number
+  e: number
+  id: number
+  weekday: string
+}
 
 // Access
 
 export type OutgoingAccess = {
   firstName: string
   timestamp: string
-  access: 'GRANTED' | 'DENIED'
+  access: 'GRANTED' | 'DENIED' | 'ERROR'
 }
 
 export type IncomingOtp = Id & {
@@ -46,58 +77,8 @@ export type IncomingFace = {
   timestamp: string
 }
 
-// Records
-
-export type AuthRecord = Record<Id['id'], Record<'records', UserRecord[]>>
-
-export type UserRecord = Id & {
-  timestamp: string
-  method?: 'FACE' | 'TFA'
-  state: 'ENTER' | 'LEAVE'
-}
-// Queries
-
-export type LatestEntry = {
-  id: string
-  timestamp: string
-  role: Role
-  firstName: string
-  lastName: string
-}
-
-// Restrictions
-export type Restriction = {
-  users: UserRestriction[]
-  groups: GroupRestriction[]
-}
-
-export type UserRestriction = Id & {
-  interval: CustomInterval
-}
-
-export type GroupRestriction = {
-  role: Role
-  interval: CustomInterval
-}
-
-export type IncomingRestriction = {
-  day: Day
-  kind: RestrictionKind
-  interval: CustomInterval
-  restriction: UserRestriction | GroupRestriction
-}
-
-export type RestrictionKind = 'USER' | 'GROUP'
-
-export type DayInterval<T> = Record<Day, T>
-
-export type CustomInterval = {
-  s: number // '1730'
-  e: number
-}
-
-export type Day = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'
+// Util
 
 export type Id = {
-  id: string
+  id: number
 }
