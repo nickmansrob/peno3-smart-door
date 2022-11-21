@@ -1,7 +1,7 @@
 import { start } from './Provider.js'
 import { getEntries, getRangeEntries, latestEntries } from './Queries.js'
 import { userRestrictions } from './Restriction.js'
-import { CustomInterval, GroupRestriction, OutgoingAccess, User, UserRestriction, Role } from './types.js'
+import { CustomInterval, GroupRestriction, OutgoingAccess, User, UserRestriction, Role } from '../src/types.js'
 
 
 // testing getEntries hoeveel zijn er VANDAAG binnen gegaan, dus let op met testen dat je het wel effectief op vandaag zet
