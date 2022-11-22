@@ -7,8 +7,24 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const Edit = () => {
+  const [user, setUser] = useState([]);
   const id = useParams();
   console.log(id);
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch(
+      `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUser(data);
+      });
+  }, []);
 
   return (
     <div className="new">
@@ -37,7 +53,7 @@ const Edit = () => {
               </div>
               <div className="formInput">
                 <label>First name</label>
-                <input type="text" placeholder="John" />
+                <input type="text" placeholder={user.firstName} />
               </div>
               <div className="formInput">
                 <label>Group</label>
@@ -45,7 +61,7 @@ const Edit = () => {
               </div>
               <div className="formInput">
                 <label>Surname</label>
-                <input type="text" placeholder="Doe" />
+                <input type="text" placeholder={user.lastName} />
               </div>
               <button>Edit</button>
             </form>

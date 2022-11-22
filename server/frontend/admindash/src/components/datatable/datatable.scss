@@ -2,15 +2,15 @@
   height: 600px;
   padding: 20px;
 
-  .cellWithStatus{
+  .cellWithStatus {
     padding: 5px;
     border-radius: 5px;
-    &.active{
-      background-color: rgba(0,128,0,0.05);
+    &.active {
+      background-color: rgba(0, 128, 0, 0.05);
       color: green;
     }
-    &.passive{
-      background-color: rgba(255,0,0,0.05);
+    &.passive {
+      background-color: rgba(255, 0, 0, 0.05);
       color: crimson;
     }
   }
@@ -26,6 +26,7 @@
       border: 1px dotted rgba(0, 0, 139, 0.54);
     }
     .deleteButton {
+      cursor: pointer;
       padding: 2px 5px;
       border-radius: 5px;
       color: crimson;

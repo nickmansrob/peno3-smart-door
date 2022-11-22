@@ -3,14 +3,31 @@ import Navbar from "../../components/navbar/Navbar";
 import "./single.scss";
 import { Link, useParams } from "react-router-dom";
 import Qr from "../../components/qr/Qr";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Single = () => {
+  const [user, setUser] = useState([]);
+
   const id = useParams();
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch(
+      `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUser(data);
+      });
+  }, []);
   const [isShown, setIsShown] = useState(false);
   console.log(id);
   const buttonClicked = () => {
-    setIsShown(true);
+    setIsShown((current) => !current);
   };
 
   return (
@@ -31,16 +48,18 @@ const Single = () => {
                 className="itemImg"
               />
               <div className="details">
-                <h1 className="itemTitle">Jane Doe</h1>
+                <h1 className="itemTitle">
+                  {user.firstName} {user.lastName}
+                </h1>
 
                 <div className="detailItem">
                   <span className="itemKey">ID:</span>
-                  <span className="itemValue">1</span>
+                  <span className="itemValue">{id.userId}</span>
                 </div>
 
                 <div className="detailItem">
                   <span className="itemKey">Group:</span>
-                  <span className="itemValue">Logistics</span>
+                  <span className="itemValue">{user.role}</span>
                 </div>
 
                 <Link
@@ -50,13 +69,15 @@ const Single = () => {
                   <div className="schedulerButton"> Click to see scheduler</div>
                 </Link>
                 <button type="button" onClick={buttonClicked}>
-                  Get QR{" "}
+                  {isShown ? "Hide QR" : "Get QR"}
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="right">{isShown && <Qr secret_key="1234"></Qr>}</div>
+          <div className="right">
+            {isShown && <Qr secret_key={user.tfaToken}></Qr>}
+          </div>
         </div>
         <div className="bottom"></div>
       </div>

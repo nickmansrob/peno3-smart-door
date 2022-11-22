@@ -3,6 +3,7 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 //import { act } from "react-dom/test-utils";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -46,6 +47,20 @@ const columns = [
     headerName: "Action",
     width: 200,
     renderCell: (params) => {
+      const buttonClicked = () => {
+        console.log(params.row.id);
+        fetch("", {
+          method: "DELETE",
+          body: JSON.stringify(params.row.id),
+        })
+          .then((response) => response.json())
+          .then((bodydata) => {
+            console.log("Success:", bodydata);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      };
       return (
         <div className="cellAction">
           <Link
@@ -54,62 +69,32 @@ const columns = [
           >
             <div className="viewButton"> View</div>
           </Link>
-          <div className="deleteButton">Delete</div>
+          <button onClick={buttonClicked} className="deleteButton">
+            Delete
+          </button>
         </div>
       );
     },
   },
 ];
 
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35, status: "active" },
-  {
-    id: 2,
-    lastName: "Lannister",
-    firstName: "Cersei",
-    age: 42,
-    status: "active",
-  },
-  {
-    id: 3,
-    lastName: "Lannister",
-    firstName: "Jaime",
-    age: 45,
-    status: "passive",
-  },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16, status: "passive" },
-  {
-    id: 5,
-    lastName: "Targaryen",
-    firstName: "Daenerys",
-    age: null,
-    status: "active",
-  },
-  {
-    id: 6,
-    lastName: "Melisandre",
-    firstName: null,
-    age: 150,
-    status: "passive",
-  },
-  {
-    id: 7,
-    lastName: "Clifford",
-    firstName: "Ferrara",
-    age: 44,
-    status: "passive",
-  },
-  {
-    id: 8,
-    lastName: "Frances",
-    firstName: "Rossini",
-    age: 36,
-    status: "passive",
-  },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65, status: "passive" },
-];
-
 const Datatable = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setUsers(data);
+      });
+  }, []);
+
+  const rows = users;
+
   return (
     <div className="datatable">
       <DataGrid

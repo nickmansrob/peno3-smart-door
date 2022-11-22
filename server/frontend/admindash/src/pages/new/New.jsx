@@ -5,6 +5,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import Qr from "../../components/qr/Qr";
 import base32Encode from "base32-encode";
+import axios from "axios";
 
 const New = () => {
   const [file, setFile] = useState("");
@@ -12,10 +13,19 @@ const New = () => {
   const [surname, setSurname] = useState("");
   const [group, setGroup] = useState("");
   const [isShown, setIsShown] = useState(false);
+  const [image, setImage] = useState(null);
 
   const array = new Int8Array(5);
   const [data, setData] = useState(array);
   const key = base32Encode(data, "Crockford");
+
+  const getFileInfo = (e) => {
+    setFile(e.target.files[0]);
+    const formData = new FormData();
+    formData.append("my-image-file", e.target.files[0], e.target.files[0].name);
+    setImage(formData);
+    console.log(image);
+  };
 
   const buttonPressed = () => {
     setData(crypto.getRandomValues(array));
@@ -42,6 +52,11 @@ const New = () => {
     //   .catch((error) => {
     //     console.error("Error:", error);
     //   });
+
+    // axios.post('url', image)
+    // .then(res =>{
+    //   console.log('Axios response:', res)
+    // })
 
     setName("");
     setGroup("");
@@ -74,7 +89,7 @@ const New = () => {
                   Image: <FileUploadIcon className="icon" />
                 </label>
                 <input
-                  onChange={(e) => setFile(e.target.files[0])}
+                  onChange={getFileInfo}
                   type="file"
                   id="file"
                   style={{ display: "none" }}
@@ -115,13 +130,14 @@ const New = () => {
         </div>
 
         <div className="bottom">
-          <div className="qrcontainer">
-            {isShown && <Qr secret_key={key}></Qr>}
-          </div>
+          {isShown && (
+            <div className="qrcontainer">
+              <Qr secret_key={key}></Qr>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
 export default New;
