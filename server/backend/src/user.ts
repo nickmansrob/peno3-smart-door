@@ -185,15 +185,11 @@ export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> 
     })
   ).filter(record => record.records.length !== 0)
 
-  console.log(JSON.stringify(records))
-
   if (records) {
     return records.map(object => {
       if (object.records.length > 1) {
         console.warn('Latest userRecord has multiple records! Taking the first one.')
       }
-
-      console.log(object.records.length)
 
       const record = {
         id: object.records[0]?.userId,
