@@ -101,8 +101,17 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
 }
 
 function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
-  // TO-DO: implement
-  return true
+  if (
+    (userEdit.firstName && userEdit.id && userEdit.lastName && userEdit.role &&
+      typeof userEdit.id === 'number' &&
+      typeof userEdit.firstName === 'string'&&
+      typeof userEdit.lastName === 'string' &&
+      typeof userEdit.role === 'string')
+  ) {
+    return true
+  } else {
+    return false
+  }
 }
 
 /** 
@@ -114,8 +123,37 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
  * enabled = false  
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
-  //To-do
-  const stream = req.body
+  if (req.body){
+    const userId = req.body as number
+    if (typeof userId === 'number'){
+      try {
+        const result = await prisma.user.update({
+          where : { id: userId}, 
+          data: {
+            firstName : '', 
+            lastName: '', 
+            faceDescriptor: '[]', 
+            role: '',  // juist zo want type Role is een beetje raar 
+            enabled: false
+          }
+        })
+        res.json(result)
+      }
+      catch(e) {
+        console.error(e)
+        res.status(500).json({error: 'User could not be deleted'})
+      } 
+    }
+    else {
+      console.error('Id invalid')
+      res.status(400).json({
+        error: 'IncomingUserEdit invalid'
+      })
+    }
+  }
+  else {
+    res.status(400).send()
+  }
 }
 
 export async function getAllActiveUsers(): Promise<number> {
