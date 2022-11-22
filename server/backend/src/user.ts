@@ -80,7 +80,20 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
       try {
         const result = await prisma.user.update({
           where: { id: userEdit.id },
-          data: userEdit
+          data: {
+            firstName: userEdit.firstName,
+            lastName: userEdit.lastName,
+            role: {
+              connectOrCreate: {
+                where: {
+                  name: userEdit.role.name,
+                },
+                create: {
+                  name: userEdit.role.name,
+                },
+              },
+            },
+          }
         }) 
         res.json(result) }
       catch (e) {
@@ -124,16 +137,15 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body){
-    const userId = req.body as number
+    const userId = parseInt(req.query.id as string)
     if (typeof userId === 'number'){
       try {
         const result = await prisma.user.update({
           where : { id: userId}, 
           data: {
-            firstName : '', 
-            lastName: '', 
-            faceDescriptor: '[]', 
-            role: '',  // juist zo want type Role is een beetje raar 
+            firstName : `deletedUser${userId}`, 
+            lastName: `deletedUser${userId}`, 
+            faceDescriptor: '[]',  
             enabled: false
           }
         })

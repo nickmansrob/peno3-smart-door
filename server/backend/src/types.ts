@@ -21,9 +21,9 @@ export type IncomingUserEdit = {
   id: number
   firstName: string
   lastName: string
-  role: string
-
+  role: Role
 }
+
 // Records
 
 export type UserRecord = Id & {
