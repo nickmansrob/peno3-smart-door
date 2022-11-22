@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
-import { User, UserRecord } from './types.js'
+import { IncomingUserEdit, User, UserRecord } from './types.js'
 import { validateFaceDescriptor } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
@@ -66,12 +66,56 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
   }
 }
 
+
+/**
+ * @param req = wat het wil verandern parameter, en naar wat het het wil verandern in array of in ...?
+ * @param res = void of res.send
+ * De dingen in de database veranderen
+ * // const filtered = JSON.parse(JSON.stringify(stream)) 
+ */
 export async function handleEditUser(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  if (req.body) {
+    const userEdit = req.body as IncomingUserEdit
+    if (validateIncomingUserEdit(userEdit)) {
+      try {
+        const result = await prisma.user.update({
+          where: { id: userEdit.id },
+          data: userEdit
+        }) 
+        res.json(result) }
+      catch (e) {
+        console.error(e)
+        res.status(500).json({
+          error: 'User could not be edited.',
+        })
+      }
+    } else {
+      console.error('IncomingUserEdit invalid')
+      res.status(400).json({
+        error: 'IncomingUserEdit invalid',
+      })
+    }
+  } else {
+    res.status(400).send()
+  }
 }
 
+function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
+  // TO-DO: implement
+  return true
+}
+
+/** 
+ * @param req =  delete user met id = ... number  { id: 1, lastName: 'Robbe' }
+ * @param res = void of res.send
+ * alles blank : facedescriptor = [], strings => '', numbers => 0
+ * id = blijft behouden
+ * naam = 'Deleted User'
+ * enabled = false  
+ */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  //To-do
+  const stream = req.body
 }
 
 export async function getAllActiveUsers(): Promise<number> {
