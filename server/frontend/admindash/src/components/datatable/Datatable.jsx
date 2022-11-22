@@ -48,18 +48,18 @@ const columns = [
     width: 200,
     renderCell: (params) => {
       const buttonClicked = () => {
-        console.log(params.row.id);
-        fetch("", {
-          method: "DELETE",
-          body: JSON.stringify(params.row.id),
-        })
-          .then((response) => response.json())
-          .then((bodydata) => {
-            console.log("Success:", bodydata);
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+        console.log("Klik");
+        //   fetch("", {
+        //     method: "DELETE",
+        //     body: JSON.stringify(params.row.id),
+        //   })
+        //     .then((response) => response.json())
+        //     .then((bodydata) => {
+        //       console.log("Success:", bodydata);
+        //     })
+        //     .catch((error) => {
+        //       console.error("Error:", error);
+        //     });
       };
       return (
         <div className="cellAction">
@@ -88,7 +88,6 @@ const Datatable = () => {
     fetch("https://styx.rndevelopment.be/api/users", requestOptions)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setUsers(data);
       });
   }, []);
