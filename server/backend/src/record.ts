@@ -31,7 +31,7 @@ export async function getRecords(id?: number) {
  * @returns The success state of the creation
  */
 export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Promise<boolean> {
-  const latestUserRecords = await getLatestUserRecords() as UserRecord[]
+  const latestUserRecords = (await getLatestUserRecords()) as UserRecord[]
   if (latestUserRecords) {
     const lastState = latestUserRecords.filter(record => record.id === userId)[0].state
     try {

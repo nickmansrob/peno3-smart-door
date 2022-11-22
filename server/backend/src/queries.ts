@@ -2,15 +2,15 @@ import { DateTime, Interval } from 'luxon'
 import { LatestEntry } from './types.js'
 import { getAllActiveUsers, getLatestUserRecords, getUsers } from './user.js'
 
-export async function getEntries(): Promise<{inside: number, total: number}> {
+export async function getEntries(): Promise<{ inside: number; total: number }> {
   const records = await getLatestUserRecords()
   const total = await getAllActiveUsers()
 
   if (records) {
     const inside = records.filter(record => record.state === 'ENTER').length
-    return {inside, total}
+    return { inside, total }
   } else {
-    return {inside: 0, total}
+    return { inside: 0, total }
   }
 }
 
@@ -20,15 +20,20 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 
   if (records) {
     const rangeEntries = records.filter(record => interval.contains(DateTime.fromISO(record.timestamp)))
-    
+
     let currentDay = interval.start
     const dateRange = []
     while (interval.contains(currentDay)) {
-      dateRange.push(currentDay)
-      currentDay = currentDay.plus({days: 1})
+      dateRange.push(currentDay.toFormat('yyyy-mm-dd'))
+      currentDay = currentDay.plus({ days: 1 })
     }
 
-    return dateRange.map(day => rangeEntries.filter(record => DateTime.fromISO(record.timestamp) === day).length)
+    return dateRange.map(
+      day =>
+        rangeEntries.filter(record => {
+          return DateTime.fromISO(record.timestamp).toFormat('yyyy-mm-dd') === day
+        }).length,
+    )
   } else {
     return []
   }
@@ -38,21 +43,26 @@ export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
   const records = await getLatestUserRecords()
 
   if (records) {
-    return await Promise.all(records.filter(record => record.state === 'ENTER').slice(0, amount).map(async record => {
-      const user = await getUsers(record.id)
-      if (user) {
-        const userObject = [user].flat()[0]
-        return {
-          id: record.id,
-          firstName: userObject.firstName,
-          lastName: userObject.lastName,
-          timestamp: record.timestamp,
-          role: userObject.roleId
-        } as LatestEntry
-      } else {
-        return {} as LatestEntry
-      }
-    }))
+    return await Promise.all(
+      records
+        .filter(record => record.state === 'ENTER')
+        .slice(0, amount)
+        .map(async record => {
+          const user = await getUsers(record.id)
+          if (user) {
+            const userObject = [user].flat()[0]
+            return {
+              id: record.id,
+              firstName: userObject.firstName,
+              lastName: userObject.lastName,
+              timestamp: record.timestamp,
+              role: userObject.roleId,
+            } as LatestEntry
+          } else {
+            return {} as LatestEntry
+          }
+        }),
+    )
   } else {
     return [] as LatestEntry[]
   }

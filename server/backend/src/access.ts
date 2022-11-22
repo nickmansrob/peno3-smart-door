@@ -16,10 +16,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
     const userTable = await prisma.user.findMany()
     const distances = await Promise.all(
       userTable.map(async user => {
-        const distance = euclidDistance(
-          serializeFaceDescriptor(user.faceDescriptor),
-          faceToCompare.faceDescriptor,
-        )
+        const distance = euclidDistance(serializeFaceDescriptor(user.faceDescriptor), faceToCompare.faceDescriptor)
         return { id: user.id, distance, firstName: user.firstName, roleId: user.roleId } // TODO: put this in a separate function
       }),
     )
@@ -46,15 +43,18 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 export async function handleOtp(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const stream = req.body as IncomingOtp
-    const user = (await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: stream.id,
       },
-    }))
+    })
 
     if (user) {
       const otpHelper = createOtp(user.tfaToken)
-      if (validateToken(otpHelper, stream.otp, DateTime.fromISO(stream.timestamp)) && !(await isRestricted(user.id, user.roleId))) {
+      if (
+        validateToken(otpHelper, stream.otp, DateTime.fromISO(stream.timestamp)) &&
+        !(await isRestricted(user.id, user.roleId))
+      ) {
         const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
         if (await recordCheck) {
           res.status(200).send(evaluateAccess('GRANTED', user.firstName))

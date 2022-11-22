@@ -13,6 +13,9 @@ export async function getUsers(id?: number) {
       where: {
         id: id,
       },
+      include: {
+        role: true,
+      },
     })
   } else {
     return await prisma.user.findMany()
@@ -23,7 +26,9 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
   if (req.body) {
     const user = req.body as User
     if (validateFaceDescriptor(user.faceDescriptor)) {
+      console.log(`Incoming user: ${JSON.stringify(user)}`)
       try {
+        console.log('Trying to write user')
         const result = await prisma.user.create({
           data: {
             firstName: user.firstName,
@@ -42,6 +47,7 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
             },
           },
         })
+        console.log('Wrote user')
         res.json(result)
       } catch (e) {
         console.error(e)
@@ -84,33 +90,30 @@ export async function getAllActiveUsers(): Promise<number> {
  */
 
 export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> {
-  const records = await prisma.user.findMany({
-    select: {
-      records: {
-        orderBy: {
-          timestamp: 'desc',
+  const records = (
+    await prisma.user.findMany({
+      select: {
+        records: {
+          orderBy: {
+            timestamp: 'desc',
+          },
+          take: 1,
         },
-        take: 1,
       },
-    },
-  })
-
-  console.log(JSON.stringify(records))
+    })
+  ).filter(record => record.records.length !== 0)
 
   if (records) {
     return records.map(object => {
-      console.log(JSON.stringify(object))
-      if (object.records.length != 1) {
+      if (object.records.length > 1) {
         console.warn('Latest userRecord has multiple records! Taking the first one.')
       }
 
-      console.log(object.records.length)
-
       const record = {
-        id: object.records[0].userId,
-        timestamp: object.records[0].timestamp.toISOString(),
-        method: object.records[0].method,
-        state: object.records[0].state,
+        id: object.records[0]?.userId,
+        timestamp: object.records[0]?.timestamp.toISOString(),
+        method: object.records[0]?.method,
+        state: object.records[0]?.state,
       } as UserRecord
 
       return record
