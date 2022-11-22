@@ -24,15 +24,12 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
     let currentDay = interval.start
     const dateRange = []
     while (interval.contains(currentDay)) {
-      dateRange.push(currentDay.toFormat('yyyy-mm-dd'))
+      dateRange.push(currentDay.toFormat('yyyy-MM-dd'))
       currentDay = currentDay.plus({ days: 1 })
     }
 
     return dateRange.map(
-      day =>
-        rangeEntries.filter(record => {
-          return DateTime.fromISO(record.timestamp).toFormat('yyyy-mm-dd') === day
-        }).length,
+      day => rangeEntries.filter(record => DateTime.fromISO(record.timestamp).toFormat('yyyy-MM-dd') === day).length,
     )
   } else {
     return []
