@@ -99,10 +99,21 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
   }
 }
 
+/**
+ * @param req =  [Role en weekday van de te veranderen restriction, welke parameter je wilt veranderen, naar wat je het wil veranderen]
+ * @param res = void of res.send
+ * in database wisselen
+ */
 export async function handleEditRoleRestriction(req: Request, res: Response): Promise<void> {
   // TODO: implement
 }
 
+
+/**
+ * @param req =  [Role en weekday van de te deleten restriction
+ * @param res = void of res.send
+ * in database deleten
+ */
 export async function handleDeleteRoleRestriction(req: Request, res: Response): Promise<void> {
   // TODO: implement
 }
@@ -115,9 +126,9 @@ export function validateRestriction(restriction: IncomingRestriction): boolean {
       restriction.id &&
       restriction.weekday &&
       (restriction.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
-      typeof restriction.e === 'number',
-    typeof restriction.s === 'number',
-    typeof restriction.id === 'number')
+      typeof restriction.e === 'number' &&
+      typeof restriction.s === 'number'&&
+      typeof restriction.id === 'number')
   ) {
     return true
   } else {
@@ -166,13 +177,27 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
 
   // if there are no restrictions, the person is granted access
   if (allRestrictions.length === 0) {
-    return false
+    return true
   } else {
     const booleanRestrictions = allRestrictions.map(restriction => inInterval(currentTime, restriction))
-    if (booleanRestrictions.includes(true)) {
-      return true
-    } else {
+    if (booleanRestrictions.includes(false)) {
       return false
+    } else {
+      return true
     }
   }
 }
+
+/**
+ To-Do's
+
+ - overal isrestricted / ... naar is allowed hernoemen eventueel
+
+ - implementeren dat in 'isrestrictions' de state wordt meegegeven (via state user op te roepen in acces files) 
+ en er dus voor zorgen dat niemand die naar buiten wilt terug gaat => if (state === enter) dan programma zoals normaal, else false
+
+ - overal true and false checken of het gebasserd is op in het interval? dus true uit isRestricted/isAllowed dan is het ok en mag hij binnen
+
+ - validations
+
+ */

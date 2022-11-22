@@ -17,6 +17,13 @@ export type Role = Id & {
   name: string
 }
 
+export type IncomingUserEdit = {
+  id: number
+  firstName: string
+  lastName: string
+  role: string
+
+}
 // Records
 
 export type UserRecord = Id & {
@@ -82,3 +89,5 @@ export type IncomingFace = {
 export type Id = {
   id: number
 }
+
+type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>; }[keyof T]
