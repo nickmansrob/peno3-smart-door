@@ -55,7 +55,7 @@ export async function start(): Promise<void> {
 }
 
 function handleRoot(_req: Request, res: Response) {
-  res.send('Running backend')
+  res.send('Running backend.')
 }
 
 async function handleGetEntries(_req: Request, res: Response) {
