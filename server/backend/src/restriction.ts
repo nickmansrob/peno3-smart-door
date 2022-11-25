@@ -27,19 +27,23 @@ export async function getUserRestrictions(id?: number) {
 export async function handleNewUserRestriction(req: Request, res: Response): Promise<void> {
   const restriction = req.body as IncomingRestriction
   if (validateRestriction(restriction)) {
-    try {
-      const result = await prisma.userRestriction.create({
-        data: {
-          userId: restriction.id,
-          start: restriction.s,
-          end: restriction.e,
-          weekday: restriction.weekday,
-        },
-      })
-      res.json(result)
-    } catch (e) {
-      console.error(e)
-      res.status(500).json({ error: 'The restrictions could not be created' })
+    if((await findUserRestriction(restriction)).length === 0)
+      try {
+        const result = await prisma.userRestriction.create({
+          data: {
+            userId: restriction.id,
+            start: restriction.s,
+            end: restriction.e,
+            weekday: restriction.weekday,
+          },
+        })
+        res.json(result)
+      } catch (e) {
+        console.error(e)
+        res.status(500).json({ error: 'The restrictions could not be created' })
+      }
+    else{
+      res.status(400).send('There already is a restriction for this user')
     }
   } else {
     res.status(400).send('The restriction has the wrong format')
@@ -183,19 +187,24 @@ export async function getRoleRestrictions(id?: number) {
 export async function handleNewRoleRestriction(req: Request, res: Response): Promise<void> {
   const restriction = req.body as IncomingRestriction
   if (validateRestriction(restriction)) {
-    try {
-      const result = await prisma.roleRestriction.create({
-        data: {
-          roleId: restriction.id,
-          start: restriction.s,
-          end: restriction.e,
-          weekday: restriction.weekday,
-        },
-      })
-      res.json(result)
-    } catch (e) {
-      console.error(e)
-      res.status(500).json({ error: 'The restrictions could not be created' })
+    if((await findUserRestriction(restriction)).length === 0){
+      try {
+        const result = await prisma.roleRestriction.create({
+          data: {
+            roleId: restriction.id,
+            start: restriction.s,
+            end: restriction.e,
+            weekday: restriction.weekday,
+          },
+        })
+        res.json(result)
+      } catch (e) {
+        console.error(e)
+        res.status(500).json({ error: 'The restrictions could not be created' })
+      }
+    }
+    else{
+      res.status(400).send('There already is a restriction for this role')
     }
   } else {
     res.status(400).send('The restriction has the wrong format')
