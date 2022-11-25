@@ -202,7 +202,7 @@ class FaceRecognition(Fragment):
     self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
 
   def toOtp(self):
-    self.camera.exit_loop.emit()
+    self.camera.signals.exit_loop.emit()
     Fragment.manager.activate("id")
 
   def onActivate(self):
