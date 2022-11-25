@@ -12,7 +12,7 @@ current_dir = os.path.dirname(__file__)
 received_id = "000000"
 received_otp = "123456"
 recognised = False # temporary face recognition check
-URL = "http://localhost:3000"
+URL = "https://styx.rndevelopment.be"
 
 
 class KeyPad(QtCore.QThread):
@@ -156,42 +156,42 @@ class FaceEncoder(QtCore.QObject):
     embedding = self.model.compute_face_descriptor(chip)
     return np.asarray(embedding)
 
-class Camera(QtCore.QObject):
-
+class CameraSignals(QtCore.QObject):
   pixmap_available = QtCore.pyqtSignal(QtGui.QPixmap)
-  start_loop = QtCore.pyqtSignal()
-  exit_loop = QtCore.pyqtSignal()
   descriptor_available = QtCore.pyqtSignal(np.ndarray)
+  exit_loop = QtCore.pyqtSignal()
 
-  def __init__(self, resolution=(320, 320)) -> None:
+class Camera(QtCore.QRunnable):
+
+  def __init__(self) -> None:
     super().__init__()
     
     self.running = False
-    self.camera = PiCamera(resolution=resolution)
+    self.camera = PiCamera(resolution=(320, 320))
+    self.img = np.empty((320, 320, 3), dtype=np.uint8)
+
+    self.signals = CameraSignals()
+    self.signals.exit_loop.connect(self.stop)
+
     self.faceEncoder = FaceEncoder()
 
-    self.start_loop.connect(self.loop)
-    self.exit_loop.connect(self.stop)
+    self.setAutoDelete(False)
   
-  def loop(self):
+  def run(self):
     self.running = True
-    with PiRGBArray(self.camera) as output:
-      while self.running:
-        self.camera.capture(output, 'rgb')
-        img = output.array
-        height, width, channel = img.shape
+    while self.running:
+      self.camera.capture(self.img, "rgb")
+      height, width, channel = self.img.shape
 
-        qImg = QtGui.QImage(img.data, width, height, QtGui.QImage.Format_RGB888)
-        qPixmap = QtGui.QPixmap.fromImage(qImg)
-        self.pixmap_available.emit(qPixmap)
+      qImg = QtGui.QImage(self.img.data, width, height, QtGui.QImage.Format_RGB888)
+      qPixmap = QtGui.QPixmap.fromImage(qImg)
+      self.signals.pixmap_available.emit(qPixmap)
 
-        boundingBox = self.faceEncoder.detectFace(img)
-        if boundingBox is not None:
-          faceDescriptor = self.faceEncoder.calculateEmbedding(img, boundingBox)
-          self.descriptor_available.emit(faceDescriptor)
-          self.stop()
-
-        output.truncate()
+      boundingBox = self.faceEncoder.detectFace(self.img)
+      if boundingBox is not None:
+        faceDescriptor = self.faceEncoder.calculateEmbedding(self.img, boundingBox)
+        self.signals.descriptor_available.emit(faceDescriptor)
+        self.stop()
   
   def stop(self):
     self.running = False
@@ -220,15 +220,11 @@ class FaceRecognition(Fragment):
     self.label_3.setScaledContents(True)
 
     self.camera = Camera()
-    self.camera.pixmap_available.connect(self.label_3.setPixmap)
-    self.camera.descriptor_available.connect(self.sendAccessRequest)
-
-    self.thread = QtCore.QThread()
-    self.camera.moveToThread(self.thread)
-    self.thread.start()
+    self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
+    self.camera.signals.descriptor_available.connect(self.sendAccessRequest)
   
   def sendAccessRequest(self, faceDescriptor):
-    self.camera.exit_loop.emit()
+    self.camera.signals.exit_loop.emit()
     body = {"faceDescriptor": faceDescriptor.tolist(),
             "timestamp": "2022-11-09T10:09:26+01:00"} # TODO fix time
     r = requests.post(url=URL+"/access_face", json=body)
@@ -242,7 +238,7 @@ class FaceRecognition(Fragment):
       Fragment.manager.activate("id")
 
   def onActivate(self):
-    self.camera.start_loop.emit()
+    QtCore.QThreadPool.globalInstance().tryStart(self.camera)
 
 
 class ID(Fragment):
