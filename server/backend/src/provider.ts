@@ -47,6 +47,7 @@ export async function start(): Promise<void> {
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)
+  app.post('/add_face', handleAddFace)
 
   app.get('/entries', handleGetEntries)
   app.get('/latest_entries', handleLatestEntries)
@@ -55,15 +56,15 @@ export async function start(): Promise<void> {
   server.listen(3000, () => console.log('Backend running!'))
 }
 
-function handleRoot(_req: Request, res: Response) { // no validation needed
+function handleRoot(_req: Request, res: Response): void {
   res.send('Running backend')
 }
 
-async function handleGetEntries(_req: Request, res: Response) { // no validation needed
+async function handleGetEntries(_req: Request, res: Response): Promise<void> {
   res.status(200).json(await getEntries())
 }
 
-async function handleLatestEntries(req: Request, res: Response) { // no validation needed
+async function handleLatestEntries(req: Request, res: Response): Promise<void> {
   const amount = parseInt(req.query.amount as string)
 
   if (amount) {
@@ -73,7 +74,7 @@ async function handleLatestEntries(req: Request, res: Response) { // no validati
   }
 }
 
-async function handleRangeEntries(req: Request, res: Response) {
+async function handleRangeEntries(req: Request, res: Response): Promise<void> {
   const s = DateTime.fromISO(req.query.s as string)
   const e = DateTime.fromISO(req.query.e as string)
 
