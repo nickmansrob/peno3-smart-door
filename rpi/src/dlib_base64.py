@@ -27,7 +27,7 @@ def calculateEmbedding(rgbImg: np.ndarray, bb: dlib.rectangle):
 
 s = sys.stdin.read()
 r = np.base64.decodebytes(s)
-img = np.frombuffer(r, dtype=np.float64)
+img = np.frombuffer(r, dtype=np.uint8)
 
 largestBoundingBox = getLargestBoundingBox(detector(img, 1))
 if largestBoundingBox is not None:
