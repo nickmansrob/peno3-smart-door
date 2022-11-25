@@ -70,12 +70,11 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
   }
 }
 
-
 /**
  * @param req = wat het wil verandern parameter, en naar wat het het wil verandern in array of in ...?
  * @param res = void of res.send
  * De dingen in de database veranderen
- * // const filtered = JSON.parse(JSON.stringify(stream)) 
+ * // const filtered = JSON.parse(JSON.stringify(stream))
  */
 export async function handleEditUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
@@ -97,10 +96,10 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
                 },
               },
             },
-          }
-        }) 
-        res.json(result) }
-      catch (e) {
+          },
+        })
+        res.json(result)
+      } catch (e) {
         console.error(e)
         res.status(500).json({
           error: 'User could not be edited.',
@@ -117,13 +116,16 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
   }
 }
 
-function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
+function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
   if (
-    (userEdit.firstName && userEdit.id && userEdit.lastName && userEdit.role &&
-      typeof userEdit.id === 'number' &&
-      typeof userEdit.firstName === 'string'&&
-      typeof userEdit.lastName === 'string' &&
-      typeof userEdit.role === 'string')
+    userEdit.firstName &&
+    userEdit.id &&
+    userEdit.lastName &&
+    userEdit.role &&
+    typeof userEdit.id === 'number' &&
+    typeof userEdit.firstName === 'string' &&
+    typeof userEdit.lastName === 'string' &&
+    typeof userEdit.role === 'string'
   ) {
     return true
   } else {
@@ -131,43 +133,40 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean{
   }
 }
 
-/** 
+/**
  * @param req =  delete user met id = ... number  { id: 1, lastName: 'Robbe' }
  * @param res = void of res.send
  * alles blank : facedescriptor = [], strings => '', numbers => 0
  * id = blijft behouden
  * naam = 'Deleted User'
- * enabled = false  
+ * enabled = false
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const userId = parseInt(req.query.id as string)
-    if (typeof userId === 'number'){
+    if (typeof userId === 'number') {
       try {
         const result = await prisma.user.update({
-          where : { id: userId}, 
+          where: { id: userId },
           data: {
-            firstName : `deletedUser${userId}`, 
-            lastName: `deletedUser${userId}`, 
-            faceDescriptor: '[]',  
-            enabled: false
-          }
+            firstName: `deletedUser${userId}`,
+            lastName: `deletedUser${userId}`,
+            faceDescriptor: '[]',
+            enabled: false,
+          },
         })
         res.json(result)
-      }
-      catch(e) {
+      } catch (e) {
         console.error(e)
-        res.status(500).json({error: 'User could not be deleted'})
-      } 
-    }
-    else {
+        res.status(500).json({ error: 'User could not be deleted' })
+      }
+    } else {
       console.error('Id invalid')
       res.status(400).json({
-        error: 'IncomingUserEdit invalid'
+        error: 'IncomingUserEdit invalid',
       })
     }
-  }
-  else {
+  } else {
     res.status(400).send()
   }
 }
