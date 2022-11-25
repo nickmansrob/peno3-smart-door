@@ -28,7 +28,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
       // Find the closest user
       const matchedUser = distances.reduce((prev, curr) => (prev.distance < curr.distance ? prev : curr))
 
-      if (matchedUser.distance <= THRESHOLD && !isRestricted(matchedUser.id, matchedUser.roleId)) {
+      if (matchedUser.distance <= THRESHOLD && await isRestricted(matchedUser.id, matchedUser.roleId)) {
         createRecord(matchedUser.id, 'FACE')
         res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', matchedUser.firstName)))
       } else {
@@ -53,7 +53,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
       const otpHelper = createOtp(user.tfaToken)
       if (
         validateToken(otpHelper, stream.otp, DateTime.fromISO(stream.timestamp)) &&
-        !(await isRestricted(user.id, user.roleId))
+        (await isRestricted(user.id, user.roleId))
       ) {
         const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
         if (await recordCheck) {
