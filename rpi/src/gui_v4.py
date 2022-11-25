@@ -300,7 +300,7 @@ class ID(Fragment):
   def onKeyPress(self, key: str):
     if key == '#':
       if len(self.idCode) == 6:
-        Fragment.manager.activate("otp", id=int(self.idCode))
+        Fragment.manager.activate("otp", idCode=int(self.idCode))
       else:
         print("Fill in your employee-ID")
     elif key == '*':
@@ -385,7 +385,7 @@ class OTP(Fragment):
       Fragment.manager.activate("denied")
 
   def onActivate(self):
-    self.label_2.setText("Hello {}".format(self.kwargs["id"]))
+    self.label_2.setText("Hello {}".format(self.kwargs["idCode"]))
 
     for label in self.labels:
       self.resetLabel(label)
@@ -395,7 +395,7 @@ class OTP(Fragment):
   def onKeyPress(self, key: str):
     if key == '#':
       if len(self.otpCode) == 6:
-        self.sendAccessRequest(self.kwargs["id"], self.otpCode)
+        self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
       else:
         print("Fill in your otp")
     elif key == '*':

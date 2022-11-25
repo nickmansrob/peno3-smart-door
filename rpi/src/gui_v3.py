@@ -385,7 +385,7 @@ class OTP(Fragment):
     if key == '#':
       if len(self.otpCode) == 6:
         if self.otpCode == received_otp: # replace with backend check
-          Fragment.manager.activate("verified")
+          Fragment.manager.activate("verified", name="FuckPython")
         else:
           Fragment.manager.activate("denied")
       else:
