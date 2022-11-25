@@ -83,6 +83,8 @@ export type IncomingFace = {
   faceDescriptor: number[]
 }
 
+export type IncomingNewFace = IncomingFace & Id
+
 // Util
 
 export type Id = {

@@ -15,10 +15,13 @@ export function serializeFaceDescriptor(arr: string): number[] {
   return Array.from(JSON.parse(arr))
 }
 
-export function validateFaceDescriptor(arr: string): boolean {
-  const array = serializeFaceDescriptor(arr)
-
-  return array.length === 128
+export function validateFaceDescriptor(arr: string | number[]): boolean {
+  if (typeof arr === 'string') {
+    const array = serializeFaceDescriptor(arr)
+    return array.length === 128
+  } else {
+    return arr.length === 128
+  }
 }
 
 // Custom type constraints validation

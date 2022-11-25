@@ -1,10 +1,41 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
+import { getFaceDescriptor } from './face.js'
 import { IncomingUserEdit, User, UserRecord } from './types.js'
 import { validateNewUser, validateUser } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
+}
+
+export async function handleAddFace(req: Request, res: Response): Promise<void> {
+  const face = req.body as IncomingNewFace
+
+  const user = await getUsers(face.id) as User
+
+  if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) {
+    try {
+      const result = await prisma.user.update({
+        where: {
+          id: face.id
+        },
+        data: {
+          faceDescriptor: JSON.stringify(face.faceDescriptor),
+          enabled: true
+        }
+      })
+      res.json(result)
+    } catch (e) {
+      console.error(e)
+      res.status(500).json({
+        error: 'User could not be updated.',
+      })
+    }
+  } else {
+    res.status(400).json({
+      error: 'Invalid new employee'
+    })
+  }
 }
 
 export async function handleRolesView(_req: Request, res: Response): Promise<void> {
