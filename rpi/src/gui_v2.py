@@ -162,6 +162,8 @@ class Camera(QtCore.QRunnable):
 
     self.signals = CameraSignals()
     self.signals.exit_loop.connect(self.stop)
+
+    self.setAutoDelete(False)
   
   def run(self):
     self.running = True
@@ -206,7 +208,7 @@ class FaceRecognition(Fragment):
     Fragment.manager.activate("id")
 
   def onActivate(self):
-    QtCore.QThreadPool.globalInstance().start(self.camera)
+    QtCore.QThreadPool.globalInstance().trystart(self.camera)
     QtCore.QTimer.singleShot(5000, self.toOtp)
 
 
