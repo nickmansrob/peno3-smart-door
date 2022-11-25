@@ -3,8 +3,9 @@ import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction, UserRecord } from './types.js'
 import { getLatestUserRecords } from './user.js'
+import { validateRestriction } from './util.js'
 
-export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
+export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> { // no validation needed
   res.json(await getUserRestrictions(parseInt(req.query.id as string)))
 }
 
@@ -322,28 +323,7 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
   }
 }
 
-/**
- *
- * @param restriction the restriction that needs to be validated
- * @returns true if the restriction is of the type IncomingRestriction, otherwise false
- */
-export function validateRestriction(restriction: IncomingRestriction): boolean {
-  // TODO: checking if the restriction from frontend is valid format
-  if (
-    restriction.e &&
-    restriction.s &&
-    restriction.id &&
-    restriction.weekday &&
-    (restriction.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
-    typeof restriction.e === 'number' &&
-    typeof restriction.s === 'number' &&
-    typeof restriction.id === 'number'
-  ) {
-    return true
-  } else {
-    return false
-  }
-}
+
 
 // Utils
 
