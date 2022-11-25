@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { IncomingUserEdit, User, UserRecord } from './types.js'
-import { validateFaceDescriptor } from './util.js'
+import { validateNewUser, validateUser } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
@@ -29,7 +29,7 @@ export async function getUsers(id?: number) {
 export async function handleNewUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const user = req.body as User
-    if (validateFaceDescriptor(user.faceDescriptor)) {
+    if (validateNewUser(user)) {
       console.log(`Incoming user: ${JSON.stringify(user)}`)
       try {
         console.log('Trying to write user')
@@ -37,8 +37,9 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
           data: {
             firstName: user.firstName,
             lastName: user.lastName,
-            faceDescriptor: user.faceDescriptor,
+            faceDescriptor: '[]',
             tfaToken: user.tfaToken,
+            enabled: false,
             role: {
               connectOrCreate: {
                 where: {

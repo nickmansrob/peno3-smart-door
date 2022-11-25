@@ -81,7 +81,6 @@ export type IncomingOtp = Id & {
 
 export type IncomingFace = {
   faceDescriptor: number[]
-  timestamp: string
 }
 
 // Util
