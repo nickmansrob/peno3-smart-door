@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Home from "./pages/home/Home";
 import List from "./pages/list/List";
 import New from "./pages/new/New";
@@ -7,6 +8,9 @@ import Weekly from "./pages/weekly/Weekly";
 import Edit from "./pages/edit/Edit";
 import Qr from "./components/qr/Qr";
 import Login from "./pages/login/Login"
+import Login2 from "./pages/login/Login2"
+import useToken from './components/Usetoken';
+
 
 import {
   BrowserRouter,
@@ -18,6 +22,10 @@ import {
 
 
 function App() {
+ // const { token, setToken } = useToken();
+  //if(!token) {
+  //  return <Login2 setToken={setToken} />
+  //}
   return (
     <div className="App">
       <BrowserRouter>
@@ -36,6 +44,7 @@ function App() {
             </Route>
             <Route path = 'login' element = {<Login/>}
             ></Route>
+            
             <Route path = 'weekly' element= {<Weekly/>}>
             <Route path = ':userId' element = {<Weekly/>}>
               </Route>
