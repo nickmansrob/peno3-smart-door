@@ -147,11 +147,11 @@ class Home(Fragment):
     self.movie.setPaused(False)
 
 
-class Camera(QtCore.QObject):
-
+class CameraSignals(QtCore.QObject):
   pixmap_available = QtCore.pyqtSignal(QtGui.QPixmap)
-  start_loop = QtCore.pyqtSignal()
   exit_loop = QtCore.pyqtSignal()
+
+class Camera(QtCore.QRunnable):
 
   def __init__(self) -> None:
     super().__init__()
@@ -160,22 +160,21 @@ class Camera(QtCore.QObject):
     self.camera = PiCamera(resolution=(320, 320))
     self.img = np.empty((320, 320, 3), dtype=np.uint8)
 
-    self.start_loop.connect(self.loop)
-    self.exit_loop.connect(self.stop)
+    self.signals = CameraSignals()
+    self.signals.exit_loop.connect(self.stop)
   
-  def loop(self):
+  def run(self):
     self.running = True
     while self.running:
-      self.camera.capture(self.img, 'rgb')
+      self.camera.capture(self.img, "rgb")
       height, width, channel = self.img.shape
 
       qImg = QtGui.QImage(self.img.data, width, height, QtGui.QImage.Format_RGB888)
       qPixmap = QtGui.QPixmap.fromImage(qImg)
-      self.pixmap_available.emit(qPixmap)
+      self.signals.pixmap_available.emit(qPixmap)
   
   def stop(self):
     self.running = False
-
 
 class FaceRecognition(Fragment):
 
@@ -211,7 +210,9 @@ class FaceRecognition(Fragment):
     Fragment.manager.activate("id")
 
   def onActivate(self):
-    self.camera.start_loop.emit()
+    self.camera = Camera()
+    self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
+    QtCore.QThreadPool.globalInstance().start(self.cameraRunnable)
     QtCore.QTimer.singleShot(5000, self.toOtp)
 
 

@@ -167,6 +167,7 @@ class CameraReader(QtCore.QRunnable):
     self.running = False
 
   def run(self):
+    self.running = True
     while self.running:
       camera.capture(self.img, "rgb")
 
