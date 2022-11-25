@@ -199,20 +199,14 @@ class FaceRecognition(Fragment):
     self.label_3.setScaledContents(True)
 
     self.camera = Camera()
-    self.camera.pixmap_available.connect(self.label_3.setPixmap)
-
-    self.thread = QtCore.QThread()
-    self.camera.moveToThread(self.thread)
-    self.thread.start()
+    self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
 
   def toOtp(self):
     self.camera.exit_loop.emit()
     Fragment.manager.activate("id")
 
   def onActivate(self):
-    self.camera = Camera()
-    self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
-    QtCore.QThreadPool.globalInstance().start(self.cameraRunnable)
+    QtCore.QThreadPool.globalInstance().start(self.camera)
     QtCore.QTimer.singleShot(5000, self.toOtp)
 
 
