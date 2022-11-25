@@ -7,6 +7,10 @@ export async function handleUserView(req: Request, res: Response): Promise<void>
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
 }
 
+export async function handleRolesView(_req: Request, res: Response): Promise<void> {
+  res.json(await prisma.role.findMany())
+}
+
 export async function getUsers(id?: number) {
   if (id) {
     return await prisma.user.findUnique({

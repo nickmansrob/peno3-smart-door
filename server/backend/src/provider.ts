@@ -13,7 +13,7 @@ import {
   handleRoleRestrictionView,
   handleUserRestrictionView,
 } from './restriction.js'
-import { handleDeleteUser, handleEditUser, handleNewUser, handleUserView } from './user.js'
+import { handleDeleteUser, handleEditUser, handleNewUser, handleRolesView, handleUserView } from './user.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()
@@ -26,6 +26,8 @@ export async function start(): Promise<void> {
   app.get('/', handleRoot)
 
   app.post('/test', (_req: Request, res: Response) => res.status(200).send())
+
+  app.get('/roles', handleRolesView)
 
   app.get('/users', handleUserView)
   app.post('/users', handleNewUser)
