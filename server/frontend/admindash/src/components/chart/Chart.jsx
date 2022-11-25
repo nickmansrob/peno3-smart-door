@@ -8,11 +8,22 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useState, useEffect } from "react";
 
 const Chart = () => {
+  const [info, setInfo] = useState([]);
+
+  var dayminuszero = new Date();
+  var dd = String(dayminuszero.getDate()).padStart(2, "0");
+  var mm = String(dayminuszero.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminuszero.getYear() + 1900);
+  const lastdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
+
   var dayminusone = new Date();
   var dd = String(dayminusone.getDate() - 1).padStart(2, "0");
   var mm = String(dayminusone.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminusone.getYear() + 1900);
+
   dayminusone = dd + "/" + mm;
 
   var dayminustwo = new Date();
@@ -43,36 +54,53 @@ const Chart = () => {
   var dayminusseven = new Date();
   var dd = String(dayminusseven.getDate() - 7).padStart(2, "0");
   var mm = String(dayminusseven.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminusseven.getYear() + 1900);
+  const firstdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
   dayminusseven = dd + "/" + mm;
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch(
+      `https://styx.rndevelopment.be/api/range_entries/?s=${firstdate}&e=${lastdate}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setInfo(data);
+        console.log(data);
+      });
+  }, []);
 
   const data = [
     {
       name: dayminusseven.toLocaleString(),
-      uv: 4000,
+      uv: info[0],
     },
     {
       name: dayminussix.toLocaleString(),
-      uv: 3000,
+      uv: info[1],
     },
     {
       name: dayminusfive.toLocaleString(),
-      uv: 2000,
+      uv: info[2],
     },
     {
       name: dayminusfour.toLocaleString(),
-      uv: 2780,
+      uv: info[3],
     },
     {
       name: dayminusthree.toLocaleString(),
-      uv: 1890,
+      uv: info[4],
     },
     {
       name: dayminustwo.toLocaleString(),
-      uv: 2390,
+      uv: info[5],
     },
     {
       name: dayminusone.toLocaleString(),
-      uv: 3490,
+      uv: info[6],
     },
   ];
 

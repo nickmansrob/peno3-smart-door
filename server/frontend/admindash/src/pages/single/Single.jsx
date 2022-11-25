@@ -7,8 +7,10 @@ import { useState, useEffect } from "react";
 
 const Single = () => {
   const [user, setUser] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   const id = useParams();
+  console.log(id.userId);
 
   useEffect(() => {
     const requestOptions = {
@@ -23,13 +25,19 @@ const Single = () => {
         console.log(data);
         setUser(data);
       });
+
+    fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setRoles(data);
+      });
   }, []);
   const [isShown, setIsShown] = useState(false);
-  console.log(id);
   const buttonClicked = () => {
     setIsShown((current) => !current);
   };
-
+  //{roles.find((x) => x.id === user.roleId)}
   return (
     <div className="single">
       <Sidebar></Sidebar>
@@ -58,8 +66,10 @@ const Single = () => {
                 </div>
 
                 <div className="detailItem">
-                  <span className="itemKey">Group:</span>
-                  <span className="itemValue">{user.role}</span>
+                  <div className="itemKey">Group:</div>
+                  <div className="itemValue">
+                    {user.role ? user.role.name : ""}
+                  </div>
                 </div>
 
                 <Link

@@ -5,16 +5,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+function arraysearcher(array, id) {}
+
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "firstName", headerName: "First name", width: 130 },
   { field: "lastName", headerName: "Last name", width: 130 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 70,
-  },
   {
     field: "fullName",
     headerName: "Full name",
@@ -35,11 +31,7 @@ const columns = [
     headerName: "Status",
     width: 160,
     renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
+      return <div className={`cellWithStatus ${params.row.status}`}></div>;
     },
   },
   {
@@ -79,18 +71,44 @@ const columns = [
 ];
 
 const Datatable = () => {
+  const [records, setRecords] = useState([]);
   const [users, setUsers] = useState([]);
+  let array = [];
+  let scndarray = [];
 
-  useEffect(() => {
-    const requestOptions = {
-      method: "GET",
-    };
-    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+  const requestOptions = {
+    method: "GET",
+  };
+  fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+    .then((res) => res.json())
+    .then((data) => {
+      setUsers(data);
+    });
+
+  for (var x in users) {
+    console.log(users[x]);
+    fetch(
+      `https://styx.rndevelopment.be/api/records?id=${users[x].id}`,
+      requestOptions
+    )
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data);
+        array.push(data);
       });
-  }, []);
+  }
+  console.log(array);
+
+  // for (var x in array) {
+  //   console.log(array[x]);
+  //   if (array[x].length === 0) {
+  //     scndarray.push({ id: users[x].id, state: "LEAVE" });
+  //   } else if (array[x].length === 1) {
+  //     scndarray.push(array[x]);
+  //   } else {
+  //     scndarray.push(array[x][-1]);
+  //   }
+  // }
+  // console.log(scndarray);
 
   const rows = users;
 
@@ -99,8 +117,8 @@ const Datatable = () => {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
       />
     </div>

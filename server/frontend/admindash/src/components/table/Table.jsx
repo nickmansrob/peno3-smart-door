@@ -12,21 +12,34 @@ import { useEffect } from "react";
 
 const List = () => {
   const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   useEffect(() => {
     const requestOptions = {
       method: "GET",
     };
-    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+    fetch(
+      "https://styx.rndevelopment.be/api/latest_entries/?amount=5",
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        data.sort(function (a, b) {
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+        console.log(data);
+        setUsers(data);
+      });
+
+    fetch("https://styx.rndevelopment.be/api/roles", requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setUsers(data);
+        setRoles(data);
       });
   }, []);
 
   const rows = users;
-
   return (
     <TableContainer component={Paper} className="table">
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -46,10 +59,15 @@ const List = () => {
               <TableCell>{row.id}</TableCell>
               <TableCell className="tableCell">{row.firstName}</TableCell>
               <TableCell className="tableCell">{row.lastName}</TableCell>
-              <TableCell className="tableCell">{row.date}</TableCell>
-              <TableCell className="tableCell">{row.timestamp}</TableCell>
-              <TableCell className="tableCell">{row.group}</TableCell>
-              <TableCell className="tableCell"></TableCell>
+              <TableCell className="tableCell">
+                {row.timestamp.slice(0, 10)}
+              </TableCell>
+              <TableCell className="tableCell">
+                {row.timestamp.slice(11, -5)}
+              </TableCell>
+              <TableCell className="tableCell">
+                {roles.find((x) => x.id === row.role).name}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

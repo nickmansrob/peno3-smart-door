@@ -41,17 +41,17 @@ const New = () => {
       tfaToken: key,
     };
 
-    // fetch("", {
-    //   method: "POST",
-    //   body: JSON.stringify(bodydata),
-    // })
-    //   .then((response) => response.json())
-    //   .then((bodydata) => {
-    //     console.log("Success:", bodydata);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //   });
+    fetch("http://styx.rndevelopment.be/api/users", {
+      method: "POST",
+      body: JSON.stringify(bodydata),
+    })
+      .then((response) => response.json())
+      .then((bodydata) => {
+        console.log("Success:", bodydata);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
     // axios.post('url', image)
     // .then(res =>{
