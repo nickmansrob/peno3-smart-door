@@ -9,7 +9,7 @@ export async function handleUserRestrictionView(req: Request, res: Response): Pr
   res.json(await getUserRestrictions(parseInt(req.query.id as string)))
 }
 
-export async function getUserRestrictions(id?: number) {
+export async function getUserRestrictions(id?: number) {  
   if (id) {
     return (
       await prisma.user.findUnique({
