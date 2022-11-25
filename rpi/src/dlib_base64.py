@@ -32,3 +32,5 @@ img = np.frombuffer(r, dtype=np.uint8)
 largestBoundingBox = getLargestBoundingBox(detector(img, 1))
 if largestBoundingBox is not None:
     faceDescriptor = calculateEmbedding(img, largestBoundingBox)
+    sys.stdout.write(faceDescriptor.tolist())
+    # ik weet niet zeker of dit werkt...
