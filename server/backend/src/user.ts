@@ -1,8 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
-import { getFaceDescriptor } from './face.js'
-import { IncomingUserEdit, User, UserRecord } from './types.js'
-import { validateNewUser, validateUser } from './util.js'
+import { IncomingNewFace, IncomingUserEdit, User, UserRecord } from './types.js'
+import { validateFaceDescriptor, validateNewUser } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1

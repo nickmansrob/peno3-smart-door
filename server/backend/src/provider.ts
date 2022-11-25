@@ -13,7 +13,7 @@ import {
   handleRoleRestrictionView,
   handleUserRestrictionView,
 } from './restriction.js'
-import { handleDeleteUser, handleEditUser, handleNewUser, handleUserView } from './user.js'
+import { handleAddFace, handleDeleteUser, handleEditUser, handleNewUser, handleRolesView, handleUserView } from './user.js'
 import { validateEndBiggerThanStart } from './util.js'
 
 export async function start(): Promise<void> {
