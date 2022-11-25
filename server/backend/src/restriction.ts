@@ -47,12 +47,115 @@ export async function handleNewUserRestriction(req: Request, res: Response): Pro
 }
 
 export async function handleEditUserRestriction(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  if(req.body){
+    const restriction = req.body as IncomingRestriction
+
+    // validation
+    if (validateRestriction(restriction)){
+      const restrictionIdArray = await findUserRestriction(restriction)
+
+      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
+      if(restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number'){
+        const restrictionId = restrictionIdArray[0].id
+
+        // validation result findMany succeeded, now the restriction will be deleted
+        try{
+          await prisma.userRestriction.update({
+            where: {id: restrictionId},
+            data: {
+              start: restriction.s,
+              end: restriction.e
+            }
+          })
+          res.status(200).send('restriction edited')
+        }
+        catch(e) {
+          console.error(e)
+          res.status(500).json({error: 'restriction could not be edited'})
+        }
+      }
+    
+      // validation of results findMany did not return true
+      else {
+        res.status(500).send('Validation of found restrictions failed')
+      }
+    }
+    // validation failed
+    else {
+      console.error('IncomingRestriction invalid')
+      res.status(400).json({
+        error: 'IncomingRestricion invalid'
+      })
+    }
+    
+  // if there is no req.body
+  }
+  else {
+    res.status(400).send()
+  }
+}
+
+
+async function findUserRestriction(restriction: IncomingRestriction){
+  const restricionIdArray = await prisma.userRestriction.findMany({
+    where: {
+      userId: restriction.id,
+      weekday: restriction.weekday
+    },
+    select: {
+      id: true
+    }
+  })
+  return restricionIdArray
 }
 
 export async function handleDeleteUserRestriction(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  // find id of restriction that needs to be deleted
+
+  if(req.body){
+    const restriction = req.body as IncomingRestriction
+
+    // validation
+    if (validateRestriction(restriction)){
+      const restrictionIdArray = await findUserRestriction(restriction)
+
+      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
+      if(restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number'){
+        const restrictionId = restrictionIdArray[0].id
+
+        // validation result findMany succeeded, now the restriction will be deleted
+        try{
+          await prisma.userRestriction.delete({
+            where: {id: restrictionId}
+          })
+          res.status(200).send('restriction deleted')
+        }
+        catch(e) {
+          console.error(e)
+          res.status(500).json({error: 'restriction could not be deleted'})
+        }
+      }
+    
+      // validation of results findMany did not return true
+      else {
+        res.status(500).send('Validation of found restrictions failed')
+      }
+    }
+    // validation failed
+    else {
+      console.error('IncomingRestriction invalid')
+      res.status(400).json({
+        error: 'IncomingRestricion invalid'
+      })
+    }
+    
+  // if there is no req.body
+  }
+  else {
+    res.status(400).send()
+  }
 }
+
 
 // Role restrictions
 
@@ -104,20 +207,129 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
  * @param res = void of res.send
  * in database wisselen
  */
+
+async function findRoleRestriction(restriction: IncomingRestriction){
+  const restricionIdArray = await prisma.roleRestriction.findMany({
+    where: {
+      roleId: restriction.id,
+      weekday: restriction.weekday
+    },
+    select: {
+      id: true
+    }
+  })
+  return restricionIdArray
+}
+
 export async function handleEditRoleRestriction(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  if(req.body){
+    const restriction = req.body as IncomingRestriction
+
+    // validation
+    if (validateRestriction(restriction)){
+      const restrictionIdArray = await findRoleRestriction(restriction)
+
+      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
+      if(restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number'){
+        const restrictionId = restrictionIdArray[0].id
+
+        // validation result findMany succeeded, now the restriction will be deleted
+        try{
+          await prisma.roleRestriction.update({
+            where: {id: restrictionId},
+            data: {
+              start: restriction.s,
+              end: restriction.e
+            }
+          })
+          res.status(200).send('restriction edited')
+        }
+        catch(e) {
+          console.error(e)
+          res.status(500).json({error: 'restriction could not be edited'})
+        }
+      }
+    
+      // validation of results findMany did not return true
+      else {
+        res.status(500).send('Validation of found restrictions failed')
+      }
+    }
+    // validation failed
+    else {
+      console.error('IncomingRestriction invalid')
+      res.status(400).json({
+        error: 'IncomingRestricion invalid'
+      })
+    }
+    
+  // if there is no req.body
+  }
+  else {
+    res.status(400).send()
+  }
 }
 
 
+
 /**
- * @param req =  [Role en weekday van de te deleten restriction
+ * @param req =  Incoming Restriction
  * @param res = void of res.send
  * in database deleten
  */
 export async function handleDeleteRoleRestriction(req: Request, res: Response): Promise<void> {
-  // TODO: implement
+  // find id of restriction that needs to be deleted
+
+  if(req.body){
+    const restriction = req.body as IncomingRestriction
+
+    // validation
+    if (validateRestriction(restriction)){
+      const restrictionIdArray = await findRoleRestriction(restriction)
+
+      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
+      if(restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number'){
+        const restrictionId = restrictionIdArray[0].id
+
+        // validation result findMany succeeded, now the restriction will be deleted
+        try{
+          await prisma.roleRestriction.delete({
+            where: {id: restrictionId}
+          })
+          res.status(200).send('restriction deleted')
+        }
+        catch(e) {
+          console.error(e)
+          res.status(500).json({error: 'restriction could not be deleted'})
+        }
+      }
+    
+      // validation of results findMany did not return true
+      else {
+        res.status(500).send('Validation of found restrictions failed')
+      }
+    }
+    // validation failed
+    else {
+      console.error('IncomingRestriction invalid')
+      res.status(400).json({
+        error: 'IncomingRestricion invalid'
+      })
+    }
+    
+  // if there is no req.body
+  }
+  else {
+    res.status(400).send()
+  }
 }
 
+
+/**
+ *
+ * @param restriction the restriction that needs to be validated
+ * @returns true if the restriction is of the type IncomingRestriction, otherwise false
+ */
 export function validateRestriction(restriction: IncomingRestriction): boolean {
   // TODO: checking if the restriction from frontend is valid format
   if (
@@ -199,5 +411,8 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
  - overal true and false checken of het gebasserd is op in het interval? dus true uit isRestricted/isAllowed dan is het ok en mag hij binnen
 
  - validations
+
+ - validation if a new restriction is added that there was not already one
+  - redirecting it to edit or let the frontend do that
 
  */
