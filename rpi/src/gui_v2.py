@@ -208,7 +208,7 @@ class FaceRecognition(Fragment):
     Fragment.manager.activate("id")
 
   def onActivate(self):
-    QtCore.QThreadPool.globalInstance().trystart(self.camera)
+    QtCore.QThreadPool.globalInstance().tryStart(self.camera)
     QtCore.QTimer.singleShot(5000, self.toOtp)
 
 
