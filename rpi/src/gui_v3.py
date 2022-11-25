@@ -301,7 +301,7 @@ class ID(Fragment):
     if key == '#':
       if len(self.idCode) == 6:
         if self.idCode == received_id: # replace with backend check
-          Fragment.manager.activate("otp")
+          Fragment.manager.activate("otp", id=int(self.idCode))
         else:
           Fragment.manager.activate("denied")
       else:
@@ -374,7 +374,7 @@ class OTP(Fragment):
     label.setText(number)
 
   def onActivate(self):
-    self.label_2.setText("Hello {}".format(self.kwargs["name"]))
+    self.label_2.setText("Hello {}".format(self.kwargs["id"]))
     
     for label in self.labels:
       self.resetLabel(label)
