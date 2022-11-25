@@ -226,7 +226,7 @@ class FaceRecognition(Fragment):
   def sendAccessRequest(self, faceDescriptor):
     self.camera.signals.exit_loop.emit()
     body = {"faceDescriptor": faceDescriptor.tolist()}
-    print(len(body["faceDescriptor"]) + "; " + type(body["faceDescriptor"]))
+    print(str(len(body["faceDescriptor"])) + "; " + str(type(body["faceDescriptor"])))
     r = requests.post(url=URL+"/access_face", json=body)
     msg = r.json()
 
