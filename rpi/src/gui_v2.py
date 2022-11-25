@@ -1,9 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import Qt
-import keyboard
 import os
-import numpy as np
 from picamera import PiCamera
+from picamera.array import PiRGBArray
 import RPi.GPIO as GPIO
 
 current_dir = os.path.dirname(__file__)
@@ -12,9 +11,8 @@ welcome_string = "Welcome " + name + "!"
 received_id = "000000"
 received_otp = "123456"
 recognised = False # temporary face recognition check
+URL = "http://localhost:3000"
 
-camera = PiCamera()
-camera.resolution = (320, 320)
 
 class KeyPad(QtCore.QThread):
 
@@ -29,8 +27,8 @@ class KeyPad(QtCore.QThread):
   def __init__(self) -> None:
     super().__init__()
     
-    self.row_pins = [21, 20, 16, 12]
-    self.col_pins = [7, 8, 25]
+    self.row_pins = [25, 8, 7, 12]
+    self.col_pins = [16, 20, 21]
     
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
@@ -148,33 +146,37 @@ class Home(Fragment):
     self.movie.setPaused(False)
 
 
+class Camera(QtCore.QObject):
 
-class Signals(QtCore.QObject):
-  image_ready = QtCore.pyqtSignal(QtGui.QImage)
+  pixmap_available = QtCore.pyqtSignal(QtGui.QPixmap)
+  start_loop = QtCore.pyqtSignal()
   exit_loop = QtCore.pyqtSignal()
-  access_response = QtCore.pyqtSignal(bool, str)
 
-class CameraReader(QtCore.QRunnable):
-
-  def __init__(self) -> None:
+  def __init__(self, resolution=(320, 320)) -> None:
     super().__init__()
-    self.signals = Signals()
-    self.running = True
-    self.signals.exit_loop.connect(self._exit)
-    self.img = np.empty((320, 320, 3), dtype=np.uint8)
-
-  def _exit(self):
+    
     self.running = False
+    self.camera = PiCamera(resolution=resolution)
 
-  def run(self):
-    while self.running:
-      camera.capture(self.img, "rgb")
+    self.start_loop.connect(self.loop)
+    self.exit_loop.connect(self.stop)
+  
+  def loop(self):
+    self.running = True
+    with PiRGBArray(self.camera) as output:
+      while self.running:
+        self.camera.capture(output, 'rgb')
+        img = output.array
+        height, width, channel = img.shape
 
-      height, width, channel = self.img.shape
-      bytesPerLine = 3 * width
-      qImg = QtGui.QImage(self.img.data, width, height, bytesPerLine, QtGui.QImage.Format_RGB888)
-      
-      self.signals.image_ready.emit(qImg)
+        qImg = QtGui.QImage(img.data, width, height, QtGui.QImage.Format_RGB888)
+        qPixmap = QtGui.QPixmap.fromImage(qImg)
+        self.pixmap_available.emit(qPixmap)
+
+        output.truncate()
+  
+  def stop(self):
+    self.running = False
 
 
 class FaceRecognition(Fragment):
@@ -198,50 +200,22 @@ class FaceRecognition(Fragment):
     self.label_3 = QtWidgets.QLabel(self)
     self.label_3.setGeometry(QtCore.QRect(240, 160, 320, 320))
     self.label_3.setScaledContents(True)
-    
 
-  def handleAccessRepsonse(self, canEnter, firstName):
-    self.cameraRunnable.signals.exit_loop.emit()
-    if canEnter:
-      global welcome_string
-      welcome_string = "Welcome " + firstName
-      Fragment.manager.activate("verified")
-    else:
-      Fragment.manager.activate("id")
+    self.camera = Camera()
+    self.camera.pixmap_available.connect(self.label_3.setPixmap)
 
-  def onActivate(self):
-    self.cameraRunnable = CameraReader()
-    self.cameraRunnable.signals.image_ready.connect(lambda img: self.label_3.setPixmap(QtGui.QPixmap(img)))
-    self.cameraRunnable.signals.access_response.connect(self.handleAccessRepsonse)
-    QtCore.QThreadPool.globalInstance().start(self.cameraRunnable)
-    QtCore.QTimer.singleShot(5000, lambda: self.handleAccessRepsonse(False, ""))
+    self.thread = QtCore.QThread()
+    self.camera.moveToThread(self.thread)
+    self.thread.start()
 
-"""
-class FaceRecognition(Fragment):
-
-  def __init__(self) -> None:
-    super().__init__("face_recognition")
-
-    self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setText("")
-    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
-
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 16)
-    self.label_2.setFont(font)
-    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Please stand in front of the camera")
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+  def toOtp(self):
+    self.camera.exit_loop.emit()
+    Fragment.manager.activate("id")
 
   def onActivate(self):
-    # temporary to simulate face recognition
-    if recognised:
-      QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("verified"))
-    else:
-      QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("id"))
-"""
+    self.camera.start_loop.emit()
+    QtCore.QTimer.singleShot(5000, self.toOtp)
+
 
 class ID(Fragment):
 
@@ -483,7 +457,7 @@ class Error(Fragment):
 
 def main():
 
-    QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf")) # fontname: ' oboto'
+    QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf"))
 
     # splash = Splash() # must be defined first
     home = Home()
