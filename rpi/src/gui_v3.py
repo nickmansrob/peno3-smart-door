@@ -12,7 +12,7 @@ current_dir = os.path.dirname(__file__)
 received_id = "000000"
 received_otp = "123456"
 recognised = False # temporary face recognition check
-URL = "https://styx.rndevelopment.be"
+URL = "https://styx.rndevelopment.be/api"
 
 
 class KeyPad(QtCore.QThread):
@@ -225,8 +225,8 @@ class FaceRecognition(Fragment):
   
   def sendAccessRequest(self, faceDescriptor):
     self.camera.signals.exit_loop.emit()
-    body = {"faceDescriptor": faceDescriptor.tolist(),
-            "timestamp": "2022-11-09T10:09:26+01:00"} # TODO fix time
+    body = {"faceDescriptor": faceDescriptor.tolist()}
+    print(len(body["faceDescriptor"]) + "; " + type(body["faceDescriptor"]))
     r = requests.post(url=URL+"/access_face", json=body)
     msg = r.json()
 
