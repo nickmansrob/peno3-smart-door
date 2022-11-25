@@ -76,27 +76,29 @@ const Datatable = () => {
   let array = [];
   let scndarray = [];
 
-  const requestOptions = {
-    method: "GET",
-  };
-  fetch("https://styx.rndevelopment.be/api/users", requestOptions)
-    .then((res) => res.json())
-    .then((data) => {
-      setUsers(data);
-    });
-
-  for (var x in users) {
-    console.log(users[x]);
-    fetch(
-      `https://styx.rndevelopment.be/api/records?id=${users[x].id}`,
-      requestOptions
-    )
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
       .then((res) => res.json())
       .then((data) => {
-        array.push(data);
+        setUsers(data);
       });
-  }
-  console.log(array);
+
+    for (var x in users) {
+      console.log(users[x]);
+      fetch(
+        `https://styx.rndevelopment.be/api/records?id=${users[x].id}`,
+        requestOptions
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          array.push(data);
+        });
+      console.log(array);
+    }
+  }, []);
 
   // for (var x in array) {
   //   console.log(array[x]);
