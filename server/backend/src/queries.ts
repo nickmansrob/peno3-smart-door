@@ -16,7 +16,7 @@ export async function getEntries(): Promise<{ inside: number; total: number }> {
 
 export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[]> {
   const records = await getLatestUserRecords()
-  const interval = Interval.fromDateTimes(s, e)
+  const interval = Interval.fromDateTimes(s, e) // s and e already validated in provider
 
   if (records) {
     const rangeEntries = records.filter(record => interval.contains(DateTime.fromISO(record.timestamp)))
@@ -36,7 +36,7 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
   }
 }
 
-export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
+export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {  // number validated in provider
   const records = await getLatestUserRecords()
 
   if (records) {

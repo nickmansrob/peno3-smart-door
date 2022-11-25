@@ -81,8 +81,9 @@ export type IncomingOtp = Id & {
 
 export type IncomingFace = {
   faceDescriptor: number[]
-  timestamp: string
 }
+
+export type IncomingNewFace = IncomingFace & Id
 
 // Util
 
@@ -90,4 +91,4 @@ export type Id = {
   id: number
 }
 
-type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>; }[keyof T]
+type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>> }[keyof T]
