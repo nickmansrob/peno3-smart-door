@@ -1,7 +1,8 @@
 import { Response, Request } from 'express'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
-import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction } from './types.js'
+import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction, UserRecord } from './types.js'
+import { getLatestUserRecords } from './user.js'
 
 export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
   res.json(await getUserRestrictions(parseInt(req.query.id as string)))
@@ -381,31 +382,51 @@ export function inInterval(currentTime: number, restrictionInterval: CustomInter
  * @param role  the role of the user to be checked
  * @returns false if no restrictions are active
  */
+
+async function findLastState(userId:number) {
+  const latestUserRecords = (await getLatestUserRecords()) as UserRecord[]
+  if (latestUserRecords) {
+    const lastState = latestUserRecords.filter(record => record.id === userId)[0].state
+    return lastState
+  }
+  else{
+    return 'ENTER'
+  }
+}
+
 export async function isRestricted(userId: number, role: number): Promise<boolean> {
   // general used information
   const currentTime = DateTime.now().hour * 100 + DateTime.now().minute
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
 
-  // getting all the restrictions in one array
-  const userRestrictions = ((await getUserRestrictions(userId)) as UserRestriction[]).map(restriction => {
-    return { s: restriction.start, e: restriction.end } as CustomInterval
-  })
-  const groupRestrictions = ((await getRoleRestrictions(role)) as RoleRestriction[]).map(restriction => {
-    return { s: restriction.start, e: restriction.end } as CustomInterval
-  })
+  // if user enters we need to check everything if the user leaves he is not restricted to leave, if there are not records, his state is entering 
+  const lastState = await findLastState(userId)
 
-  const allRestrictions = [...userRestrictions, ...groupRestrictions]
+  if(lastState ==='ENTER'){
+    // getting all the restrictions in one array
+    const userRestrictions = ((await getUserRestrictions(userId)) as UserRestriction[]).map(restriction => {
+      return { s: restriction.start, e: restriction.end } as CustomInterval
+    })
+    const groupRestrictions = ((await getRoleRestrictions(role)) as RoleRestriction[]).map(restriction => {
+      return { s: restriction.start, e: restriction.end } as CustomInterval
+    })
 
-  // if there are no restrictions, the person is granted access
-  if (allRestrictions.length === 0) {
-    return true
-  } else {
-    const booleanRestrictions = allRestrictions.map(restriction => inInterval(currentTime, restriction))
-    if (booleanRestrictions.includes(false)) {
-      return false
-    } else {
+    const allRestrictions = [...userRestrictions, ...groupRestrictions]
+
+    // if there are no restrictions, the person is granted access
+    if (allRestrictions.length === 0) {
       return true
+    } else {
+      const booleanRestrictions = allRestrictions.map(restriction => inInterval(currentTime, restriction))
+      if (booleanRestrictions.includes(false)) {
+        return false
+      } else {
+        return true
+      }
     }
+  }
+  else{
+    return true
   }
 }
 
@@ -415,7 +436,7 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
  - overal isrestricted / ... naar is allowed hernoemen eventueel
 
  - implementeren dat in 'isrestrictions' de state wordt meegegeven (via state user op te roepen in acces files) 
- en er dus voor zorgen dat niemand die naar buiten wilt terug gaat => if (state === enter) dan programma zoals normaal, else false
+ en er dus voor zorgen dat niemand die naar buiten wilt terug gaat => if (state === enter) dan programma zoals normaal, else true direct (dan leaved hij)
 
  - overal true and false checken of het gebasserd is op in het interval? dus true uit isRestricted/isAllowed dan is het ok en mag hij binnen
 
