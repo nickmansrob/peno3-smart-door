@@ -306,10 +306,7 @@ class ID(Fragment):
   def onKeyPress(self, key: str):
     if key == '+':
       if len(self.idCode) == 6:
-        if self.idCode == received_id: # replace with backend check
-          Fragment.manager.activate("otp", idCode=int(self.idCode))
-        else:
-          Fragment.manager.activate("denied")
+        Fragment.manager.activate("otp", idCode=int(self.idCode))
       else:
         print("Fill in your employee-ID")
     elif key == '*':
@@ -379,6 +376,20 @@ class OTP(Fragment):
                         "border-bottom-right-radius : 9px")
     label.setText(number)
 
+  def sendAccessRequest(self, id, otp):
+    body = {"id": id,
+            "otp": otp,
+            "timestamp": "2022-11-09T10:09:26+01:00"} # TODO fix time
+    r = requests.post(url=URL+"/access_otp", json=body)
+    msg = r.json()
+
+    if msg["access"] == "GRANTED":
+      Fragment.manager.activate("verified", name=msg["firstName"])
+    elif msg["access"] == "ERROR":
+      Fragment.manager.activate("error")
+    else:
+      Fragment.manager.activate("denied")
+
   def onActivate(self):
     self.label_2.setText("Hello {}".format(self.kwargs["idCode"]))
 
@@ -390,10 +401,7 @@ class OTP(Fragment):
   def onKeyPress(self, key: str):
     if key == '+':
       if len(self.otpCode) == 6:
-        if self.otpCode == received_otp: # replace with backend check
-          Fragment.manager.activate("verified", name="FuckPython")
-        else:
-          Fragment.manager.activate("denied")
+        self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
       else:
         print("Fill in your otp")
     elif key == '*':
