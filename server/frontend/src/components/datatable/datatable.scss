@@ -2,6 +2,19 @@
   height: 600px;
   padding: 20px;
 
+  .cellWithStatus {
+    padding: 5px;
+    border-radius: 5px;
+    &.ENTER {
+      background-color: rgba(0, 128, 0, 0.05);
+      color: green;
+    }
+    &.LEAVE {
+      background-color: rgba(255, 0, 0, 0.05);
+      color: crimson;
+    }
+  }
+
   .cellAction {
     display: flex;
     align-items: center;
@@ -13,6 +26,7 @@
       border: 1px dotted rgba(0, 0, 139, 0.54);
     }
     .deleteButton {
+      cursor: pointer;
       padding: 2px 5px;
       border-radius: 5px;
       color: crimson;

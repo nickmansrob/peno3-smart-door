@@ -1,73 +1,130 @@
 import "./datatable.scss";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { act } from "react-dom/test-utils";
+//import { act } from "react-dom/test-utils";
 import { Link } from "react-router-dom";
-
-const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "firstName", headerName: "First name", width: 130 },
-  { field: "lastName", headerName: "Last name", width: 130 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
-  },
-  {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    renderCell: (params) => {
-      return (
-        <div>
-          <span>{params.row.age}</span>
-          <span>{params.row.lastName}</span>
-        </div>
-      );
-    },
-  },
-];
-
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
+import { useState, useEffect } from "react";
 
 const Datatable = () => {
-  const actionColumn = [
+  const [status, setStatus] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+
+    fetch("https://styx.rndevelopment.be/api/users", requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+      });
+
+    fetch("https://styx.rndevelopment.be/api/latest_status", requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setStatus(data);
+      });
+
+    fetch("https://styx.rndevelopment.be/api/roles", requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        setRoles(data);
+      });
+  }, []);
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "firstName", headerName: "First name", width: 130 },
+    { field: "lastName", headerName: "Last name", width: 130 },
+    {
+      field: "roleId",
+      headerName: "Role",
+      width: 130,
+      renderCell: (params) => {
+        return (
+          <div>
+            {roles.find((x) => x.id === params.row.roleId)
+              ? roles.find((x) => x.id === params.row.roleId).name
+              : ""}
+          </div>
+        );
+      },
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 160,
+      renderCell: (params) => {
+        return (
+          <div
+            className={`cellWithStatus ${
+              status.find((x) => x.id === params.row.id)
+                ? status.find((x) => x.id === params.row.id).state
+                : "LEAVE"
+            } `}
+          >
+            {(status.find((x) => x.id === params.row.id)
+              ? status.find((x) => x.id === params.row.id).state
+              : "LEAVE") === "LEAVE"
+              ? "OUTSIDE"
+              : "INSIDE"}
+          </div>
+        );
+      },
+    },
     {
       field: "action",
       headerName: "Action",
       width: 200,
-      renderCell: () => {
+      renderCell: (params) => {
+        const buttonClicked = () => {
+          fetch("https://styx.rndevelopment.be/api/users", {
+            method: "DELETE",
+            body: JSON.stringify({
+              id: params.row.id,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+          window.location.reload(true);
+        };
         return (
           <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
+            <Link
+              to={`/users/${params.row.id}`}
+              style={{ textDecoration: "none" }}
+            >
               <div className="viewButton"> View</div>
             </Link>
-            <div className="deleteButton">Delete</div>
+            <button onClick={buttonClicked} className="deleteButton">
+              Delete
+            </button>
           </div>
         );
       },
     },
   ];
+
+  const rows = users;
+
   return (
     <div className="datatable">
       <DataGrid
         rows={rows}
-        columns={columns.concat(actionColumn)}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        columns={columns}
+        pageSize={9}
+        rowsPerPageOptions={[9]}
         checkboxSelection
       />
     </div>

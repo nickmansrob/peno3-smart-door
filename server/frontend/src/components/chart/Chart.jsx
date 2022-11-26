@@ -8,53 +8,102 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+import { useState, useEffect } from "react";
 
 const Chart = () => {
+  const [info, setInfo] = useState([]);
+
+  var dayminuszero = new Date();
+  var dd = String(dayminuszero.getDate()).padStart(2, "0");
+  var mm = String(dayminuszero.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminuszero.getYear() + 1900);
+  const lastdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
+
+  var dayminusone = new Date();
+  var dd = String(dayminusone.getDate() - 1).padStart(2, "0");
+  var mm = String(dayminusone.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminusone.getYear() + 1900);
+
+  dayminusone = dd + "/" + mm;
+
+  var dayminustwo = new Date();
+  var dd = String(dayminustwo.getDate() - 2).padStart(2, "0");
+  var mm = String(dayminustwo.getMonth() + 1).padStart(2, "0");
+  dayminustwo = dd + "/" + mm;
+
+  var dayminusthree = new Date();
+  var dd = String(dayminusthree.getDate() - 3).padStart(2, "0");
+  var mm = String(dayminusthree.getMonth() + 1).padStart(2, "0");
+  dayminusthree = dd + "/" + mm;
+
+  var dayminusfour = new Date();
+  var dd = String(dayminusfour.getDate() - 4).padStart(2, "0");
+  var mm = String(dayminusfour.getMonth() + 1).padStart(2, "0");
+  dayminusfour = dd + "/" + mm;
+
+  var dayminusfive = new Date();
+  var dd = String(dayminusfive.getDate() - 5).padStart(2, "0");
+  var mm = String(dayminusfive.getMonth() + 1).padStart(2, "0");
+  dayminusfive = dd + "/" + mm;
+
+  var dayminussix = new Date();
+  var dd = String(dayminussix.getDate() - 6).padStart(2, "0");
+  var mm = String(dayminussix.getMonth() + 1).padStart(2, "0");
+  dayminussix = dd + "/" + mm;
+
+  var dayminusseven = new Date();
+  var dd = String(dayminusseven.getDate() - 7).padStart(2, "0");
+  var mm = String(dayminusseven.getMonth() + 1).padStart(2, "0");
+  var yy = String(dayminusseven.getYear() + 1900);
+  const firstdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
+  dayminusseven = dd + "/" + mm;
+
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+    fetch(
+      `https://styx.rndevelopment.be/api/range_entries/?s=${firstdate}&e=${lastdate}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setInfo(data);
+        console.log(data);
+      });
+  }, []);
+
+  const data = [
+    {
+      name: dayminusseven.toLocaleString(),
+      uv: info[0],
+    },
+    {
+      name: dayminussix.toLocaleString(),
+      uv: info[1],
+    },
+    {
+      name: dayminusfive.toLocaleString(),
+      uv: info[2],
+    },
+    {
+      name: dayminusfour.toLocaleString(),
+      uv: info[3],
+    },
+    {
+      name: dayminusthree.toLocaleString(),
+      uv: info[4],
+    },
+    {
+      name: dayminustwo.toLocaleString(),
+      uv: info[5],
+    },
+    {
+      name: dayminusone.toLocaleString(),
+      uv: info[6],
+    },
+  ];
+
   return (
     <div className="chart">
       <ResponsiveContainer width="100%" aspect={2 / 1}>
