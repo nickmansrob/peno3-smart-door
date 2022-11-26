@@ -66,7 +66,7 @@ const Single = () => {
                 </div>
 
                 <div className="detailItem">
-                  <div className="itemKey">Group:</div>
+                  <div className="itemKey">Role:</div>
                   <div className="itemValue">
                     {user.role ? user.role.name : ""}
                   </div>

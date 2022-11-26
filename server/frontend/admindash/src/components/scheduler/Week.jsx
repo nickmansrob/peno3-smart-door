@@ -14,6 +14,7 @@ class Calendar extends Component {
       viewType: "Resources",
       durationBarVisible: false,
       timeRangeSelectedHandling: "Enabled",
+
       onTimeRangeSelected: async (args) => {
         const dp = this.calendar;
         const modal = await DayPilot.Modal.prompt(
