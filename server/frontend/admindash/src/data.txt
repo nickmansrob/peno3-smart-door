@@ -1,0 +1,61 @@
+[
+    {
+      id: 234,
+      name: "Martijn",
+      surname: "Spaepen",
+      timestamp: "17:03:456",
+      date: "13/03/2022",
+      group: "IT",
+    },
+    {
+      id: 456,
+      name: "Kevin",
+      surname: "Maes",
+      timestamp: "15:01:456",
+      date: "13/03/2022",
+      group: "Logistics",
+    },
+    {
+      id: 567,
+      name: "Rob",
+      surname: "Nickmans",
+      timestamp: "12:01:456",
+      date: "13/03/2022",
+      group: "Development",
+    },
+    {
+      id: 124,
+      name: "Robin",
+      surname: "Vandenhoeck",
+      timestamp: "10:07:456",
+      date: "13/03/2022",
+      group: "Sales",
+    },
+
+    {
+      id: 984,
+      name: "Milo",
+      surname: "Rogge",
+      timestamp: "16:47:456",
+      date: "12/03/2022",
+      group: "Sales",
+    },
+
+    {
+      id: 498,
+      name: "Milo",
+      surname: "Rogge",
+      timestamp: "16:47:456",
+      date: "12/03/2022",
+      group: "Sales",
+    },
+
+    {
+      id: 176,
+      name: "Wouter",
+      surname: "Strobbe",
+      timestamp: "14:33:456",
+      date: "12/03/2022",
+      group: "Consulting",
+    },
+  ];
