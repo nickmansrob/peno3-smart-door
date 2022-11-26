@@ -243,7 +243,7 @@ export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> 
         method: object.records[0]?.method,
         state: object.records[0]?.state,
       } as UserRecord
-
+      
       return record
     })
   }

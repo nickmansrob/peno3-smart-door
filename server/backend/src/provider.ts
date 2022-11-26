@@ -89,6 +89,6 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
 }
 
 async function handleLatestStatus(_req: Request, res: Response): Promise<void> {
-  res.status(200).json(getLatestUserRecords())
+  res.status(200).json(await getLatestUserRecords())
 }
 
