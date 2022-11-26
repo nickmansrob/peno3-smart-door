@@ -67,8 +67,7 @@ while True:
             faceDescriptor = embedding = calculateEmbedding(rgbImg, largestBoundingBox)
             timestamp = str(datetime.datetime.now(pytz.timezone('Europe/Brussels')))
 
-            body = {"faceDescriptor": faceDescriptor,
-                    "timestamp": timestamp}
+            body = {"faceDescriptor": faceDescriptor}
             
             r = requests.post(url=URL+'/access_face', json=body)
             print(r)

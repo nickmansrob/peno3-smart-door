@@ -2,9 +2,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import Qt
 import os
 import numpy as np
-from picamera import PiCamera
-from picamera.array import PiRGBArray
-import RPi.GPIO as GPIO
+import cv2
+import keyboard
+import dlib
+import requests
 
 current_dir = os.path.dirname(__file__)
 name = "Milo"
@@ -27,38 +28,21 @@ class KeyPad(QtCore.QThread):
 
   def __init__(self) -> None:
     super().__init__()
-    
-    self.row_pins = [25, 8, 7, 12]
-    self.col_pins = [16, 20, 21]
-    
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-
-    for pin in self.col_pins:
-        GPIO.setup(pin, GPIO.OUT)
-
-    for pin in self.row_pins:
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    
-    self.keys = [[self.Key('1'), self.Key('4'), self.Key('7'), self.Key('*')],
-                 [self.Key('2'), self.Key('5'), self.Key('8'), self.Key('0')],
-                 [self.Key('3'), self.Key('6'), self.Key('9'), self.Key('#')]]
+    self.keys = [self.Key('0'), self.Key('1'), self.Key('2'), 
+                 self.Key('3'), self.Key('4'), self.Key('5'), 
+                 self.Key('6'), self.Key('7'), self.Key('8'),
+                 self.Key('9'), self.Key('*'), self.Key('+')]
 
   def run(self):
     while True:
-      for col in range(3):
-        GPIO.output(self.col_pins[col], GPIO.HIGH)
-        for row in range(4):
-          key = self.keys[col][row]
-          if GPIO.input(self.row_pins[row]) == 1:
-            if not key.pressed:
-              key.pressed = True
-              self.keyPressed.emit(key.code)
-          elif key.pressed:
-            key.pressed = False
-              
-        GPIO.output(self.col_pins[col], GPIO.LOW)
-      self.msleep(10)
+      for key in self.keys:
+        if keyboard.is_pressed(key.code): # replace with keypad specific check
+          if not key.pressed:
+            key.pressed = True
+            self.keyPressed.emit(key.code)
+        elif key.pressed:
+          key.pressed = False
+      self.msleep(5)
 
 
 class FragmentManager:
@@ -72,12 +56,13 @@ class FragmentManager:
   def register(self, id, fragment):
     self.indices[id] = self.stackedWidget.addWidget(fragment)
   
-  def activate(self, id):
+  def activate(self, id, **kwargs):
+    self.stackedWidget.widget(self.indices[id]).kwargs = kwargs
     self.stackedWidget.setCurrentIndex(self.indices[id])
   
   def start(self, width, height):
     self.stackedWidget.resize(width, height)
-    self.stackedWidget.showFullScreen()
+    self.stackedWidget.show()
 
     keyPad = KeyPad()
     keyPad.keyPressed.connect(lambda key: self.stackedWidget.currentWidget().onKeyPress(key))
@@ -92,6 +77,7 @@ class Fragment(QtWidgets.QWidget):
 
   def __init__(self, id: str) -> None:
     super().__init__()
+    self.kwargs = {}
     Fragment.manager.register(id, self)
 
   def onActivate(self): # virtual method
@@ -147,8 +133,35 @@ class Home(Fragment):
     self.movie.setPaused(False)
 
 
+class FaceEncoder(QtCore.QObject):
+
+  def __init__(self, ) -> None:
+    super().__init__()
+    self.detector = dlib.get_frontal_face_detector()
+    self.predictor = dlib.shape_predictor(os.path.join(current_dir, 'shape_predictor_68_face_landmarks_GTX.dat'))
+    self.model = dlib.face_recognition_model_v1(os.path.join(current_dir, 'dlib_face_recognition_resnet_model_v1.dat'))
+  
+  def detectFace(self, rgbImg: np.ndarray) -> dlib.rectangle:
+    boxes = self.detector(rgbImg, 1)
+    largestBb = None
+    largestArea = 0
+    for bb in boxes:
+        area = bb.width() * bb.height()
+        if area > largestArea:
+            largestArea = area
+            largestBb = bb
+    return largestBb
+  
+  def calculateEmbedding(self, rgbImg: np.ndarray, bb: dlib.rectangle) -> np.ndarray:
+    landmarks = self.predictor(rgbImg, bb)
+    chip = dlib.get_face_chip(rgbImg, landmarks)
+    embedding = self.model.compute_face_descriptor(chip)
+    return np.asarray(embedding)
+
+
 class CameraSignals(QtCore.QObject):
   pixmap_available = QtCore.pyqtSignal(QtGui.QPixmap)
+  descriptor_available = QtCore.pyqtSignal(np.ndarray)
   exit_loop = QtCore.pyqtSignal()
 
 class Camera(QtCore.QRunnable):
@@ -157,23 +170,32 @@ class Camera(QtCore.QRunnable):
     super().__init__()
     
     self.running = False
-    self.camera = PiCamera(resolution=(320, 320))
-    self.img = np.empty((320, 320, 3), dtype=np.uint8)
+    self.camera = cv2.VideoCapture(0)
 
     self.signals = CameraSignals()
     self.signals.exit_loop.connect(self.stop)
 
-    self.setAutoDelete(False)
+    self.faceEncoder = FaceEncoder()
   
   def run(self):
     self.running = True
     while self.running:
-      self.camera.capture(self.img, "rgb")
-      height, width, channel = self.img.shape
+      return_value, img = self.camera.read()
+      assert return_value == True
 
-      qImg = QtGui.QImage(self.img.data, width, height, QtGui.QImage.Format_RGB888)
+      img = cv2.flip(img, 1)
+      img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+      height, width, channel = img.shape
+
+      qImg = QtGui.QImage(img.data, width, height, QtGui.QImage.Format_RGB888)
       qPixmap = QtGui.QPixmap.fromImage(qImg)
       self.signals.pixmap_available.emit(qPixmap)
+
+      boundingBox = self.faceEncoder.detectFace(img)
+      if boundingBox is not None:
+        faceDescriptor = self.faceEncoder.calculateEmbedding(img, boundingBox)
+        self.signals.descriptor_available.emit(faceDescriptor)
+        self.stop()
   
   def stop(self):
     self.running = False
@@ -197,19 +219,32 @@ class FaceRecognition(Fragment):
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
     self.label_3 = QtWidgets.QLabel(self)
-    self.label_3.setGeometry(QtCore.QRect(240, 160, 320, 320))
+    self.label_3.setGeometry(QtCore.QRect(200, 120, 400, 300))
     self.label_3.setScaledContents(True)
 
     self.camera = Camera()
+    self.camera.setAutoDelete(False)
     self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
-
-  def toOtp(self):
+    self.camera.signals.descriptor_available.connect(self.sendAccessRequest)
+  
+  def sendAccessRequest(self, faceDescriptor):
     self.camera.signals.exit_loop.emit()
-    Fragment.manager.activate("id")
+    body = {"faceDescriptor": faceDescriptor.tolist()}
+    r = requests.post(url=URL+"/access_face", json=body)
+    if r.status_code in [200, 401]: 
+      msg = r.json()
+
+      if msg["access"] == "GRANTED":
+        Fragment.manager.activate("verified", name=msg["firstName"])
+      elif msg["access"] == "ERROR":
+        Fragment.manager.activate("error")
+      else:
+        Fragment.manager.activate("id")
+    else:
+      Fragment.manager.activate("error")
 
   def onActivate(self):
     QtCore.QThreadPool.globalInstance().tryStart(self.camera)
-    QtCore.QTimer.singleShot(5000, self.toOtp)
 
 
 class ID(Fragment):
@@ -269,10 +304,10 @@ class ID(Fragment):
     self.idCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '#':
+    if key == '+':
       if len(self.idCode) == 6:
         if self.idCode == received_id: # replace with backend check
-          Fragment.manager.activate("otp")
+          Fragment.manager.activate("otp", idCode=int(self.idCode))
         else:
           Fragment.manager.activate("denied")
       else:
@@ -304,7 +339,6 @@ class OTP(Fragment):
     font = QtGui.QFont("Roboto", 36)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Hello {}".format(name))
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
     self.label_3 = QtWidgets.QLabel(self)
@@ -346,16 +380,18 @@ class OTP(Fragment):
     label.setText(number)
 
   def onActivate(self):
+    self.label_2.setText("Hello {}".format(self.kwargs["idCode"]))
+
     for label in self.labels:
       self.resetLabel(label)
     
     self.otpCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '#':
+    if key == '+':
       if len(self.otpCode) == 6:
         if self.otpCode == received_otp: # replace with backend check
-          Fragment.manager.activate("verified")
+          Fragment.manager.activate("verified", name="FuckPython")
         else:
           Fragment.manager.activate("denied")
       else:
@@ -395,9 +431,9 @@ class Verified(Fragment):
     font = QtGui.QFont("Roboto", 30)
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
-    self.textlabel.setText(welcome_string)
   
   def onActivate(self):
+    self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
 
 
