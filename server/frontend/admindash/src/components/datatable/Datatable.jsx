@@ -86,6 +86,9 @@ const Datatable = () => {
             body: JSON.stringify({
               id: params.row.id,
             }),
+            headers: {
+              "Content-Type": "application/json",
+            },
           })
             .then((response) => response.json())
             .then((data) => {
@@ -94,6 +97,7 @@ const Datatable = () => {
             .catch((error) => {
               console.error("Error:", error);
             });
+          window.location.reload(true);
         };
         return (
           <div className="cellAction">
