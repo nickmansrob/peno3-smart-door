@@ -52,7 +52,11 @@ export async function getUsers(id?: number) {
       },
     })
   } else {
-    return await prisma.user.findMany()
+    return await prisma.user.findMany({
+      where: {
+        enabled: true
+      }
+    })
   }
 }
 
@@ -194,7 +198,7 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
     } else {
       console.error('Id invalid')
       res.status(400).json({
-        error: 'IncomingUserEdit invalid',
+        error: 'IncomingUserDelete invalid',
       })
     }
   } else {

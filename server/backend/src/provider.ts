@@ -24,7 +24,9 @@ export async function start(): Promise<void> {
   server.use('/api/', app)
 
   app.use(express.json())
-  app.use(cors())
+  app.use(cors({
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }))
 
   app.get('/', handleRoot)
 
