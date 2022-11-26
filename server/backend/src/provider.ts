@@ -1,4 +1,5 @@
 import express, { Express, Response, Request } from 'express'
+import cors from 'cors'
 import { DateTime } from 'luxon'
 import { handleFace, handleOtp } from './access.js'
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
@@ -23,6 +24,7 @@ export async function start(): Promise<void> {
   server.use('/api/', app)
 
   app.use(express.json())
+  app.use(cors())
 
   app.get('/', handleRoot)
 
