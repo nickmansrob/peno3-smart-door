@@ -174,7 +174,7 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = parseInt(req.query.id as string)
+    const userId = req.body.id as number // TODO: validate
     if (typeof userId === 'number') {
       try {
         const result = await prisma.user.update({
