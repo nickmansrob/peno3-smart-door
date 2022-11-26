@@ -13,7 +13,7 @@ import {
   handleRoleRestrictionView,
   handleUserRestrictionView,
 } from './restriction.js'
-import { handleAddFace, handleDeleteUser, handleEditUser, handleNewUser, handleRolesView, handleUserView } from './user.js'
+import { getLatestUserRecords, handleAddFace, handleDeleteUser, handleEditUser, handleNewUser, handleRolesView, handleUserView } from './user.js'
 import { validateEndBiggerThanStart } from './util.js'
 
 export async function start(): Promise<void> {
@@ -54,6 +54,7 @@ export async function start(): Promise<void> {
   app.get('/entries', handleGetEntries)
   app.get('/latest_entries', handleLatestEntries)
   app.get('/range_entries', handleRangeEntries)
+  app.get('/latest_status', handleLatestStatus)
 
   server.listen(3000, () => console.log('Backend running!'))
 }
@@ -86,3 +87,8 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
     res.status(400).send()
   }
 }
+
+async function handleLatestStatus(_req: Request, res: Response): Promise<void> {
+  res.status(200).json(getLatestUserRecords())
+}
+
