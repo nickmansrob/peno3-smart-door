@@ -14,20 +14,20 @@ export function validateFaceDescriptor(arr: string | number[]): boolean {
 
 /**
  *
- * @param restriction the restriction that needs to be validated
- * @returns true if the restriction is of the type IncomingPermission, otherwise false
+ * @param permissions the permissions that needs to be validated
+ * @returns true if the permissions is of the type IncomingPermission, otherwise false
  */
-export function validatePermission(restriction: IncomingPermission): boolean {
-  // checking if the restriction from frontend is valid format
+export function validatePermission(permissions: IncomingPermission): boolean {
+  // checking if the permissions from frontend is valid format
   if (
-    restriction.e &&
-    restriction.s &&
-    restriction.id &&
-    restriction.weekday &&
-    (restriction.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
-    typeof restriction.e === 'number' &&
-    typeof restriction.s === 'number' &&
-    typeof restriction.id === 'number'
+    permissions.e &&
+    permissions.s &&
+    permissions.id &&
+    permissions.weekday &&
+    (permissions.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
+    typeof permissions.e === 'number' &&
+    typeof permissions.s === 'number' &&
+    typeof permissions.id === 'number'
   ) {
     return true
   } else {

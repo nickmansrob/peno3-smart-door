@@ -63,13 +63,13 @@ export async function getAssociatedUserId(record: UserRecord) {
 /**
  *
  * @param currentTime the current time
- * @param restrictionInterval the interval to be checked
+ * @param permissionsInterval the interval to be checked
  * @returns true if currentTime is in interval
  */
-export function inInterval(currentTime: number, restrictionInterval: CustomInterval): boolean {
+export function inInterval(currentTime: number, permissionsInterval: CustomInterval): boolean {
   // no validation needed
-  const minimumEntry: number = restrictionInterval.s
-  const maxEntry: number = restrictionInterval.e
+  const minimumEntry: number = permissionsInterval.s
+  const maxEntry: number = permissionsInterval.e
   if (currentTime >= minimumEntry && currentTime <= maxEntry) {
     return true
   } else {

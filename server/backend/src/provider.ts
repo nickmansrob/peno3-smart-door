@@ -51,15 +51,15 @@ export async function start(): Promise<void> {
 
   app.get('/records', handleRecordView)
 
-  app.get('/user_restrictions', handleUserPermissionView)
-  app.post('/user_restrictions', handleNewUserPermission)
-  app.put('/user_restrictions', handleEditUserPermission)
-  app.delete('/user_restrictions', handleDeleteUserPermission)
+  app.get('/user_permissions', handleUserPermissionView)
+  app.post('/user_permissions', handleNewUserPermission)
+  app.put('/user_permissions', handleEditUserPermission)
+  app.delete('/user_permissions', handleDeleteUserPermission)
 
-  app.get('/role_restrictions', handleRolePermissionView)
-  app.post('/role_restrictions', handleNewRolePermission)
-  app.put('/role_restrictions', handleEditRolePermission)
-  app.delete('/role_restrictions', handleDeleteRolePermission)
+  app.get('/role_permissions', handleRolePermissionView)
+  app.post('/role_permissions', handleNewRolePermission)
+  app.put('/role_permissions', handleEditRolePermission)
+  app.delete('/role_permissions', handleDeleteRolePermission)
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)

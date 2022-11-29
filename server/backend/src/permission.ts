@@ -29,17 +29,17 @@ export async function getUserPermissions(id?: number) {
 }
 
 export async function handleNewUserPermission(req: Request, res: Response): Promise<void> {
-  const restriction = req.body as IncomingPermission
-  if (validatePermission(restriction)) {
+  const permissions = req.body as IncomingPermission
+  if (validatePermission(permissions)) {
     // validation input
-    if ((await findUserPermission(restriction)).length === 0)
+    if ((await findUserPermission(permissions)).length === 0)
       try {
         const result = await prisma.userPermission.create({
           data: {
-            userId: restriction.id,
-            start: restriction.s,
-            end: restriction.e,
-            weekday: restriction.weekday,
+            userId: permissions.id,
+            start: permissions.s,
+            end: permissions.e,
+            weekday: permissions.weekday,
           },
         })
         res.json(result)
@@ -48,18 +48,18 @@ export async function handleNewUserPermission(req: Request, res: Response): Prom
         res.status(500).json({ error: 'The permissions could not be created' })
       }
     else {
-      res.status(400).send('There already is a restriction for this user')
+      res.status(400).send('There already is a permissions for this user')
     }
   } else {
-    res.status(400).send('The restriction has the wrong format')
+    res.status(400).send('The permissions has the wrong format')
   }
 }
 
-async function findUserPermission(restriction: IncomingPermission) {
+async function findUserPermission(permissions: IncomingPermission) {
   const restricionIdArray = await prisma.userPermission.findMany({
     where: {
-      userId: restriction.id,
-      weekday: restriction.weekday,
+      userId: permissions.id,
+      weekday: permissions.weekday,
     },
     select: {
       id: true,
@@ -70,29 +70,29 @@ async function findUserPermission(restriction: IncomingPermission) {
 
 export async function handleEditUserPermission(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const restriction = req.body as IncomingPermission
+    const permissions = req.body as IncomingPermission
 
-    if (validatePermission(restriction)) {
+    if (validatePermission(permissions)) {
       // validation input
-      const restrictionIdArray = await findUserPermission(restriction)
+      const permissionsIdArray = await findUserPermission(permissions)
 
-      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
-      if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
-        const restrictionId = restrictionIdArray[0].id
+      // validation incoming permissions succeeded, now validating result findMany and if ok, then deleting the permissions
+      if (permissionsIdArray.length === 1 && typeof permissionsIdArray[0].id === 'number') {
+        const permissionsId = permissionsIdArray[0].id
 
-        // validation result findMany succeeded, now the restriction will be deleted
+        // validation result findMany succeeded, now the permissions will be deleted
         try {
           await prisma.userPermission.update({
-            where: { id: restrictionId },
+            where: { id: permissionsId },
             data: {
-              start: restriction.s,
-              end: restriction.e,
+              start: permissions.s,
+              end: permissions.e,
             },
           })
-          res.status(200).send('restriction edited')
+          res.status(200).send('permissions edited')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'restriction could not be edited' })
+          res.status(500).json({ error: 'permissions could not be edited' })
         }
       }
 
@@ -116,28 +116,28 @@ export async function handleEditUserPermission(req: Request, res: Response): Pro
 }
 
 export async function handleDeleteUserPermission(req: Request, res: Response): Promise<void> {
-  // find id of restriction that needs to be deleted
+  // find id of permissions that needs to be deleted
 
   if (req.body) {
-    const restriction = req.body as IncomingPermission
+    const permissions = req.body as IncomingPermission
 
-    if (validatePermission(restriction)) {
+    if (validatePermission(permissions)) {
       // validation input
-      const restrictionIdArray = await findUserPermission(restriction)
+      const permissionsIdArray = await findUserPermission(permissions)
 
-      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
-      if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
-        const restrictionId = restrictionIdArray[0].id
+      // validation incoming permissions succeeded, now validating result findMany and if ok, then deleting the permissions
+      if (permissionsIdArray.length === 1 && typeof permissionsIdArray[0].id === 'number') {
+        const permissionsId = permissionsIdArray[0].id
 
-        // validation result findMany succeeded, now the restriction will be deleted
+        // validation result findMany succeeded, now the permissions will be deleted
         try {
           await prisma.userPermission.delete({
-            where: { id: restrictionId },
+            where: { id: permissionsId },
           })
-          res.status(200).send('restriction deleted')
+          res.status(200).send('permissions deleted')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'restriction could not be deleted' })
+          res.status(500).json({ error: 'permissions could not be deleted' })
         }
       }
 
@@ -186,18 +186,18 @@ export async function getRolePermissions(id?: number) {
 }
 
 export async function handleNewRolePermission(req: Request, res: Response): Promise<void> {
-  const restriction = req.body as IncomingPermission
-  if (validatePermission(restriction)) {
+  const permissions = req.body as IncomingPermission
+  if (validatePermission(permissions)) {
     // validation input
-    if ((await findUserPermission(restriction)).length === 0) {
+    if ((await findUserPermission(permissions)).length === 0) {
       // validation amount of
       try {
         const result = await prisma.rolePermission.create({
           data: {
-            roleId: restriction.id,
-            start: restriction.s,
-            end: restriction.e,
-            weekday: restriction.weekday,
+            roleId: permissions.id,
+            start: permissions.s,
+            end: permissions.e,
+            weekday: permissions.weekday,
           },
         })
         res.json(result)
@@ -206,10 +206,10 @@ export async function handleNewRolePermission(req: Request, res: Response): Prom
         res.status(500).json({ error: 'The permissions could not be created' })
       }
     } else {
-      res.status(400).send('There already is a restriction for this role')
+      res.status(400).send('There already is a permissions for this role')
     }
   } else {
-    res.status(400).send('The restriction has the wrong format')
+    res.status(400).send('The permissions has the wrong format')
   }
 }
 
@@ -219,12 +219,12 @@ export async function handleNewRolePermission(req: Request, res: Response): Prom
  * in database wisselen
  */
 
-async function findRolePermission(restriction: IncomingPermission) {
+async function findRolePermission(permissions: IncomingPermission) {
   // no validation needed
   const restricionIdArray = await prisma.rolePermission.findMany({
     where: {
-      roleId: restriction.id,
-      weekday: restriction.weekday,
+      roleId: permissions.id,
+      weekday: permissions.weekday,
     },
     select: {
       id: true,
@@ -235,29 +235,29 @@ async function findRolePermission(restriction: IncomingPermission) {
 
 export async function handleEditRolePermission(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const restriction = req.body as IncomingPermission
+    const permissions = req.body as IncomingPermission
 
-    if (validatePermission(restriction)) {
+    if (validatePermission(permissions)) {
       // validation input
-      const restrictionIdArray = await findRolePermission(restriction)
+      const permissionsIdArray = await findRolePermission(permissions)
 
-      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
-      if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
-        const restrictionId = restrictionIdArray[0].id
+      // validation incoming permissions succeeded, now validating result findMany and if ok, then deleting the permissions
+      if (permissionsIdArray.length === 1 && typeof permissionsIdArray[0].id === 'number') {
+        const permissionsId = permissionsIdArray[0].id
 
-        // validation result findMany succeeded, now the restriction will be deleted
+        // validation result findMany succeeded, now the permissions will be deleted
         try {
           await prisma.rolePermission.update({
-            where: { id: restrictionId },
+            where: { id: permissionsId },
             data: {
-              start: restriction.s,
-              end: restriction.e,
+              start: permissions.s,
+              end: permissions.e,
             },
           })
-          res.status(200).send('restriction edited')
+          res.status(200).send('permissions edited')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'restriction could not be edited' })
+          res.status(500).json({ error: 'permissions could not be edited' })
         }
       }
 
@@ -284,31 +284,31 @@ export async function handleEditRolePermission(req: Request, res: Response): Pro
  * @param req =  IncomingPermission
  * @param res = res.send
  * @returns void
- * deleting role restriction in database
+ * deleting role permissions in database
  */
 export async function handleDeleteRolePermission(req: Request, res: Response): Promise<void> {
-  // find id of restriction that needs to be deleted
+  // find id of permissions that needs to be deleted
 
   if (req.body) {
-    const restriction = req.body as IncomingPermission
+    const permissions = req.body as IncomingPermission
 
-    if (validatePermission(restriction)) {
+    if (validatePermission(permissions)) {
       // validation input
-      const restrictionIdArray = await findRolePermission(restriction)
+      const permissionsIdArray = await findRolePermission(permissions)
 
-      // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
-      if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
-        const restrictionId = restrictionIdArray[0].id
+      // validation incoming permissions succeeded, now validating result findMany and if ok, then deleting the permissions
+      if (permissionsIdArray.length === 1 && typeof permissionsIdArray[0].id === 'number') {
+        const permissionsId = permissionsIdArray[0].id
 
-        // validation result findMany succeeded, now the restriction will be deleted
+        // validation result findMany succeeded, now the permissions will be deleted
         try {
           await prisma.rolePermission.delete({
-            where: { id: restrictionId },
+            where: { id: permissionsId },
           })
-          res.status(200).send('restriction deleted')
+          res.status(200).send('permissions deleted')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'restriction could not be deleted' })
+          res.status(500).json({ error: 'permissions could not be deleted' })
         }
       }
 
@@ -348,14 +348,14 @@ export async function isPermitted(userId: number, role: number): Promise<boolean
   if (nextState === 'ENTER') {
     // getting all the permissions in one array
     const userPermissions = ((await getUserPermissions(userId)) as UserPermission[])
-      .filter(restriction => restriction.weekday === currentDay)
-      .map(restriction => {
-        return { s: restriction.start, e: restriction.end } as CustomInterval
+      .filter(permissions => permissions.weekday === currentDay)
+      .map(permissions => {
+        return { s: permissions.start, e: permissions.end } as CustomInterval
       })
     const groupPermissions = ((await getRolePermissions(role)) as RolePermission[])
-      .filter(restriction => restriction.weekday === currentDay)
-      .map(restriction => {
-        return { s: restriction.start, e: restriction.end } as CustomInterval
+      .filter(permissions => permissions.weekday === currentDay)
+      .map(permissions => {
+        return { s: permissions.start, e: permissions.end } as CustomInterval
       })
 
     const allPermissions = [...userPermissions, ...groupPermissions]
@@ -364,7 +364,7 @@ export async function isPermitted(userId: number, role: number): Promise<boolean
     if (allPermissions.length === 0) {
       return false
     } else {
-      const booleanPermissions = allPermissions.map(restriction => inInterval(currentTime, restriction))
+      const booleanPermissions = allPermissions.map(permissions => inInterval(currentTime, permissions))
       if (booleanPermissions.includes(false)) {
         return false
       } else {
