@@ -76,7 +76,6 @@ export type OutgoingAccess = {
 
 export type IncomingOtp = Id & {
   otp: string
-  timestamp: string
 }
 
 export type IncomingFace = {

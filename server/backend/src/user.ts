@@ -217,7 +217,7 @@ export async function getAllActiveUsers(): Promise<number> {
   }
 }
 
-export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | undefined>  {
+export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | undefined> {
   const records = (
     await prisma.user.findMany({
       select: {
@@ -230,7 +230,7 @@ export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | unde
       },
       where: {
         enabled: true,
-      }
+      },
     })
   ).filter(record => record.records.length !== 0)
 

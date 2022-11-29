@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { IncomingFace, IncomingOtp, IncomingRestriction, OutgoingAccess, User, UserRecord } from './types.js'
@@ -101,8 +100,8 @@ export function validateIncomingFace(incomingFace: IncomingFace): boolean {
   }
 }
 
-export function validateIncomingOtp(Otp: IncomingOtp) {
-  if (typeof Otp.id === 'number' && typeof Otp.otp === 'string' && typeof Otp.timestamp === 'string') {
+export function validateIncomingOtp(Otp: IncomingOtp): boolean {
+  if (typeof Otp.id === 'number' && typeof Otp.otp === 'string') {
     return true
   } else {
     return false
@@ -122,27 +121,38 @@ export function evaluateAccess(
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access }
 }
-
-export async function findLastState(userId: number): Promise<string> {
+/**
+ * 
+ * @param userId the id of the user
+ * @returns the next state of the user
+ */
+export async function findNextState(userId: number): Promise<string> {
   const latestUserRecords = (await getLatestUserRecords()) as UserRecord[]
 
   const lastUserState = latestUserRecords.filter(record => record.id === userId)
   if (lastUserState.length > 0) {
-    return lastUserState[0].state
+    const lastState = lastUserState[0].state
+    if (lastState === 'ENTER') {
+      return 'LEAVE'
+    } else {
+      return 'ENTER'
+    }
   } else {
-    return 'LEAVE'
+    return 'ENTER'
   }
 }
 
 export async function getAssociatedUserId(record: UserRecord) {
-  const user = (await prisma.userRecord.findUnique({
-    where: {
-      id: record.id
-    },
-    select: {
-      user: true
-    }
-  }))?.user
+  const user = (
+    await prisma.userRecord.findUnique({
+      where: {
+        id: record.id,
+      },
+      select: {
+        user: true,
+      },
+    })
+  )?.user
 
   return user
 }

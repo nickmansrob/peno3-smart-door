@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import * as OTPAuth from 'otpauth'
 
 export function createOtp(secret: string): OTPAuth.TOTP {
@@ -12,11 +11,10 @@ export function createOtp(secret: string): OTPAuth.TOTP {
   })
 }
 
-export function validateToken(otp: OTPAuth.TOTP, token: string, timestamp: DateTime) {
+export function validateToken(otp: OTPAuth.TOTP, token: string) {
   // no validation needed
   return otp.validate({
     token,
-    timestamp: timestamp.toMillis(),
-    window: 1,
+    window: 2,
   })
 }

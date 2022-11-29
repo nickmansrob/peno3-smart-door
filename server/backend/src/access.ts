@@ -31,7 +31,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 
       if (distances.length == 0) {
         // When there are no faces in the database nobody can enter :(
-        res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+        res.status(401).json(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
       } else {
         // Find the closest user
         const matchedUser = distances.reduce((prev, curr) => (prev.distance < curr.distance ? prev : curr))
@@ -40,26 +40,28 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
           if (await isRestricted(matchedUser.id, matchedUser.roleId)) {
             // Can access
             createRecord(matchedUser.id, 'FACE')
-            res.status(200).send(JSON.stringify(evaluateAccess('GRANTED', matchedUser.firstName)))
+            res.status(200).json(JSON.stringify(evaluateAccess('GRANTED', matchedUser.firstName)))
           } else {
             // Restricted
-            res.status(200).send(JSON.stringify(evaluateAccess('RESTRICTED', matchedUser.firstName)))
+            res.status(200).json(JSON.stringify(evaluateAccess('RESTRICTED', matchedUser.firstName)))
           }
         } else {
-          res.status(401).send(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+          res.status(401).json(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
         }
       }
     } else {
-      res.status(400).send('IncomingFace invalid')
+      res.status(400).json('IncomingFace invalid')
     }
   } else {
-    res.status(400).send()
+    res.status(400).json()
   }
 }
 
 export async function handleOtp(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const stream = req.body as IncomingOtp
+
+    console.log(`Incoming OTP ${JSON.stringify(stream)}`)
     if (validateIncomingOtp(stream)) {
       // validation input
       const user = await prisma.user.findUnique({
@@ -70,24 +72,31 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
 
       if (user) {
         const otpHelper = createOtp(user.tfaToken)
-        if (
-          validateToken(otpHelper, stream.otp, DateTime.fromISO(stream.timestamp)) &&
-          (await isRestricted(user.id, user.roleId))
-        ) {
-          const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
-          if (await recordCheck) {
-            res.status(200).send(evaluateAccess('GRANTED', user.firstName))
+
+        console.log(validateToken(otpHelper, stream.otp))
+
+        if (validateToken(otpHelper, stream.otp) != null) {
+          if (await isRestricted(user.id, user.roleId)) {
+            // User allowed
+            const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
+            if (await recordCheck) {
+              res.status(200).json(evaluateAccess('GRANTED', user.firstName))
+            } else {
+              res.status(500).json(evaluateAccess('ERROR', user.firstName))
+            }
           } else {
-            res.status(500).send(evaluateAccess('ERROR', user.firstName))
+            res.status(401).json(evaluateAccess('RESTRICTED', user.firstName))
           }
         } else {
-          res.status(401).send()
+          res.status(400).json('Incoming OTP invalid')
         }
+      } else {
+        res.status(400).json('User does not exist')
       }
     } else {
-      res.status(400).send('Incoming OTP invalid')
+      res.status(400).json('OTP Validation failed')
     }
   } else {
-    res.status(400).send()
+    res.status(400).json('Bad request')
   }
 }

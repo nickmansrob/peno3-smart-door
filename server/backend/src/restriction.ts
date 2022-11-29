@@ -1,9 +1,8 @@
 import { Response, Request } from 'express'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
-import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction, UserRecord } from './types.js'
-import { getLatestUserRecords } from './user.js'
-import { findLastState, validateRestriction } from './util.js'
+import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction } from './types.js'
+import { findNextState, validateRestriction } from './util.js'
 
 export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
   // no validation needed
@@ -355,9 +354,9 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
 
   // if user enters we need to check everything if the user leaves he is not restricted to leave, if there are not records, his state is entering
-  const lastState = await findLastState(userId)
+  const nextState = await findNextState(userId)
 
-  if (lastState === 'LEAVE') {
+  if (nextState === 'ENTER') {
     // getting all the restrictions in one array
     const userRestrictions = ((await getUserRestrictions(userId)) as UserRestriction[])
       .filter(restriction => restriction.weekday === currentDay)
