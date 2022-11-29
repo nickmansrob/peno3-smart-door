@@ -5,12 +5,14 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-
+import "react-widgets/styles.css";
+import DropdownList from "react-widgets/DropdownList";
 const Edit = () => {
   const [user, setUser] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [group, setGroup] = useState([]);
+  const rolenames = Array.from(roles, (x) => x.name);
   const id = useParams();
-  console.log(id);
-
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -23,6 +25,13 @@ const Edit = () => {
       .then((data) => {
         console.log(data);
         setUser(data);
+      });
+
+    fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setRoles(data);
       });
   }, []);
 
@@ -46,18 +55,16 @@ const Edit = () => {
           <div className="right">
             <form>
               <div className="formInput">
-                <label htmlFor="file">
-                  Image: <FileUploadIcon className="icon" />
-                </label>
-                <input type="file" id="file" style={{ display: "none" }} />
-              </div>
-              <div className="formInput">
                 <label>First name</label>
                 <input type="text" placeholder={user.firstName} />
               </div>
-              <div className="formInput">
-                <label>Group</label>
-                <input type="text" placeholder="Administration" />
+              <div>
+                <label>Role</label>
+                <DropdownList
+                  data={rolenames}
+                  value={group}
+                  onChange={(group) => setGroup(group)}
+                />
               </div>
               <div className="formInput">
                 <label>Surname</label>

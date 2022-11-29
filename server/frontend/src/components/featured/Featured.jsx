@@ -22,6 +22,8 @@ const Featured = () => {
   const Total_employees = info.total;
   const Employees_in = info.inside;
   const percentage = (100 * Employees_in) / Total_employees;
+  console.log(Total_employees);
+  console.log(Employees_in);
   return (
     <div className="featured">
       <div className="top">
@@ -37,6 +39,7 @@ const Featured = () => {
           />
         </div>
       </div>
+      <div className="totalpercentage">/{Total_employees}</div>
     </div>
   );
 };
