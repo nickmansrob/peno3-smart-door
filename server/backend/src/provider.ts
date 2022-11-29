@@ -84,10 +84,10 @@ async function handleGetEntries(_req: Request, res: Response): Promise<void> {
 async function handleLatestEntries(req: Request, res: Response): Promise<void> {
   const amount = parseInt(req.query.amount as string)
 
-  if (amount) {
+  if (amount) { // validation input
     res.status(200).json(await getLatestEntries(amount))
   } else {
-    res.status(400).send()
+    res.status(400).send('Input invalid')
   }
 }
 
@@ -99,7 +99,7 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
     // validation input
     res.status(200).json(await getRangeEntries(s, e))
   } else {
-    res.status(400).send()
+    res.status(400).send('Input invalid')
   }
 }
 
