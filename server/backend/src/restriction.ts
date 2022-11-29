@@ -2,14 +2,16 @@ import { Response, Request } from 'express'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction } from './types.js'
-import { findNextState, validateRestriction } from './util.js'
+import { findNextState, inInterval } from './util.js'
+import { validateRestriction } from './validation.js'
 
 export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
   // no validation needed
   res.json(await getUserRestrictions(parseInt(req.query.id as string)))
 }
 
-export async function getUserRestrictions(id?: number) {   // no validation needed
+export async function getUserRestrictions(id?: number) {
+  // no validation needed
   if (id) {
     return (
       await prisma.user.findUnique({
@@ -28,7 +30,8 @@ export async function getUserRestrictions(id?: number) {   // no validation need
 
 export async function handleNewUserRestriction(req: Request, res: Response): Promise<void> {
   const restriction = req.body as IncomingRestriction
-  if (validateRestriction(restriction)) { // validation input
+  if (validateRestriction(restriction)) {
+    // validation input
     if ((await findUserRestriction(restriction)).length === 0)
       try {
         const result = await prisma.userRestriction.create({
@@ -52,7 +55,7 @@ export async function handleNewUserRestriction(req: Request, res: Response): Pro
   }
 }
 
-async function findUserRestriction(restriction: IncomingRestriction) { 
+async function findUserRestriction(restriction: IncomingRestriction) {
   const restricionIdArray = await prisma.userRestriction.findMany({
     where: {
       userId: restriction.id,
@@ -69,7 +72,8 @@ export async function handleEditUserRestriction(req: Request, res: Response): Pr
   if (req.body) {
     const restriction = req.body as IncomingRestriction
 
-    if (validateRestriction(restriction)) { // validation input
+    if (validateRestriction(restriction)) {
+      // validation input
       const restrictionIdArray = await findUserRestriction(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
@@ -117,8 +121,8 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
   if (req.body) {
     const restriction = req.body as IncomingRestriction
 
-    
-    if (validateRestriction(restriction)) { // validation input
+    if (validateRestriction(restriction)) {
+      // validation input
       const restrictionIdArray = await findUserRestriction(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
@@ -158,12 +162,14 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
 
 // Role restrictions
 
-export async function handleRoleRestrictionView(req: Request, res: Response): Promise<void> { // no validation needed
+export async function handleRoleRestrictionView(req: Request, res: Response): Promise<void> {
+  // no validation needed
   res.json(getRoleRestrictions(parseInt(req.query.name as string)))
 }
 
-export async function getRoleRestrictions(id?: number) {  
-  if (id) { // 'validation' input
+export async function getRoleRestrictions(id?: number) {
+  if (id) {
+    // 'validation' input
     return (
       await prisma.role.findUnique({
         where: {
@@ -181,8 +187,10 @@ export async function getRoleRestrictions(id?: number) {
 
 export async function handleNewRoleRestriction(req: Request, res: Response): Promise<void> {
   const restriction = req.body as IncomingRestriction
-  if (validateRestriction(restriction)) { // validation input
-    if ((await findUserRestriction(restriction)).length === 0) { // validation amount of 
+  if (validateRestriction(restriction)) {
+    // validation input
+    if ((await findUserRestriction(restriction)).length === 0) {
+      // validation amount of
       try {
         const result = await prisma.roleRestriction.create({
           data: {
@@ -206,12 +214,13 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
 }
 
 /**
- * @param req =  IncomingRestriction 
+ * @param req =  IncomingRestriction
  * @param res = void of res.send
  * in database wisselen
  */
 
-async function findRoleRestriction(restriction: IncomingRestriction) { // no validation needed
+async function findRoleRestriction(restriction: IncomingRestriction) {
+  // no validation needed
   const restricionIdArray = await prisma.roleRestriction.findMany({
     where: {
       roleId: restriction.id,
@@ -228,8 +237,8 @@ export async function handleEditRoleRestriction(req: Request, res: Response): Pr
   if (req.body) {
     const restriction = req.body as IncomingRestriction
 
-    
-    if (validateRestriction(restriction)) { // validation input
+    if (validateRestriction(restriction)) {
+      // validation input
       const restrictionIdArray = await findRoleRestriction(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
@@ -283,8 +292,8 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
   if (req.body) {
     const restriction = req.body as IncomingRestriction
 
-   
-    if (validateRestriction(restriction)) { // validation input
+    if (validateRestriction(restriction)) {
+      // validation input
       const restrictionIdArray = await findRoleRestriction(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
@@ -322,28 +331,10 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
   }
 }
 
-// Utils
-
-/**
- *
- * @param currentTime the current time
- * @param restrictionInterval the interval to be checked
- * @returns true if currentTime is in interval
- */
-export function inInterval(currentTime: number, restrictionInterval: CustomInterval): boolean { // no validation needed
-  const minimumEntry: number = restrictionInterval.s
-  const maxEntry: number = restrictionInterval.e
-  if (currentTime >= minimumEntry && currentTime <= maxEntry) {
-    return true
-  } else {
-    return false
-  }
-}
-
 /**
  *
  * @param userId the id of the user where the lastState needed to be found of
- * @returns the last state of the user that is seen in the records 
+ * @returns the last state of the user that is seen in the records
  */
 
 export async function isRestricted(userId: number, role: number): Promise<boolean> {
@@ -384,20 +375,3 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
     return true // User can always exit
   }
 }
-
-/**
- To-Do's
-
- - overal isrestricted / ... naar is allowed hernoemen eventueel OK
-
- - implementeren dat in 'isrestrictions' de state wordt meegegeven (via state user op te roepen in acces files) 
- en er dus voor zorgen dat niemand die naar buiten wilt terug gaat => if (state === enter) dan programma zoals normaal, else true direct (dan leaved hij) OK
-
- - overal true and false checken of het gebasserd is op in het interval? dus true uit isRestricted/isAllowed dan is het ok en mag hij binnen OK
-
- - validations
-
- - validation if a new restriction is added that there was not already one
-  - redirecting it to edit or let the frontend do that    OK
-
- */

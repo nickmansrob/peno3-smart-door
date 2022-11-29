@@ -23,7 +23,7 @@ import {
   handleRolesView,
   handleUserView,
 } from './user.js'
-import { validateEndBiggerThanStart } from './util.js'
+import { validateEndBiggerThanStart } from './validation.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()
@@ -84,7 +84,8 @@ async function handleGetEntries(_req: Request, res: Response): Promise<void> {
 async function handleLatestEntries(req: Request, res: Response): Promise<void> {
   const amount = parseInt(req.query.amount as string)
 
-  if (amount) { // validation input
+  if (amount) {
+    // validation input
     res.status(200).json(await getLatestEntries(amount))
   } else {
     res.status(400).send('Input invalid')
