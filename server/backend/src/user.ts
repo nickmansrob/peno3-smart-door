@@ -267,6 +267,9 @@ export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> 
           take: 1,
         },
       },
+      where: {
+        enabled: true
+      },
     })
   ).filter(record => record.records.length !== 0)
 
