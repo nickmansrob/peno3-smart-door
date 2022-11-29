@@ -1,9 +1,11 @@
 import { DateTime, Interval } from 'luxon'
 import { LatestEntry } from './types.js'
-import { getAllActiveUsers, getLatestUserRecords, getUsers } from './user.js'
+import { getAllActiveUsers, getLatestEnabledUserRecords, getLatestUserRecords, getUsers } from './user.js'
 
 export async function getEntries(): Promise<{ inside: number; total: number }> {
-  const records = await getLatestUserRecords()
+  // Realtime monitor
+  // NO disabled users
+  const records = await getLatestEnabledUserRecords()
   const total = await getAllActiveUsers()
 
   if (records) {
@@ -15,6 +17,7 @@ export async function getEntries(): Promise<{ inside: number; total: number }> {
 }
 
 export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[]> {
+  // Disabled users allowed
   const records = await getLatestUserRecords()
   const interval = Interval.fromDateTimes(s, e) // s and e already validated in provider
 
@@ -37,8 +40,9 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 }
 
 export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
+  // NO disabled users
   // number validated in provider
-  const records = await getLatestUserRecords()
+  const records = await getLatestEnabledUserRecords()
 
   if (records) {
     return await Promise.all(

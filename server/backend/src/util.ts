@@ -1,5 +1,6 @@
 import { Role } from '@prisma/client'
 import { DateTime } from 'luxon'
+import { prisma } from './database.js'
 import { IncomingFace, IncomingOtp, IncomingRestriction, OutgoingAccess, User, UserRecord } from './types.js'
 import { getLatestUserRecords } from './user.js'
 
@@ -50,15 +51,6 @@ export function validateRestriction(restriction: IncomingRestriction): boolean {
   }
 }
 
-// TODO: adding/changing roles
-export function validateRole(role: Role): boolean {
-  if (role.name === ('ADMIN' || 'EMPLOYEE')) {
-    return true
-  } else {
-    return false
-  }
-}
-
 export function validateUser(user: User): boolean {
   if (
     user.dateCreated &&
@@ -74,7 +66,6 @@ export function validateUser(user: User): boolean {
     typeof user.firstName === 'string' &&
     typeof user.id === 'number' &&
     typeof user.lastName === 'string' &&
-    validateRole(user.role as Role) &&
     typeof user.tfaToken === 'string'
   ) {
     return true
@@ -91,7 +82,6 @@ export function validateNewUser(user: User): boolean {
     user.tfaToken &&
     typeof user.firstName === 'string' &&
     typeof user.lastName === 'string' &&
-    validateRole(user.role as Role) &&
     typeof user.tfaToken === 'string'
   ) {
     return true
@@ -142,4 +132,17 @@ export async function findLastState(userId: number): Promise<string> {
   } else {
     return 'LEAVE'
   }
+}
+
+export async function getAssociatedUserId(record: UserRecord) {
+  const user = (await prisma.userRecord.findUnique({
+    where: {
+      id: record.id
+    },
+    select: {
+      user: true
+    }
+  }))?.user
+
+  return user
 }

@@ -217,6 +217,41 @@ export async function getAllActiveUsers(): Promise<number> {
   }
 }
 
+export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | undefined>  {
+  const records = (
+    await prisma.user.findMany({
+      select: {
+        records: {
+          orderBy: {
+            timestamp: 'desc',
+          },
+          take: 1,
+        },
+      },
+      where: {
+        enabled: true,
+      }
+    })
+  ).filter(record => record.records.length !== 0)
+
+  if (records) {
+    return records.map(object => {
+      if (object.records.length > 1) {
+        console.warn('Latest userRecord has multiple records! Taking the first one.')
+      }
+
+      const record = {
+        id: object.records[0]?.userId,
+        timestamp: object.records[0]?.timestamp.toISOString(),
+        method: object.records[0]?.method,
+        state: object.records[0]?.state,
+      } as UserRecord
+
+      return record
+    })
+  }
+}
+
 /**
  * @returns the latest record for each user or undefined if no records are present
  */
