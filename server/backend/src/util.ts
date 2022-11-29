@@ -87,6 +87,14 @@ export function validateNewUser(user: User): boolean {
   } else {
     return false
   }
+// Is not used? 
+export function validateUser(user: User): boolean{
+  if(user.enabled && user.faceDescriptor && user.firstName && user.id && user.lastName && user.role && user.tfaToken
+    && typeof user.enabled === 'boolean' && validateFaceDescriptor(user.faceDescriptor) && typeof user.firstName === 'string' 
+    && typeof user.id === 'number' && typeof user.lastName === 'string' && validateRole(user.role as Role) && typeof user.tfaToken === 'string'){
+    return true}
+  else{
+    return false }
 }
 
 // TODO: everywhere checking what the type of the facedescriptor is and when it will be transfered to a differend type (normally ok now, but be cautious and check)
