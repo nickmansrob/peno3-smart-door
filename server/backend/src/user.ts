@@ -37,6 +37,7 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
   }
 }
 
+
 export async function handleRolesView(_req: Request, res: Response): Promise<void> { // no validation needed 
   res.json(await prisma.role.findMany())
 }
@@ -117,30 +118,41 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
   if (req.body) {
     const userEdit = req.body as IncomingUserEdit
     if (validateIncomingUserEdit(userEdit)) { // validation input
-      try {
-        const result = await prisma.user.update({
-          where: { id: userEdit.id },
-          data: {
-            firstName: userEdit.firstName,
-            lastName: userEdit.lastName,
-            role: {
-              connectOrCreate: {
-                where: {
-                  name: userEdit.role.name,
-                },
-                create: {
-                  name: userEdit.role.name,
+
+      // if the user is deleted than it can not be edited
+      const enabledUser = await prisma.user.findUnique({
+        where: {id: userEdit.id},
+        select: {enabled: true}
+      })
+      if (enabledUser){
+        try {
+          const result = await prisma.user.update({
+            where: { id: userEdit.id },
+            data: {
+              firstName: userEdit.firstName,
+              lastName: userEdit.lastName,
+              role: {
+                connectOrCreate: {
+                  where: {
+                    name: userEdit.role.name,
+                  },
+                  create: {
+                    name: userEdit.role.name,
+                  },
                 },
               },
             },
-          },
-        })
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({
-          error: 'User could not be edited.',
-        })
+          })
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json({
+            error: 'User could not be edited.',
+          })
+        }
+      }
+      else{
+        res.status(400).send('A deleted user can not be edited')
       }
     } else {
       console.error('IncomingUserEdit invalid')
