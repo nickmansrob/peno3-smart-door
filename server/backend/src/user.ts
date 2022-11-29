@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { IncomingNewFace, IncomingUserEdit, User, UserRecord } from './types.js'
-import { validateFaceDescriptor, validateNewUser } from './util.js'
+import { validateFaceDescriptor, validateNewUser, validateIncomingUserEdit } from './validation.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
@@ -13,6 +13,7 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
   const user = (await getUsers(face.id)) as User
 
   if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) {
+    // validation input
     try {
       const result = await prisma.user.update({
         where: {
@@ -38,10 +39,12 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
 }
 
 export async function handleRolesView(_req: Request, res: Response): Promise<void> {
+  // no validation needed
   res.json(await prisma.role.findMany())
 }
 
 export async function getUsers(id?: number) {
+  // no validation needed
   if (id) {
     return await prisma.user.findUnique({
       where: {
@@ -65,43 +68,47 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
     const user = req.body as User
     if (validateNewUser(user)) {
       console.info(`Incoming user: ${JSON.stringify(user)}`)
-      try {
-        console.info('Trying to write user')
-        const result = await prisma.user.create({
-          data: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            faceDescriptor: '[]',
-            tfaToken: user.tfaToken,
-            enabled: false,
-            role: {
-              connectOrCreate: {
-                where: {
-                  name: user.role.name,
-                },
-                create: {
-                  name: user.role.name,
+      if (validateNewUser(user)) {
+        // validation input
+        console.log(`Incoming user: ${JSON.stringify(user)}`)
+        try {
+          console.info('Trying to write user')
+          const result = await prisma.user.create({
+            data: {
+              firstName: user.firstName,
+              lastName: user.lastName,
+              faceDescriptor: '[]',
+              tfaToken: user.tfaToken,
+              enabled: false,
+              role: {
+                connectOrCreate: {
+                  where: {
+                    name: user.role.name,
+                  },
+                  create: {
+                    name: user.role.name,
+                  },
                 },
               },
             },
-          },
-        })
-        console.info('Wrote user')
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({
-          error: 'User could not be created.',
+          })
+          console.info('Wrote user')
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json({
+            error: 'User could not be created.',
+          })
+        }
+      } else {
+        console.error('faceDescriptor invalid')
+        res.status(400).json({
+          error: 'faceDescriptor invalid',
         })
       }
     } else {
-      console.error('faceDescriptor invalid')
-      res.status(400).json({
-        error: 'faceDescriptor invalid',
-      })
+      res.status(400).send()
     }
-  } else {
-    res.status(400).send()
   }
 }
 
@@ -115,30 +122,41 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
   if (req.body) {
     const userEdit = req.body as IncomingUserEdit
     if (validateIncomingUserEdit(userEdit)) {
-      try {
-        const result = await prisma.user.update({
-          where: { id: userEdit.id },
-          data: {
-            firstName: userEdit.firstName,
-            lastName: userEdit.lastName,
-            role: {
-              connectOrCreate: {
-                where: {
-                  name: userEdit.role.name,
-                },
-                create: {
-                  name: userEdit.role.name,
+      // validation input
+
+      // if the user is deleted than it can not be edited
+      const enabledUser = await prisma.user.findUnique({
+        where: { id: userEdit.id },
+        select: { enabled: true },
+      })
+      if (enabledUser) {
+        try {
+          const result = await prisma.user.update({
+            where: { id: userEdit.id },
+            data: {
+              firstName: userEdit.firstName,
+              lastName: userEdit.lastName,
+              role: {
+                connectOrCreate: {
+                  where: {
+                    name: userEdit.role.name,
+                  },
+                  create: {
+                    name: userEdit.role.name,
+                  },
                 },
               },
             },
-          },
-        })
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({
-          error: 'User could not be edited.',
-        })
+          })
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json({
+            error: 'User could not be edited.',
+          })
+        }
+      } else {
+        res.status(400).send('A deleted user can not be edited')
       }
     } else {
       console.error('IncomingUserEdit invalid')
@@ -148,23 +166,6 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
     }
   } else {
     res.status(400).send()
-  }
-}
-
-function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
-  if (
-    userEdit.firstName &&
-    userEdit.id &&
-    userEdit.lastName &&
-    userEdit.role &&
-    typeof userEdit.id === 'number' &&
-    typeof userEdit.firstName === 'string' &&
-    typeof userEdit.lastName === 'string' &&
-    typeof userEdit.role === 'string'
-  ) {
-    return true
-  } else {
-    return false
   }
 }
 
@@ -178,8 +179,9 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = req.body.id as number // TODO: validate
+    const userId = parseInt(req.query.id as string)
     if (typeof userId === 'number') {
+      // validation input
       try {
         const result = await prisma.user.update({
           where: { id: userId },
@@ -207,6 +209,7 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
 }
 
 export async function getAllActiveUsers(): Promise<number> {
+  // no validation needed
   const users = await getUsers()
 
   if (users) {
@@ -257,6 +260,7 @@ export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | unde
  */
 
 export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> {
+  // no validation needed
   const records = (
     await prisma.user.findMany({
       select: {

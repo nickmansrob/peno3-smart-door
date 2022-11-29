@@ -1,17 +1,11 @@
 import { Response, Request } from 'express'
-import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isRestricted } from './restriction.js'
-import { IncomingFace, IncomingOtp, User } from './types.js'
-import {
-  euclidDistance,
-  evaluateAccess,
-  serializeFaceDescriptor,
-  validateIncomingFace,
-  validateIncomingOtp,
-} from './util.js'
+import { IncomingFace, IncomingOtp } from './types.js'
+import { euclidDistance, evaluateAccess, serializeFaceDescriptor } from './util.js'
+import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 
 export async function handleFace(req: Request, res: Response): Promise<void> {
   const THRESHOLD = 0.52 // False accept rate less than 1/1000
