@@ -52,7 +52,7 @@ export function validateRestriction(restriction: IncomingRestriction): boolean {
 
 // TODO: adding/changing roles
 export function validateRole(role: Role): boolean {
-  if (role.id === (1 || 2) && (role.name === 'ADMIN' || 'EMPLOYEE')) {
+  if (role.name === ('ADMIN' || 'EMPLOYEE')) {
     return true
   } else {
     return false
@@ -125,7 +125,10 @@ export function validateEndBiggerThanStart(s: DateTime, e: DateTime): boolean {
   return start <= end
 }
 
-export function evaluateAccess(access: 'GRANTED' | 'DENIED' | 'ERROR'| 'RESTRICTED', firstName: string): OutgoingAccess {
+export function evaluateAccess(
+  access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
+  firstName: string,
+): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access }
 }
