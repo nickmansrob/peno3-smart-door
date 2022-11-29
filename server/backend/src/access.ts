@@ -25,7 +25,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
 
       if (distances.length == 0) {
         // When there are no faces in the database nobody can enter :(
-        res.status(401).json(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+        res.status(401).json(evaluateAccess('DENIED', 'Unknown'))
       } else {
         // Find the closest user
         const matchedUser = distances.reduce((prev, curr) => (prev.distance < curr.distance ? prev : curr))
@@ -34,13 +34,13 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
           if (await isRestricted(matchedUser.id, matchedUser.roleId)) {
             // Can access
             createRecord(matchedUser.id, 'FACE')
-            res.status(200).json(JSON.stringify(evaluateAccess('GRANTED', matchedUser.firstName)))
+            res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName))
           } else {
             // Restricted
-            res.status(200).json(JSON.stringify(evaluateAccess('RESTRICTED', matchedUser.firstName)))
+            res.status(200).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
           }
         } else {
-          res.status(401).json(JSON.stringify(evaluateAccess('DENIED', 'Unknown')))
+          res.status(401).json(evaluateAccess('DENIED', 'Unknown'))
         }
       }
     } else {
