@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { IncomingNewFace, IncomingUserEdit, User, UserRecord } from './types.js'
-import { validateFaceDescriptor, validateNewUser } from './util.js'
+import { validateFaceDescriptor, validateIncomingUserEdit, validateNewUser } from './util.js'
 
 export async function handleUserView(req: Request, res: Response): Promise<void> {
   res.json(await getUsers(parseInt(req.query.id as string))) // styx.rndevelopment.be/api/users?id=1
@@ -12,7 +12,7 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
 
   const user = (await getUsers(face.id)) as User
 
-  if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) {
+  if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) { // validation input
     try {
       const result = await prisma.user.update({
         where: {
@@ -37,11 +37,11 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
   }
 }
 
-export async function handleRolesView(_req: Request, res: Response): Promise<void> {
+export async function handleRolesView(_req: Request, res: Response): Promise<void> { // no validation needed 
   res.json(await prisma.role.findMany())
 }
 
-export async function getUsers(id?: number) {
+export async function getUsers(id?: number) { // no validation needed
   if (id) {
     return await prisma.user.findUnique({
       where: {
@@ -65,6 +65,8 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
     const user = req.body as User
     if (validateNewUser(user)) {
       console.info(`Incoming user: ${JSON.stringify(user)}`)
+    if (validateNewUser(user)) { // validation input
+      console.log(`Incoming user: ${JSON.stringify(user)}`)
       try {
         console.info('Trying to write user')
         const result = await prisma.user.create({
@@ -114,7 +116,7 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
 export async function handleEditUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
     const userEdit = req.body as IncomingUserEdit
-    if (validateIncomingUserEdit(userEdit)) {
+    if (validateIncomingUserEdit(userEdit)) { // validation input
       try {
         const result = await prisma.user.update({
           where: { id: userEdit.id },
@@ -151,22 +153,7 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
   }
 }
 
-function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
-  if (
-    userEdit.firstName &&
-    userEdit.id &&
-    userEdit.lastName &&
-    userEdit.role &&
-    typeof userEdit.id === 'number' &&
-    typeof userEdit.firstName === 'string' &&
-    typeof userEdit.lastName === 'string' &&
-    typeof userEdit.role === 'string'
-  ) {
-    return true
-  } else {
-    return false
-  }
-}
+
 
 /**
  * @param req =  delete user met id = ... number  { id: 1, lastName: 'Robbe' }
@@ -178,8 +165,8 @@ function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = req.body.id as number // TODO: validate
-    if (typeof userId === 'number') {
+    const userId = parseInt(req.query.id as string)
+    if (typeof userId === 'number') { // validation input
       try {
         const result = await prisma.user.update({
           where: { id: userId },
@@ -206,7 +193,7 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
   }
 }
 
-export async function getAllActiveUsers(): Promise<number> {
+export async function getAllActiveUsers(): Promise<number> { // no validation needed
   const users = await getUsers()
 
   if (users) {
@@ -256,7 +243,7 @@ export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | unde
  * @returns the latest record for each user or undefined if no records are present
  */
 
-export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> {
+export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> { // no validation needed
   const records = (
     await prisma.user.findMany({
       select: {

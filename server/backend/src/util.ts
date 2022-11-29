@@ -114,6 +114,24 @@ export function validateEndBiggerThanStart(s: DateTime, e: DateTime): boolean {
   return start <= end
 }
 
+export function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
+  if (
+    userEdit.firstName &&
+    userEdit.id &&
+    userEdit.lastName &&
+    userEdit.role &&
+    typeof userEdit.id === 'number' &&
+    typeof userEdit.firstName === 'string' &&
+    typeof userEdit.lastName === 'string' &&
+    typeof userEdit.role === 'string'
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function evaluateAccess(access: 'GRANTED' | 'DENIED' | 'ERROR', firstName: string): OutgoingAccess {
 export function evaluateAccess(
   access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
   firstName: string,
