@@ -206,7 +206,7 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
 }
 
 /**
- * @param req =  [Role en weekday van de te veranderen restriction, welke parameter je wilt veranderen, naar wat je het wil veranderen]
+ * @param req =  IncomingRestriction 
  * @param res = void of res.send
  * in database wisselen
  */
