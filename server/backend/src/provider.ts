@@ -14,7 +14,15 @@ import {
   handleRoleRestrictionView,
   handleUserRestrictionView,
 } from './restriction.js'
-import { getLatestUserRecords, handleAddFace, handleDeleteUser, handleEditUser, handleNewUser, handleRolesView, handleUserView } from './user.js'
+import {
+  getLatestUserRecords,
+  handleAddFace,
+  handleDeleteUser,
+  handleEditUser,
+  handleNewUser,
+  handleRolesView,
+  handleUserView,
+} from './user.js'
 import { validateEndBiggerThanStart } from './util.js'
 
 export async function start(): Promise<void> {
@@ -24,9 +32,11 @@ export async function start(): Promise<void> {
   server.use('/api/', app)
 
   app.use(express.json())
-  app.use(cors({
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }))
+  app.use(
+    cors({
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  )
 
   app.get('/', handleRoot)
 
@@ -60,7 +70,7 @@ export async function start(): Promise<void> {
   app.get('/range_entries', handleRangeEntries)
   app.get('/latest_status', handleLatestStatus)
 
-  server.listen(3000, () => console.log('Backend running!'))
+  server.listen(3000, () => console.info('Backend running!'))
 }
 
 function handleRoot(_req: Request, res: Response): void {
@@ -85,7 +95,8 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
   const s = DateTime.fromISO(req.query.s as string)
   const e = DateTime.fromISO(req.query.e as string)
 
-  if (s.isValid && e.isValid && validateEndBiggerThanStart(s,e)) { // validation input
+  if (s.isValid && e.isValid && validateEndBiggerThanStart(s, e)) {
+    // validation input
     res.status(200).json(await getRangeEntries(s, e))
   } else {
     res.status(400).send()
@@ -95,4 +106,3 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
 async function handleLatestStatus(_req: Request, res: Response): Promise<void> {
   res.status(200).json(await getLatestUserRecords())
 }
-

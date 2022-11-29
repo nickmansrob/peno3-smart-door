@@ -10,18 +10,18 @@ export async function handleUserView(req: Request, res: Response): Promise<void>
 export async function handleAddFace(req: Request, res: Response): Promise<void> {
   const face = req.body as IncomingNewFace
 
-  const user = await getUsers(face.id) as User
+  const user = (await getUsers(face.id)) as User
 
   if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) {
     try {
       const result = await prisma.user.update({
         where: {
-          id: face.id
+          id: face.id,
         },
         data: {
           faceDescriptor: JSON.stringify(face.faceDescriptor),
-          enabled: true
-        }
+          enabled: true,
+        },
       })
       res.json(result)
     } catch (e) {
@@ -32,7 +32,7 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
     }
   } else {
     res.status(400).json({
-      error: 'Invalid new employee'
+      error: 'Invalid new employee',
     })
   }
 }
@@ -54,8 +54,8 @@ export async function getUsers(id?: number) {
   } else {
     return await prisma.user.findMany({
       where: {
-        enabled: true
-      }
+        enabled: true,
+      },
     })
   }
 }
@@ -64,9 +64,9 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
   if (req.body) {
     const user = req.body as User
     if (validateNewUser(user)) {
-      console.log(`Incoming user: ${JSON.stringify(user)}`)
+      console.info(`Incoming user: ${JSON.stringify(user)}`)
       try {
-        console.log('Trying to write user')
+        console.info('Trying to write user')
         const result = await prisma.user.create({
           data: {
             firstName: user.firstName,
@@ -86,7 +86,7 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
             },
           },
         })
-        console.log('Wrote user')
+        console.info('Wrote user')
         res.json(result)
       } catch (e) {
         console.error(e)
@@ -247,7 +247,7 @@ export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> 
         method: object.records[0]?.method,
         state: object.records[0]?.state,
       } as UserRecord
-      
+
       return record
     })
   }

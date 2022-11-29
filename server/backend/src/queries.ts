@@ -36,7 +36,8 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
   }
 }
 
-export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {  // number validated in provider
+export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
+  // number validated in provider
   const records = await getLatestUserRecords()
 
   if (records) {

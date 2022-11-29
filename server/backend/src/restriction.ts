@@ -3,9 +3,10 @@ import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction, UserRecord } from './types.js'
 import { getLatestUserRecords } from './user.js'
-import { validateRestriction } from './util.js'
+import { findLastState, validateRestriction } from './util.js'
 
-export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> { // no validation needed
+export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
+  // no validation needed
   res.json(await getUserRestrictions(parseInt(req.query.id as string)))
 }
 
@@ -323,8 +324,6 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
   }
 }
 
-
-
 // Utils
 
 /**
@@ -350,16 +349,6 @@ export function inInterval(currentTime: number, restrictionInterval: CustomInter
  * @returns false if no restrictions are active
  */
 
-async function findLastState(userId: number) {
-  const latestUserRecords = (await getLatestUserRecords()) as UserRecord[]
-  if (latestUserRecords) {
-    const lastState = latestUserRecords.filter(record => record.id === userId)[0].state
-    return lastState
-  } else {
-    return 'ENTER'
-  }
-}
-
 export async function isRestricted(userId: number, role: number): Promise<boolean> {
   // general used information
   const currentTime = DateTime.now().hour * 100 + DateTime.now().minute
@@ -368,7 +357,7 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
   // if user enters we need to check everything if the user leaves he is not restricted to leave, if there are not records, his state is entering
   const lastState = await findLastState(userId)
 
-  if (lastState === 'ENTER') {
+  if (lastState === 'LEAVE') {
     // getting all the restrictions in one array
     const userRestrictions = ((await getUserRestrictions(userId)) as UserRestriction[])
       .filter(restriction => restriction.weekday === currentDay)
@@ -383,9 +372,9 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
 
     const allRestrictions = [...userRestrictions, ...groupRestrictions]
 
-    // if there are no restrictions, the person is granted access
+    // if there are no restrictions, the person is denied access
     if (allRestrictions.length === 0) {
-      return true
+      return false
     } else {
       const booleanRestrictions = allRestrictions.map(restriction => inInterval(currentTime, restriction))
       if (booleanRestrictions.includes(false)) {
@@ -395,7 +384,7 @@ export async function isRestricted(userId: number, role: number): Promise<boolea
       }
     }
   } else {
-    return true
+    return true // User can always exit
   }
 }
 
