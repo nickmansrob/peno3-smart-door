@@ -5,10 +5,10 @@ CREATE TABLE "User" (
     "lastName" TEXT NOT NULL,
     "faceDescriptor" TEXT NOT NULL,
     "tfaToken" TEXT NOT NULL,
-    "roleName" TEXT NOT NULL,
+    "roleId" INTEGER NOT NULL,
     "dateCreated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
-    CONSTRAINT "User_roleName_fkey" FOREIGN KEY ("roleName") REFERENCES "Role" ("name") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -28,23 +28,23 @@ CREATE TABLE "UserRecord" (
 );
 
 -- CreateTable
-CREATE TABLE "UserRestriction" (
+CREATE TABLE "UserPermission" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "userId" INTEGER NOT NULL,
     "start" INTEGER NOT NULL,
     "end" INTEGER NOT NULL,
     "weekday" TEXT NOT NULL,
-    CONSTRAINT "UserRestriction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "UserPermission_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
-CREATE TABLE "RoleRestriction" (
+CREATE TABLE "RolePermission" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "roleName" TEXT NOT NULL,
+    "roleId" INTEGER NOT NULL,
     "start" INTEGER NOT NULL,
     "end" INTEGER NOT NULL,
     "weekday" TEXT NOT NULL,
-    CONSTRAINT "RoleRestriction_roleName_fkey" FOREIGN KEY ("roleName") REFERENCES "Role" ("name") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "RolePermission_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex

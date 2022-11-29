@@ -2,7 +2,7 @@ import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
-import { isRestricted } from './restriction.js'
+import { isPermitted } from './permission.js'
 import { IncomingFace, IncomingOtp } from './types.js'
 import { euclidDistance, evaluateAccess, serializeFaceDescriptor } from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
@@ -31,12 +31,12 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
         const matchedUser = distances.reduce((prev, curr) => (prev.distance < curr.distance ? prev : curr))
 
         if (matchedUser.distance <= THRESHOLD) {
-          if (await isRestricted(matchedUser.id, matchedUser.roleId)) {
+          if (await isPermitted(matchedUser.id, matchedUser.roleId)) {
             // Can access
             createRecord(matchedUser.id, 'FACE')
             res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName))
           } else {
-            // Restricted
+            // Permitted
             res.status(200).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
           }
         } else {
@@ -70,7 +70,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
         console.log(validateToken(otpHelper, stream.otp))
 
         if (validateToken(otpHelper, stream.otp) != null) {
-          if (await isRestricted(user.id, user.roleId)) {
+          if (await isPermitted(user.id, user.roleId)) {
             // User allowed
             const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
             if (await recordCheck) {

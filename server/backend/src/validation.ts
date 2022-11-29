@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { IncomingFace, IncomingOtp, IncomingRestriction, IncomingUserEdit, User } from './types.js'
+import { IncomingFace, IncomingOtp, IncomingPermission, IncomingUserEdit, User } from './types.js'
 import { serializeFaceDescriptor } from './util.js'
 
 // Custom type constraints validation
@@ -15,9 +15,9 @@ export function validateFaceDescriptor(arr: string | number[]): boolean {
 /**
  *
  * @param restriction the restriction that needs to be validated
- * @returns true if the restriction is of the type IncomingRestriction, otherwise false
+ * @returns true if the restriction is of the type IncomingPermission, otherwise false
  */
-export function validateRestriction(restriction: IncomingRestriction): boolean {
+export function validatePermission(restriction: IncomingPermission): boolean {
   // checking if the restriction from frontend is valid format
   if (
     restriction.e &&

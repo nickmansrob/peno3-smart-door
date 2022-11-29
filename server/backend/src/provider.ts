@@ -5,15 +5,15 @@ import { handleFace, handleOtp } from './access.js'
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
-  handleDeleteRoleRestriction,
-  handleDeleteUserRestriction,
-  handleEditRoleRestriction,
-  handleEditUserRestriction,
-  handleNewRoleRestriction,
-  handleNewUserRestriction,
-  handleRoleRestrictionView,
-  handleUserRestrictionView,
-} from './restriction.js'
+  handleDeleteRolePermission,
+  handleDeleteUserPermission,
+  handleEditRolePermission,
+  handleEditUserPermission,
+  handleNewRolePermission,
+  handleNewUserPermission,
+  handleRolePermissionView,
+  handleUserPermissionView,
+} from './permission.js'
 import {
   getLatestUserRecords,
   handleAddFace,
@@ -51,15 +51,15 @@ export async function start(): Promise<void> {
 
   app.get('/records', handleRecordView)
 
-  app.get('/user_restrictions', handleUserRestrictionView)
-  app.post('/user_restrictions', handleNewUserRestriction)
-  app.put('/user_restrictions', handleEditUserRestriction)
-  app.delete('/user_restrictions', handleDeleteUserRestriction)
+  app.get('/user_restrictions', handleUserPermissionView)
+  app.post('/user_restrictions', handleNewUserPermission)
+  app.put('/user_restrictions', handleEditUserPermission)
+  app.delete('/user_restrictions', handleDeleteUserPermission)
 
-  app.get('/role_restrictions', handleRoleRestrictionView)
-  app.post('/role_restrictions', handleNewRoleRestriction)
-  app.put('/role_restrictions', handleEditRoleRestriction)
-  app.delete('/role_restrictions', handleDeleteRoleRestriction)
+  app.get('/role_restrictions', handleRolePermissionView)
+  app.post('/role_restrictions', handleNewRolePermission)
+  app.put('/role_restrictions', handleEditRolePermission)
+  app.delete('/role_restrictions', handleDeleteRolePermission)
 
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)

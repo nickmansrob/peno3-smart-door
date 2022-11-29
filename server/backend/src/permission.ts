@@ -1,16 +1,16 @@
 import { Response, Request } from 'express'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
-import { CustomInterval, IncomingRestriction, RoleRestriction, UserRestriction } from './types.js'
+import { CustomInterval, IncomingPermission, RolePermission, UserPermission } from './types.js'
 import { findNextState, inInterval } from './util.js'
-import { validateRestriction } from './validation.js'
+import { validatePermission } from './validation.js'
 
-export async function handleUserRestrictionView(req: Request, res: Response): Promise<void> {
+export async function handleUserPermissionView(req: Request, res: Response): Promise<void> {
   // no validation needed
-  res.json(await getUserRestrictions(parseInt(req.query.id as string)))
+  res.json(await getUserPermissions(parseInt(req.query.id as string)))
 }
 
-export async function getUserRestrictions(id?: number) {
+export async function getUserPermissions(id?: number) {
   // no validation needed
   if (id) {
     return (
@@ -19,22 +19,22 @@ export async function getUserRestrictions(id?: number) {
           id: id,
         },
         select: {
-          restrictions: true,
+          permissions: true,
         },
       })
-    )?.restrictions
+    )?.permissions
   } else {
-    return await prisma.userRestriction.findMany()
+    return await prisma.userPermission.findMany()
   }
 }
 
-export async function handleNewUserRestriction(req: Request, res: Response): Promise<void> {
-  const restriction = req.body as IncomingRestriction
-  if (validateRestriction(restriction)) {
+export async function handleNewUserPermission(req: Request, res: Response): Promise<void> {
+  const restriction = req.body as IncomingPermission
+  if (validatePermission(restriction)) {
     // validation input
-    if ((await findUserRestriction(restriction)).length === 0)
+    if ((await findUserPermission(restriction)).length === 0)
       try {
-        const result = await prisma.userRestriction.create({
+        const result = await prisma.userPermission.create({
           data: {
             userId: restriction.id,
             start: restriction.s,
@@ -45,7 +45,7 @@ export async function handleNewUserRestriction(req: Request, res: Response): Pro
         res.json(result)
       } catch (e) {
         console.error(e)
-        res.status(500).json({ error: 'The restrictions could not be created' })
+        res.status(500).json({ error: 'The permissions could not be created' })
       }
     else {
       res.status(400).send('There already is a restriction for this user')
@@ -55,8 +55,8 @@ export async function handleNewUserRestriction(req: Request, res: Response): Pro
   }
 }
 
-async function findUserRestriction(restriction: IncomingRestriction) {
-  const restricionIdArray = await prisma.userRestriction.findMany({
+async function findUserPermission(restriction: IncomingPermission) {
+  const restricionIdArray = await prisma.userPermission.findMany({
     where: {
       userId: restriction.id,
       weekday: restriction.weekday,
@@ -68,13 +68,13 @@ async function findUserRestriction(restriction: IncomingRestriction) {
   return restricionIdArray
 }
 
-export async function handleEditUserRestriction(req: Request, res: Response): Promise<void> {
+export async function handleEditUserPermission(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const restriction = req.body as IncomingRestriction
+    const restriction = req.body as IncomingPermission
 
-    if (validateRestriction(restriction)) {
+    if (validatePermission(restriction)) {
       // validation input
-      const restrictionIdArray = await findUserRestriction(restriction)
+      const restrictionIdArray = await findUserPermission(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
       if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
@@ -82,7 +82,7 @@ export async function handleEditUserRestriction(req: Request, res: Response): Pr
 
         // validation result findMany succeeded, now the restriction will be deleted
         try {
-          await prisma.userRestriction.update({
+          await prisma.userPermission.update({
             where: { id: restrictionId },
             data: {
               start: restriction.s,
@@ -98,12 +98,12 @@ export async function handleEditUserRestriction(req: Request, res: Response): Pr
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found restrictions failed')
+        res.status(500).send('Validation of found permissions failed')
       }
     }
     // validation input failed
     else {
-      console.error('IncomingRestriction invalid')
+      console.error('IncomingPermission invalid')
       res.status(400).json({
         error: 'IncomingRestricion invalid',
       })
@@ -115,15 +115,15 @@ export async function handleEditUserRestriction(req: Request, res: Response): Pr
   }
 }
 
-export async function handleDeleteUserRestriction(req: Request, res: Response): Promise<void> {
+export async function handleDeleteUserPermission(req: Request, res: Response): Promise<void> {
   // find id of restriction that needs to be deleted
 
   if (req.body) {
-    const restriction = req.body as IncomingRestriction
+    const restriction = req.body as IncomingPermission
 
-    if (validateRestriction(restriction)) {
+    if (validatePermission(restriction)) {
       // validation input
-      const restrictionIdArray = await findUserRestriction(restriction)
+      const restrictionIdArray = await findUserPermission(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
       if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
@@ -131,7 +131,7 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
 
         // validation result findMany succeeded, now the restriction will be deleted
         try {
-          await prisma.userRestriction.delete({
+          await prisma.userPermission.delete({
             where: { id: restrictionId },
           })
           res.status(200).send('restriction deleted')
@@ -143,12 +143,12 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found restrictions failed')
+        res.status(500).send('Validation of found permissions failed')
       }
     }
     // validation failed
     else {
-      console.error('IncomingRestriction invalid')
+      console.error('IncomingPermission invalid')
       res.status(400).json({
         error: 'IncomingRestricion invalid',
       })
@@ -160,14 +160,14 @@ export async function handleDeleteUserRestriction(req: Request, res: Response): 
   }
 }
 
-// Role restrictions
+// Role permissions
 
-export async function handleRoleRestrictionView(req: Request, res: Response): Promise<void> {
+export async function handleRolePermissionView(req: Request, res: Response): Promise<void> {
   // no validation needed
-  res.json(getRoleRestrictions(parseInt(req.query.name as string)))
+  res.json(getRolePermissions(parseInt(req.query.name as string)))
 }
 
-export async function getRoleRestrictions(id?: number) {
+export async function getRolePermissions(id?: number) {
   if (id) {
     // 'validation' input
     return (
@@ -176,23 +176,23 @@ export async function getRoleRestrictions(id?: number) {
           id: id,
         },
         select: {
-          restrictions: true,
+          permissions: true,
         },
       })
-    )?.restrictions
+    )?.permissions
   } else {
-    return await prisma.roleRestriction.findMany()
+    return await prisma.rolePermission.findMany()
   }
 }
 
-export async function handleNewRoleRestriction(req: Request, res: Response): Promise<void> {
-  const restriction = req.body as IncomingRestriction
-  if (validateRestriction(restriction)) {
+export async function handleNewRolePermission(req: Request, res: Response): Promise<void> {
+  const restriction = req.body as IncomingPermission
+  if (validatePermission(restriction)) {
     // validation input
-    if ((await findUserRestriction(restriction)).length === 0) {
+    if ((await findUserPermission(restriction)).length === 0) {
       // validation amount of
       try {
-        const result = await prisma.roleRestriction.create({
+        const result = await prisma.rolePermission.create({
           data: {
             roleId: restriction.id,
             start: restriction.s,
@@ -203,7 +203,7 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
         res.json(result)
       } catch (e) {
         console.error(e)
-        res.status(500).json({ error: 'The restrictions could not be created' })
+        res.status(500).json({ error: 'The permissions could not be created' })
       }
     } else {
       res.status(400).send('There already is a restriction for this role')
@@ -214,14 +214,14 @@ export async function handleNewRoleRestriction(req: Request, res: Response): Pro
 }
 
 /**
- * @param req =  IncomingRestriction
+ * @param req =  IncomingPermission
  * @param res = void of res.send
  * in database wisselen
  */
 
-async function findRoleRestriction(restriction: IncomingRestriction) {
+async function findRolePermission(restriction: IncomingPermission) {
   // no validation needed
-  const restricionIdArray = await prisma.roleRestriction.findMany({
+  const restricionIdArray = await prisma.rolePermission.findMany({
     where: {
       roleId: restriction.id,
       weekday: restriction.weekday,
@@ -233,13 +233,13 @@ async function findRoleRestriction(restriction: IncomingRestriction) {
   return restricionIdArray
 }
 
-export async function handleEditRoleRestriction(req: Request, res: Response): Promise<void> {
+export async function handleEditRolePermission(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const restriction = req.body as IncomingRestriction
+    const restriction = req.body as IncomingPermission
 
-    if (validateRestriction(restriction)) {
+    if (validatePermission(restriction)) {
       // validation input
-      const restrictionIdArray = await findRoleRestriction(restriction)
+      const restrictionIdArray = await findRolePermission(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
       if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
@@ -247,7 +247,7 @@ export async function handleEditRoleRestriction(req: Request, res: Response): Pr
 
         // validation result findMany succeeded, now the restriction will be deleted
         try {
-          await prisma.roleRestriction.update({
+          await prisma.rolePermission.update({
             where: { id: restrictionId },
             data: {
               start: restriction.s,
@@ -263,12 +263,12 @@ export async function handleEditRoleRestriction(req: Request, res: Response): Pr
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found restrictions failed')
+        res.status(500).send('Validation of found permissions failed')
       }
     }
     // validation failed
     else {
-      console.error('IncomingRestriction invalid')
+      console.error('IncomingPermission invalid')
       res.status(400).json({
         error: 'IncomingRestricion invalid',
       })
@@ -281,20 +281,20 @@ export async function handleEditRoleRestriction(req: Request, res: Response): Pr
 }
 
 /**
- * @param req =  IncomingRestriction
+ * @param req =  IncomingPermission
  * @param res = res.send
  * @returns void
  * deleting role restriction in database
  */
-export async function handleDeleteRoleRestriction(req: Request, res: Response): Promise<void> {
+export async function handleDeleteRolePermission(req: Request, res: Response): Promise<void> {
   // find id of restriction that needs to be deleted
 
   if (req.body) {
-    const restriction = req.body as IncomingRestriction
+    const restriction = req.body as IncomingPermission
 
-    if (validateRestriction(restriction)) {
+    if (validatePermission(restriction)) {
       // validation input
-      const restrictionIdArray = await findRoleRestriction(restriction)
+      const restrictionIdArray = await findRolePermission(restriction)
 
       // validation incoming restriction succeeded, now validating result findMany and if ok, then deleting the restriction
       if (restrictionIdArray.length === 1 && typeof restrictionIdArray[0].id === 'number') {
@@ -302,7 +302,7 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
 
         // validation result findMany succeeded, now the restriction will be deleted
         try {
-          await prisma.roleRestriction.delete({
+          await prisma.rolePermission.delete({
             where: { id: restrictionId },
           })
           res.status(200).send('restriction deleted')
@@ -314,12 +314,12 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found restrictions failed')
+        res.status(500).send('Validation of found permissions failed')
       }
     }
     // validation failed
     else {
-      console.error('IncomingRestriction invalid')
+      console.error('IncomingPermission invalid')
       res.status(400).json({
         error: 'IncomingRestricion invalid',
       })
@@ -337,35 +337,35 @@ export async function handleDeleteRoleRestriction(req: Request, res: Response): 
  * @returns the last state of the user that is seen in the records
  */
 
-export async function isRestricted(userId: number, role: number): Promise<boolean> {
+export async function isPermitted(userId: number, role: number): Promise<boolean> {
   // general used information
   const currentTime = DateTime.now().hour * 100 + DateTime.now().minute
   const currentDay = DateTime.now().weekdayShort.toUpperCase()
 
-  // if user enters we need to check everything if the user leaves he is not restricted to leave, if there are not records, his state is entering
+  // if user enters we need to check everything if the user leaves he is not permitted to leave, if there are not records, his state is entering
   const nextState = await findNextState(userId)
 
   if (nextState === 'ENTER') {
-    // getting all the restrictions in one array
-    const userRestrictions = ((await getUserRestrictions(userId)) as UserRestriction[])
+    // getting all the permissions in one array
+    const userPermissions = ((await getUserPermissions(userId)) as UserPermission[])
       .filter(restriction => restriction.weekday === currentDay)
       .map(restriction => {
         return { s: restriction.start, e: restriction.end } as CustomInterval
       })
-    const groupRestrictions = ((await getRoleRestrictions(role)) as RoleRestriction[])
+    const groupPermissions = ((await getRolePermissions(role)) as RolePermission[])
       .filter(restriction => restriction.weekday === currentDay)
       .map(restriction => {
         return { s: restriction.start, e: restriction.end } as CustomInterval
       })
 
-    const allRestrictions = [...userRestrictions, ...groupRestrictions]
+    const allPermissions = [...userPermissions, ...groupPermissions]
 
-    // if there are no restrictions, the person is denied access
-    if (allRestrictions.length === 0) {
+    // if there are no permissions, the person is denied access
+    if (allPermissions.length === 0) {
       return false
     } else {
-      const booleanRestrictions = allRestrictions.map(restriction => inInterval(currentTime, restriction))
-      if (booleanRestrictions.includes(false)) {
+      const booleanPermissions = allPermissions.map(restriction => inInterval(currentTime, restriction))
+      if (booleanPermissions.includes(false)) {
         return false
       } else {
         return true

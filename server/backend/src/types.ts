@@ -40,15 +40,15 @@ export type LatestEntry = Id & {
   role: number
 }
 
-// Restrictions
+// Permissions
 
-export type UserRestriction = Id & {
+export type UserPermission = Id & {
   start: number
   end: number
   weekday: string
 }
 
-export type RoleRestriction = Id & {
+export type RolePermission = Id & {
   start: number
   end: number
   weekday: string
@@ -59,7 +59,7 @@ export type CustomInterval = {
   e: number
 }
 
-export type IncomingRestriction = {
+export type IncomingPermission = {
   s: number
   e: number
   id: number
@@ -89,5 +89,3 @@ export type IncomingNewFace = IncomingFace & Id
 export type Id = {
   id: number
 }
-
-type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>> }[keyof T]
