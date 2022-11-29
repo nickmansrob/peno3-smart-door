@@ -81,13 +81,8 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
               tfaToken: user.tfaToken,
               enabled: false,
               role: {
-                connectOrCreate: {
-                  where: {
-                    name: user.role.name,
-                  },
-                  create: {
-                    name: user.role.name,
-                  },
+                connect: {
+                  name: user.role.name,
                 },
               },
             },
@@ -137,13 +132,8 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
               firstName: userEdit.firstName,
               lastName: userEdit.lastName,
               role: {
-                connectOrCreate: {
-                  where: {
-                    name: userEdit.role.name,
-                  },
-                  create: {
-                    name: userEdit.role.name,
-                  },
+                connect: {
+                  name: userEdit.role.name,
                 },
               },
             },
