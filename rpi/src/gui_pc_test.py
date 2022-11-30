@@ -13,48 +13,57 @@ welcome_string = "Welcome " + name + "!"
 received_id = "000000"
 received_otp = "123456"
 recognised = False # temporary face recognition check"""
-URL = "https://styx.rndevelopment.be/api"
+
+# URL = "https://styx.rndevelopment.be/api"
+URL = "http://localhost:3000"
 
 
 class KeyPad(QtCore.QThread):
 
+  KEY_FORWARD = '+'
+  KEY_BACKWARD = '-'
+
   class Key:
     
-    def __init__(self, code: str) -> None:
+    def __init__(self, code) -> None:
       self.code = code
+      self.pressed = False
+  
+  class KeyCombination:
+
+    def __init__(self, keys) -> None:
+      self.keys = keys
+      self.code = ''.join([key.code for key in self.keys])
       self.pressed = False
 
   keyPressed = QtCore.pyqtSignal(str)
 
   def __init__(self) -> None:
     super().__init__()
-    self.keys = [self.Key('0'), self.Key('1'), self.Key('2'), 
-                 self.Key('3'), self.Key('4'), self.Key('5'), 
-                 self.Key('6'), self.Key('7'), self.Key('8'),
-                 self.Key('9'), self.Key('*'), self.Key('+')]
+    self.keys = [self.Key('0'), self.Key('1'), self.Key('2'), self.Key('3'), self.Key('4'), 
+                 self.Key('5'), self.Key('6'), self.Key('7'), self.Key('8'), self.Key('9'), 
+                 self.Key(self.KEY_BACKWARD), self.Key(self.KEY_FORWARD)]
+    self.combinations = [self.KeyCombination([self.keys[10], self.keys[11]])]
 
   def run(self):
     self.double = False
     while True:
       for key in self.keys:
-        if keyboard.is_pressed('+') and keyboard.is_pressed('*'):
-            if not self.double:
-              self.double = True
-              self.keyPressed.emit("double")
-        elif keyboard.is_pressed(key.code): # replace with keypad specific check
+        if keyboard.is_pressed(key.code):
           if not key.pressed:
             key.pressed = True
-            """if key.code == '*':
-                if keyboard.is_pressed('+'):
-                  self.keyPressed.emit("double")
-            elif key.code == '+':
-                if keyboard.is_pressed('*'):
-                  self.keyPressed.emit("double")"""
             self.keyPressed.emit(key.code)
-        elif self.double:
-          self.double = False
         elif key.pressed:
           key.pressed = False
+      
+      for combo in self.combinations:
+        if all(key.pressed for key in combo.keys):
+          if not combo.pressed:
+            combo.pressed = True
+            self.keyPressed.emit(combo.code)
+        elif combo.pressed:
+          combo.pressed = False
+      
       self.msleep(5)
 
 
@@ -99,28 +108,8 @@ class Fragment(QtWidgets.QWidget):
   def onKeyPress(self, key: str): # virtual method
     pass
 
-"""
-class Splash(Fragment):
-
-  def __init__(self) -> None:
-    super().__init__("splash")
-
-    self.giflabel = QtWidgets.QLabel(self)
-    self.giflabel.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.giflabel.setMinimumSize(QtCore.QSize(800, 480))
-    self.giflabel.setMaximumSize(QtCore.QSize(800, 480))
-    self.movie = QtGui.QMovie(os.path.join(current_dir, "logo-splash-small-noloop.gif"))
-    self.movie.finished.connect(lambda: Fragment.manager.activate("home"))
-    self.giflabel.setMovie(self.movie)
-  
-  def onActivate(self):
-    self.movie.start()
-"""
-
 
 class Home(Fragment):
-
-  received_keys = []
 
   def __init__(self) -> None:
     super().__init__("home")
@@ -130,7 +119,10 @@ class Home(Fragment):
     self.giflabel.setAlignment(QtCore.Qt.AlignCenter)
     self.movie = QtGui.QMovie(os.path.join(current_dir, "logo-outro-small-noloop.gif"))
     self.giflabel.setMovie(self.movie)
-    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if "double" in self.received_keys else Fragment.manager.activate("face_recognition"))
+
+    self.adminModeCombination = ''.join([KeyPad.KEY_BACKWARD, KeyPad.KEY_FORWARD])
+    self.gotAdminModeCombination = False
+    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition"))
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
@@ -141,12 +133,14 @@ class Home(Fragment):
     self.label_1.setAlignment(QtCore.Qt.AlignCenter)
 
   def onActivate(self):
+    self.gotAdminModeCombination = False
     self.movie.start()
     self.movie.setPaused(True)
   
   def onKeyPress(self, key: str):
-    self.received_keys.append(key)
     self.movie.setPaused(False)
+    if key == self.adminModeCombination:
+      self.gotAdminModeCombination = True
       
 
 class FaceEncoder(QtCore.QObject):
@@ -325,19 +319,19 @@ class ID(Fragment):
     self.idCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '+':
+    if key == KeyPad.KEY_FORWARD:
       if len(self.idCode) == 6:
         Fragment.manager.activate("otp", idCode=int(self.idCode), status=self.kwargs["status"])
       else:
         print("Fill in your employee-ID")
-    elif key == '*':
+    elif key == KeyPad.KEY_BACKWARD:
       if len(self.idCode) > 0:
         self.idCode = self.idCode[:-1]
         self.resetLabel(self.labels[len(self.idCode)])
     else:
       if len(self.idCode) == 6:
         print("Press \'+\' to continue")
-      else:
+      elif len(key) == 1:
         self.fillLabel(self.labels[len(self.idCode)], key)
         self.idCode += key
 
@@ -427,24 +421,25 @@ class OTP(Fragment):
     self.otpCode = ""
   
   def onKeyPress(self, key: str):
-    if self.kwargs["status"] == "normal":
-      if key == '+':
-        if len(self.otpCode) == 6:
+    if key == KeyPad.KEY_FORWARD:
+      if len(self.otpCode) == 6:
+        if self.kwargs["status"] == "normal":
           self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
-        else:
-          print("Fill in your otp")
-      elif key == '*':
-        if len(self.otpCode) > 0:
-          self.otpCode = self.otpCode[:-1]
-          self.resetLabel(self.labels[len(self.otpCode)])
+        elif self.kwargs["status"] == "add_user":
+          print("Not yet implemented")
+          pass
       else:
-        if len(self.otpCode) == 6:
-          print("Press \'+\' to continue")
-        else:
-          self.fillLabel(self.labels[len(self.otpCode)], key)
-          self.otpCode += key
-    elif self.kwargs["status"] == "add_user":
-      pass
+        print("Fill in your otp")
+    elif key == KeyPad.KEY_BACKWARD:
+      if len(self.otpCode) > 0:
+        self.otpCode = self.otpCode[:-1]
+        self.resetLabel(self.labels[len(self.otpCode)])
+    else:
+      if len(self.otpCode) == 6:
+        print("Press \'+\' to continue")
+      elif len(key) == 1:
+        self.fillLabel(self.labels[len(self.otpCode)], key)
+        self.otpCode += key
       
 
 class Verified(Fragment):

@@ -97,7 +97,6 @@ type OutgoingAccess = {
 
 type IncomingOtp = Id & {
   otp: string
-  timestamp: string
 }
 
 type IncomingFace = {
