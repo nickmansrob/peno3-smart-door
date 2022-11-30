@@ -8,12 +8,12 @@ import dlib
 import requests
 
 current_dir = os.path.dirname(__file__)
-name = "Milo"
+"""name = "Milo"
 welcome_string = "Welcome " + name + "!"
 received_id = "000000"
 received_otp = "123456"
-recognised = False # temporary face recognition check
-URL = "http://localhost:3000"
+recognised = False # temporary face recognition check"""
+URL = "https://styx.rndevelopment.be/api"
 
 
 class KeyPad(QtCore.QThread):
@@ -34,12 +34,25 @@ class KeyPad(QtCore.QThread):
                  self.Key('9'), self.Key('*'), self.Key('+')]
 
   def run(self):
+    self.double = False
     while True:
       for key in self.keys:
-        if keyboard.is_pressed(key.code): # replace with keypad specific check
+        if keyboard.is_pressed('+') and keyboard.is_pressed('*'):
+            if not self.double:
+              self.double = True
+              self.keyPressed.emit("double")
+        elif keyboard.is_pressed(key.code): # replace with keypad specific check
           if not key.pressed:
             key.pressed = True
+            """if key.code == '*':
+                if keyboard.is_pressed('+'):
+                  self.keyPressed.emit("double")
+            elif key.code == '+':
+                if keyboard.is_pressed('*'):
+                  self.keyPressed.emit("double")"""
             self.keyPressed.emit(key.code)
+        elif self.double:
+          self.double = False
         elif key.pressed:
           key.pressed = False
       self.msleep(5)
@@ -107,6 +120,8 @@ class Splash(Fragment):
 
 class Home(Fragment):
 
+  received_keys = []
+
   def __init__(self) -> None:
     super().__init__("home")
 
@@ -115,7 +130,7 @@ class Home(Fragment):
     self.giflabel.setAlignment(QtCore.Qt.AlignCenter)
     self.movie = QtGui.QMovie(os.path.join(current_dir, "logo-outro-small-noloop.gif"))
     self.giflabel.setMovie(self.movie)
-    self.movie.finished.connect(lambda: Fragment.manager.activate("face_recognition"))
+    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if "double" in self.received_keys else Fragment.manager.activate("face_recognition"))
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
@@ -130,8 +145,9 @@ class Home(Fragment):
     self.movie.setPaused(True)
   
   def onKeyPress(self, key: str):
+    self.received_keys.append(key)
     self.movie.setPaused(False)
-
+      
 
 class FaceEncoder(QtCore.QObject):
 
@@ -231,17 +247,22 @@ class FaceRecognition(Fragment):
     self.camera.signals.exit_loop.emit()
     body = {"faceDescriptor": faceDescriptor.tolist()}
     r = requests.post(url=URL+"/access_face", json=body)
+
+    print(r.status_code)
     if r.status_code in [200, 401]: 
       msg = r.json()
+      print(msg)
 
       if msg["access"] == "GRANTED":
         Fragment.manager.activate("verified", name=msg["firstName"])
       elif msg["access"] == "ERROR":
-        Fragment.manager.activate("error")
+        Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+      elif msg["access"] == "RESTRICTED":
+        Fragment.manager.activate("error", message="Access denied at the moment.")
       else:
-        Fragment.manager.activate("id")
+        Fragment.manager.activate("id", status="normal")
     else:
-      Fragment.manager.activate("error")
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
   def onActivate(self):
     QtCore.QThreadPool.globalInstance().tryStart(self.camera)
@@ -306,7 +327,7 @@ class ID(Fragment):
   def onKeyPress(self, key: str):
     if key == '+':
       if len(self.idCode) == 6:
-        Fragment.manager.activate("otp", idCode=int(self.idCode))
+        Fragment.manager.activate("otp", idCode=int(self.idCode), status=self.kwargs["status"])
       else:
         print("Fill in your employee-ID")
     elif key == '*':
@@ -378,17 +399,24 @@ class OTP(Fragment):
 
   def sendAccessRequest(self, id, otp):
     body = {"id": id,
-            "otp": otp,
-            "timestamp": "2022-11-09T10:09:26+01:00"} # TODO fix time
+            "otp": otp}
     r = requests.post(url=URL+"/access_otp", json=body)
-    msg = r.json()
+    
+    print(r.status_code)
+    if r.status_code in [200, 401]:
+      msg = r.json()
+      print(msg)
 
-    if msg["access"] == "GRANTED":
-      Fragment.manager.activate("verified", name=msg["firstName"])
-    elif msg["access"] == "ERROR":
-      Fragment.manager.activate("error")
+      if msg["access"] == "GRANTED":
+        Fragment.manager.activate("verified", name=msg["firstName"])
+      elif msg["access"] == "ERROR":
+        Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+      elif msg["access"] == "RESTRICTED":
+        Fragment.manager.activate("error", message="Access denied at the moment.")
+      else:
+        Fragment.manager.activate("error", message="Access denied.")
     else:
-      Fragment.manager.activate("denied")
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
   def onActivate(self):
     self.label_2.setText("Hello {}".format(self.kwargs["idCode"]))
@@ -399,21 +427,24 @@ class OTP(Fragment):
     self.otpCode = ""
   
   def onKeyPress(self, key: str):
-    if key == '+':
-      if len(self.otpCode) == 6:
-        self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
+    if self.kwargs["status"] == "normal":
+      if key == '+':
+        if len(self.otpCode) == 6:
+          self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
+        else:
+          print("Fill in your otp")
+      elif key == '*':
+        if len(self.otpCode) > 0:
+          self.otpCode = self.otpCode[:-1]
+          self.resetLabel(self.labels[len(self.otpCode)])
       else:
-        print("Fill in your otp")
-    elif key == '*':
-      if len(self.otpCode) > 0:
-        self.otpCode = self.otpCode[:-1]
-        self.resetLabel(self.labels[len(self.otpCode)])
-    else:
-      if len(self.otpCode) == 6:
-        print("Press \'+\' to continue")
-      else:
-        self.fillLabel(self.labels[len(self.otpCode)], key)
-        self.otpCode += key
+        if len(self.otpCode) == 6:
+          print("Press \'+\' to continue")
+        else:
+          self.fillLabel(self.labels[len(self.otpCode)], key)
+          self.otpCode += key
+    elif self.kwargs["status"] == "add_user":
+      pass
       
 
 class Verified(Fragment):
@@ -445,26 +476,6 @@ class Verified(Fragment):
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
 
 
-class Denied(Fragment):
-
-  def __init__(self) -> None:
-    super().__init__("denied")
-
-    self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setStyleSheet("background-color: rgb(208, 0, 0);")
-    self.label_1.setText("")
-    
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-    self.label_2.setText("")
-    self.label_2.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "no_access.png")))
-  
-  def onActivate(self):
-    QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
-
-
 class Error(Fragment):
 
   def __init__(self) -> None:
@@ -488,10 +499,31 @@ class Error(Fragment):
     font = QtGui.QFont("Roboto", 24)
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
-    self.textlabel.setText("Something went wrong, please contact the helpdesk.")  
 
   def onActivate(self):
+    self.textlabel.setText(self.kwargs["message"])
     QtCore.QTimer.singleShot(5000, lambda: Fragment.manager.activate("home"))  
+
+
+class AddUser(Fragment):
+
+  def __init__(self) -> None:
+    super().__init__("add_user")
+
+    self.label_1 = QtWidgets.QLabel(self)
+    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
+    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
+
+    self.label_2 = QtWidgets.QLabel(self)
+    self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
+    font = QtGui.QFont("Roboto", 24)
+    self.label_2.setFont(font)
+    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
+    self.label_2.setText("Stand in front of the camera and press # to register.")
+    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+
+  def onActivate(self):
+    QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home")) # temporary
 
 
 def main():
@@ -504,8 +536,8 @@ def main():
     id = ID()
     otp = OTP()
     verified = Verified()
-    denied = Denied()
     error = Error()
+    add_user = AddUser()
 
     Fragment.manager.start(800, 480)
 
