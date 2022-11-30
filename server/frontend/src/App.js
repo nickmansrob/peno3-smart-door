@@ -5,6 +5,8 @@ import Single from "./pages/single/Single"
 import Weekly from "./pages/weekly/Weekly";
 import Edit from "./pages/edit/Edit";
 import Login from "./pages/login/Login"
+import Weeklytable from "./pages/weekly/Weeklytable"
+import Editweekly from "./pages/weekly/Editweekly";
 
 import {
   BrowserRouter,
@@ -32,6 +34,11 @@ function App() {
             </Route>
             <Route path = 'login' element = {<Login/>}
             ></Route>
+            <Route path = 'weeklytable' element= {<Weeklytable/>} ></Route>
+            <Route path = 'editweekly' element= {<Editweekly/>} >
+            <Route path = ':userId' element = {<Editweekly/>}>
+            </Route>
+            </Route>
             <Route path = 'weekly' element= {<Weekly/>}>
             <Route path = ':userId' element = {<Weekly/>}>
               </Route>

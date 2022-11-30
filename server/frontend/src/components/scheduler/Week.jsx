@@ -67,7 +67,7 @@ class Calendar extends Component {
         id: 1,
         resource: "R4",
         text: "Allowed",
-        start: "2022-11-07T10:30:00",
+        start: "2022-11-07T10:20:00",
         end: "2022-11-07T13:00:00",
       },
       {
