@@ -312,6 +312,22 @@ class ID(Fragment):
                         "border-bottom-right-radius : 9px")
     label.setText(number)
 
+  def sendGetFirstNameRequest(self, id):
+    body = {"id": id}
+    r = requests.post(url=URL+"/get_firstName", json=body)
+    
+    print(r.status_code)
+    if r.status_code in [200, 401]:
+      msg = r.json()
+      print(msg)
+      
+      if msg["firstName"] is None:
+        Fragment.manager.activate("error", message="Access denied.")
+      else:
+        Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], status=self.kwargs["status"])
+    else:
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+
   def onActivate(self):
     for label in self.labels:
       self.resetLabel(label)
@@ -321,7 +337,7 @@ class ID(Fragment):
   def onKeyPress(self, key: str):
     if key == KeyPad.KEY_FORWARD:
       if len(self.idCode) == 6:
-        Fragment.manager.activate("otp", idCode=int(self.idCode), status=self.kwargs["status"])
+        self.sendGetFirstNameRequest(int(self.idCode))
       else:
         print("Fill in your employee-ID")
     elif key == KeyPad.KEY_BACKWARD:
@@ -413,7 +429,7 @@ class OTP(Fragment):
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
   def onActivate(self):
-    self.label_2.setText("Hello {}".format(self.kwargs["idCode"]))
+    self.label_2.setText("Hello {}".format(self.kwargs["firstName"]))
 
     for label in self.labels:
       self.resetLabel(label)
@@ -497,7 +513,7 @@ class Error(Fragment):
 
   def onActivate(self):
     self.textlabel.setText(self.kwargs["message"])
-    QtCore.QTimer.singleShot(5000, lambda: Fragment.manager.activate("home"))  
+    QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home"))  
 
 
 class AddUser(Fragment):
@@ -518,7 +534,7 @@ class AddUser(Fragment):
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
   def onActivate(self):
-    QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home")) # temporary
+    QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home")) # temporary
 
 
 def main():
