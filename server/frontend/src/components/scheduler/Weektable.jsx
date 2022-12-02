@@ -14,11 +14,14 @@ const Weektable = () => {
       method: "GET",
     };
 
-    fetch(`https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`, requestOptions)
+    fetch(
+      `https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`,
+      requestOptions
+    )
       .then((res) => res.json())
       .then((data) => {
         setPermissions(data);
-        console.log(permissions)
+        console.log(permissions);
       });
   });
 
@@ -68,8 +71,8 @@ const Weektable = () => {
     },
   ];
 
-  const rows = permissions
-   
+  const rows = permissions;
+
   return (
     <div className="datatable">
       <DataGrid
@@ -78,6 +81,14 @@ const Weektable = () => {
         pageSize={9}
         rowsPerPageOptions={[5]}
       />
+      <div className="buttonzone">
+        <Link
+          to={`/addweekly/${userId.userId}`}
+          style={{ textDecoration: "none" }}
+        >
+          <div>Add Permission</div>
+        </Link>
+      </div>
     </div>
   );
 };

@@ -29,7 +29,8 @@
       }
 
       .right {
-        flex: 2;
+        display: flex;
+        justify-content: center;
         form {
           display: flex;
           flex-wrap: wrap;
@@ -53,6 +54,7 @@
           }
           .roller {
             display: block;
+            margin: 20px;
           }
         }
         button {
