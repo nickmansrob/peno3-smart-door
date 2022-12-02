@@ -120,6 +120,7 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
         res.status(200).json(user)
       } catch (e) {
         console.error(e)
+        console.trace()
         res.status(403).json('User could not be found.')
       }
     } else {

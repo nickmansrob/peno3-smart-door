@@ -27,29 +27,35 @@ export async function getUserPermissions(id?: number) {
 }
 
 export async function handleNewUserPermission(req: Request, res: Response): Promise<void> {
-  const permissions = req.body as IncomingPermission
-  if (validatePermission(permissions)) {
-    // validation input
-    if ((await findUserPermission(permissions)).length === 0)
-      try {
-        const result = await prisma.userPermission.create({
-          data: {
-            userId: permissions.id,
-            start: permissions.s,
-            end: permissions.e,
-            weekday: permissions.weekday,
-          },
-        })
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({ error: 'The permissions could not be created' })
+  if(req.body){
+    const permissions = req.body as IncomingPermission
+    if (validatePermission(permissions)) {
+      // validation input
+      if ((await findUserPermission(permissions)).length === 0){
+        try {
+          const result = await prisma.userPermission.create({
+            data: {
+              userId: permissions.id,
+              start: permissions.s,
+              end: permissions.e,
+              weekday: permissions.weekday,
+            },
+          })
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json({ error: 'The permissions could not be created' })
+        }
       }
-    else {
-      res.status(400).send('There already is a permissions for this user')
+      else {
+        res.status(409).send('There already is a permissions for this user')
+      }
+    } else {
+      res.status(400).send('The permissions has the wrong format')
     }
-  } else {
-    res.status(400).send('The permissions has the wrong format')
+  }
+  else {
+    res.status(400).send('Bad Request')
   }
 }
 
