@@ -37,7 +37,7 @@
           .formInput {
             width: 40%;
             label {
-              display: flex;
+              display: block;
               align-items: center;
               gap: 10px;
               .icon {
@@ -51,13 +51,15 @@
               border-bottom: 1px solid;
             }
           }
-          
+          .roller {
+            display: block;
+          }
         }
-        button{
+        button {
           width: 50%;
           background-color: rgb(11, 11, 163);
           color: white;
-          cursor:pointer;
+          cursor: pointer;
         }
       }
     }
