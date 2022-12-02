@@ -85,7 +85,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
           res.status(401).json(evaluateAccess('DENIED', user.firstName))
         }
       } else {
-        res.status(403).json('User does not exist')
+        res.status(403).json(`User with id: ${} does not exist`)
       }
     } else {
       res.status(400).json('OTP Validation failed')
@@ -114,8 +114,9 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
           lastName: true,
         },
       })
-      if (!user || /deletedUser/.test(user.firstName)) {
-        console.warn('User could not be found.')
+      res.status(200).json(user)
+      if (!user) {
+        console.warn(`User with id ${stream.id} could not be found.`)
         res.status(403).json('User could not be found.')
       } else {
         res.status(200).json(user)
