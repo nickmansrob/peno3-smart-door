@@ -82,7 +82,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
             res.status(401).json(evaluateAccess('RESTRICTED', user.firstName))
           }
         } else {
-          res.status(400).json('Incoming OTP invalid')
+          res.status(401).json(evaluateAccess('DENIED', user.firstName))
         }
       } else {
         res.status(403).json('User does not exist')
@@ -120,15 +120,13 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
         res.status(200).json(user)
       } catch (e) {
         console.error(e)
-        res.status(500).json({
-          error: 'User could not be found.',
-        })
+        res.status(403).json('User could not be found.')
       }
     } else {
-      res.status(400).send('Id is invalid')
+      res.status(400).json('Id is invalid')
     }
   } else {
-    res.status(400).send()
+    res.status(400).json()
   }
 }
 
