@@ -4,6 +4,12 @@
   -moz-box-shadow: 0px 3px 12px -1px rgba(0, 0, 0, 0.51);
   box-shadow: 0px 3px 12px -1px rgba(0, 0, 0, 0.51);
   padding: 10px;
+  .totalpercentage {
+    text-align: center;
+    font-size: 25px;
+    color: rgba(105, 101, 101, 0.67);
+    justify-content: center;
+  }
   .top {
     display: flex;
     align-items: center;

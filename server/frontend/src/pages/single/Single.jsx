@@ -10,7 +10,6 @@ const Single = () => {
   const [roles, setRoles] = useState([]);
 
   const id = useParams();
-  console.log(id.userId);
 
   useEffect(() => {
     const requestOptions = {
@@ -73,10 +72,10 @@ const Single = () => {
                 </div>
 
                 <Link
-                  to={`/weekly/${id.userId}`}
+                  to={`/weeklytable/${id.userId}`}
                   style={{ textDecoration: "none" }}
                 >
-                  <div className="schedulerButton"> Click to see scheduler</div>
+                  <div className="schedulerButton"> Click to permissions</div>
                 </Link>
                 <button type="button" onClick={buttonClicked}>
                   {isShown ? "Hide QR" : "Get QR"}
