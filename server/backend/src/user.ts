@@ -217,7 +217,7 @@ export async function getLatestEnabledUserRecords(amount?: number): Promise<User
       select: {
         records: {
           where: {
-            state: 'ENTER'
+            state: 'ENTER',
           },
           orderBy: {
             timestamp: 'desc',
@@ -228,7 +228,7 @@ export async function getLatestEnabledUserRecords(amount?: number): Promise<User
       where: {
         enabled: true,
       },
-      take: amount
+      take: amount,
     })
   ).filter(record => record.records.length !== 0)
 
@@ -258,9 +258,9 @@ export async function getRangeRecords(s: DateTime, e: DateTime) {
           where: {
             timestamp: {
               lte: e.toString(),
-              gte: s.toString()
+              gte: s.toString(),
             },
-            state: 'ENTER'
+            state: 'ENTER',
           },
           orderBy: {
             timestamp: 'desc',

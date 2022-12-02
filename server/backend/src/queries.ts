@@ -29,7 +29,13 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
       currentDay = currentDay.plus({ days: 1 })
     }
 
-    const recsPerUser = dateRange.map(day => records.map(record => record.records.filter(userRecord => DateTime.fromISO(userRecord.timestamp.toString()).toFormat('yyyy-MM-dd') === day)))
+    const recsPerUser = dateRange.map(day =>
+      records.map(record =>
+        record.records.filter(
+          userRecord => DateTime.fromISO(userRecord.timestamp.toString()).toFormat('yyyy-MM-dd') === day,
+        ),
+      ),
+    )
 
     console.log(recsPerUser)
 
@@ -46,22 +52,21 @@ export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
 
   if (records) {
     return await Promise.all(
-      records
-        .map(async record => {
-          const user = await getUsers(record.id)
-          if (user) {
-            const userObject = [user].flat()[0]
-            return {
-              id: record.id,
-              firstName: userObject.firstName,
-              lastName: userObject.lastName,
-              timestamp: record.timestamp,
-              role: userObject.roleId,
-            } as LatestEntry
-          } else {
-            return {} as LatestEntry
-          }
-        }),
+      records.map(async record => {
+        const user = await getUsers(record.id)
+        if (user) {
+          const userObject = [user].flat()[0]
+          return {
+            id: record.id,
+            firstName: userObject.firstName,
+            lastName: userObject.lastName,
+            timestamp: record.timestamp,
+            role: userObject.roleId,
+          } as LatestEntry
+        } else {
+          return {} as LatestEntry
+        }
+      }),
     )
   } else {
     return [] as LatestEntry[]

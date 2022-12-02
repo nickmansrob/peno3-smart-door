@@ -14,8 +14,18 @@ import {
   handleUserView,
 } from './user.js'
 import { validateEndBiggerThanStart } from './validation.js'
-import { handleRolePermissionView, handleNewRolePermission, handleEditRolePermission, handleDeleteRolePermission } from './role_permission.js'
-import { handleUserPermissionView, handleNewUserPermission, handleEditUserPermission, handleDeleteUserPermission } from './user_permission.js'
+import {
+  handleRolePermissionView,
+  handleNewRolePermission,
+  handleEditRolePermission,
+  handleDeleteRolePermission,
+} from './role_permission.js'
+import {
+  handleUserPermissionView,
+  handleNewUserPermission,
+  handleEditUserPermission,
+  handleDeleteUserPermission,
+} from './user_permission.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()

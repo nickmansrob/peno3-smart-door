@@ -75,9 +75,10 @@ export type OutgoingAccess = {
 }
 
 export type OutgoingAdminAccess = {
-  firstName: string, 
-  access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED', 
-  role: string}
+  firstName: string
+  access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED'
+  role: string
+}
 
 export type IncomingOtp = Id & {
   otp: string

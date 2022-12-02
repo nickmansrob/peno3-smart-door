@@ -95,81 +95,69 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
   }
 }
 
-
 /**
- * 
+ *
  * @param req id as number
  * @param res  firstName and lastName of person behind the id
- * 
+ *
  */
 export async function handleGetName(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const userId = req.body as number
 
-    if(userId){
+    if (userId) {
       try {
         const user = await prisma.user.findUnique({
           where: {
             id: userId,
           },
-          select:{
+          select: {
             firstName: true,
-            lastName: true
-          }
+            lastName: true,
+          },
         })
         res.json(user)
-      }
-      catch(e) {
+      } catch (e) {
         console.error(e)
-        res.status(500).json({
+        res.status(403).json({
           error: 'User could not be found.',
         })
       }
-    }
-    else{
+    } else {
       res.status(400).send('The send id is not a number')
     }
-  }
-  else{
-    res.status(400).send
+  } else {
+    res.status(400).send()
   }
 }
 
 export async function handleAdminAccess(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const stream = req.body as IncomingOtp
-    if (validateIncomingOtp(stream)) { // validation input
+    if (validateIncomingOtp(stream)) {
+      // validation input
       const user = await prisma.user.findUnique({
         where: {
-          id: stream.id
-        }
+          id: stream.id,
+        },
       })
 
-      if(user){
+      if (user) {
         const otpHelper = createOtp(user.tfaToken)
 
-        if(validateToken(otpHelper, stream.otp) != null) {
-          if(await isPermitted(user.id, user.roleId)){
-            // User allowed
-            res.status(200).json(evaluateAdminAccess('GRANTED', user.firstName, await getRole(user.roleId)))
-          }
-          else {
-            res.status(401).json(evaluateAdminAccess('DENIED', user.firstName, await getRole(user.roleId)))
-          }
+        if (validateToken(otpHelper, stream.otp) != null) {
+          // User allowed
+          res.status(200).json(evaluateAdminAccess('GRANTED', user.firstName, await getRole(user.roleId)))
+        } else {
+          res.status(401).json(evaluateAdminAccess('DENIED', user.firstName, await getRole(user.roleId)))
         }
-        else{
-          res.status(400).json('Incoming OTP invalid')
-        }
-      }
-      else {
+      } else {
         res.status(400).json('User does not exist')
       }
-    }
-    else {
+    } else {
       res.status(400).json('OTP Validation failed')
     }
-  }
-  else {
+  } else {
     res.status(400).json('Bad request')
   }
 }

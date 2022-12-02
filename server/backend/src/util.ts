@@ -27,9 +27,10 @@ export function evaluateAccess(
 
 export function evaluateAdminAccess(
   access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
-  firstName: string, role: Role
+  firstName: string,
+  role: Role,
 ): OutgoingAdminAccess {
-  return {firstName, access, role: role.name}
+  return { firstName, access, role: role.name }
 }
 
 /**
@@ -88,11 +89,9 @@ export function inInterval(currentTime: number, permissionsInterval: CustomInter
 export async function getRole(roleId: number): Promise<Role> {
   const role = await prisma.role.findUnique({
     where: {
-      id: roleId
-    }
+      id: roleId,
+    },
   })
 
   return role as Role
 }
-
-
