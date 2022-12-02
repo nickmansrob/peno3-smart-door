@@ -31,7 +31,7 @@ export async function handleNewUserPermission(req: Request, res: Response): Prom
     const permissions = req.body as IncomingPermission
     if (validatePermission(permissions)) {
       // validation input
-      if ((await findUserPermission(permissions)).length === 0)
+      if ((await findUserPermission(permissions)).length === 0) {
         try {
           const result = await prisma.userPermission.create({
             data: {
