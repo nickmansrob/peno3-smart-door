@@ -108,14 +108,13 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
       const user = await prisma.user.findFirst({
         where: {
           id: stream.id,
-          enabled: true
         },
         select: {
           firstName: true,
           lastName: true,
         },
       })
-      if (!user) {
+      if (!user || /deletedUser/.test(user.firstName)) {
         console.warn('User could not be found.')
         res.status(403).json('User could not be found.')
       } else {
