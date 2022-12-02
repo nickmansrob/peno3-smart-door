@@ -10,7 +10,10 @@ import DropdownList from "react-widgets/DropdownList";
 const Edit = () => {
   const [user, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [group, setGroup] = useState([]);
+  const [group, setGroup] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
   const rolenames = Array.from(roles, (x) => x.name);
   const id = useParams();
   useEffect(() => {
@@ -23,7 +26,6 @@ const Edit = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setUser(data);
       });
 
@@ -34,6 +36,26 @@ const Edit = () => {
         setRoles(data);
       });
   }, []);
+  const buttonPressed = () => {
+    const bodydata = {
+      id: Number(id.userId),
+      firstName: firstName,
+      lastName: lastName,
+      role: { name: group },
+    };
+    fetch(`https://styx.rndevelopment.be/api/users`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodydata),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+    console.log(bodydata);
+  };
 
   return (
     <div className="new">
@@ -56,7 +78,12 @@ const Edit = () => {
             <form>
               <div className="formInput">
                 <label>First name</label>
-                <input type="text" placeholder={user.firstName} />
+                <input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  type="text"
+                  placeholder={user.firstName}
+                />
               </div>
               <div>
                 <label>Role</label>
@@ -67,10 +94,17 @@ const Edit = () => {
                 />
               </div>
               <div className="formInput">
-                <label>Surname</label>
-                <input type="text" placeholder={user.lastName} />
+                <label>Last name</label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder={user.lastName}
+                />
               </div>
-              <button>Edit</button>
+              <button type="button" onClick={buttonPressed}>
+                Edit
+              </button>
             </form>
           </div>
         </div>
