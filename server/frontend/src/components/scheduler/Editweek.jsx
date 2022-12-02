@@ -11,6 +11,12 @@ const Edit = () => {
   const [user, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
   const [day, setDay] = useState([]);
+  const [hour, setHour] = useState([]);
+  const [minute, setMinute] = useState([]);
+  const minutes = [];
+  for (let i = 0; i < 61; i++) {
+    minutes.push(i);
+  }
   const days = [
     "Monday",
     "Tuesday",
@@ -19,6 +25,10 @@ const Edit = () => {
     "Friday",
     "Saturday",
     "Sunday",
+  ];
+  const hours = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+    22, 23, 0,
   ];
   const id = useParams();
   const idArray = id.userId.split("-");
@@ -54,32 +64,51 @@ const Edit = () => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>Edit Timeperiod(id:{permissionId})</h1>
+          <h1>Edit Timeperiod (id:{permissionId})</h1>
         </div>
         <div className="bottom">
-          <div className="day">
-            <label>Day</label>
-            <DropdownList
-              data={days}
-              value={day}
-              onChange={(day) => setDay(day)}
-            />
-          </div>
+          <form>
+            <div className="day">
+              <label>Day</label>
+              <DropdownList
+                data={days}
+                value={day}
+                onChange={(day) => setDay(day)}
+              />
+            </div>
 
-          <div className="right">
-            <form>
-              <div className="formInput">
-                <label>Begin timeperiod</label>
-                <input type="text" />
+            <div className="right">
+              <div className="roller">
+                <label>Start</label>
+                <DropdownList
+                  data={hours}
+                  value={hour}
+                  onChange={(hour) => setHour(hour)}
+                />
+                <DropdownList
+                  data={minutes}
+                  value={minute}
+                  onChange={(minute) => setMinute(minute)}
+                />
               </div>
 
-              <div className="formInput">
-                <label>End Timeperiod</label>
-                <input type="text" />
+              <div className="roller">
+                <label>End</label>
+                <DropdownList
+                  data={hours}
+                  value={hour}
+                  onChange={(hour) => setHour(hour)}
+                />
+                <DropdownList
+                  data={minutes}
+                  value={minute}
+                  onChange={(minute) => setMinute(minute)}
+                />
               </div>
+
               <button>Edit</button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
