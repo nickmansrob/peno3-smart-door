@@ -3,7 +3,7 @@ import { prisma } from './database.js'
 import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isPermitted } from './permission.js'
-import { IncomingFace, IncomingOtp, Role } from './types.js'
+import { IncomingFace, IncomingOtp, Role, Id } from './types.js'
 import { euclidDistance, evaluateAccess, evaluateAdminAccess, getRole, serializeFaceDescriptor } from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 
@@ -37,7 +37,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
             res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName))
           } else {
             // Permitted
-            res.status(200).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
+            res.status(401).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
           }
         } else {
           res.status(401).json(evaluateAccess('DENIED', 'Unknown'))
@@ -85,7 +85,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
           res.status(400).json('Incoming OTP invalid')
         }
       } else {
-        res.status(400).json('User does not exist')
+        res.status(403).json('User does not exist')
       }
     } else {
       res.status(400).json('OTP Validation failed')
@@ -103,28 +103,29 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
  */
 export async function handleGetName(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = req.body as number
+    const stream = req.body as Id
 
-    if (userId) {
+    if (stream) {
       try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: {
-            id: userId,
+            id: stream.id,
+            enabled: true
           },
           select: {
             firstName: true,
             lastName: true,
           },
         })
-        res.json(user)
+        res.status(200).json(user)
       } catch (e) {
         console.error(e)
-        res.status(403).json({
+        res.status(500).json({
           error: 'User could not be found.',
         })
       }
     } else {
-      res.status(400).send('The send id is not a number')
+      res.status(400).send('Id is invalid')
     }
   } else {
     res.status(400).send()
@@ -152,7 +153,7 @@ export async function handleAdminAccess(req: Request, res: Response): Promise<vo
           res.status(401).json(evaluateAdminAccess('DENIED', user.firstName, await getRole(user.roleId)))
         }
       } else {
-        res.status(400).json('User does not exist')
+        res.status(403).json('User does not exist')
       }
     } else {
       res.status(400).json('OTP Validation failed')
