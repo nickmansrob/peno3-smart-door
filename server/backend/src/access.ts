@@ -85,7 +85,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
           res.status(401).json(evaluateAccess('DENIED', user.firstName))
         }
       } else {
-        res.status(403).json(`User with id: ${} does not exist`)
+        res.status(403).json(`User with id: ${stream.id} does not exist`)
       }
     } else {
       res.status(400).json('OTP Validation failed')
@@ -122,7 +122,7 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
         res.status(200).json(user)
       }
     } else {
-      res.status(400).json('Id is invalid')
+      res.status(400).json(`Recieved data (id) = ${JSON.stringify(req.body)} is invalid`)
     }
   } else {
     res.status(400).json()
@@ -150,7 +150,7 @@ export async function handleAdminAccess(req: Request, res: Response): Promise<vo
           res.status(401).json(evaluateAdminAccess('DENIED', user.firstName, await getRole(user.roleId)))
         }
       } else {
-        res.status(403).json('User does not exist')
+        res.status(403).json(`User with id: ${stream.id}  does not exist`)
       }
     } else {
       res.status(400).json('OTP Validation failed')

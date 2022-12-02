@@ -42,8 +42,6 @@ export async function start(): Promise<void> {
 
   app.get('/', handleRoot)
 
-  app.post('/test', (_req: Request, res: Response) => res.status(200).send())
-
   app.get('/roles', handleRolesView)
 
   app.get('/users', handleUserView)
@@ -78,7 +76,7 @@ export async function start(): Promise<void> {
 }
 
 function handleRoot(_req: Request, res: Response): void {
-  res.send('Running backend')
+  res.json('Running backend')
 }
 
 async function handleGetEntries(_req: Request, res: Response): Promise<void> {
@@ -92,7 +90,7 @@ async function handleLatestEntries(req: Request, res: Response): Promise<void> {
     // validation input
     res.status(200).json(await getLatestEntries(amount))
   } else {
-    res.status(400).send('Input invalid')
+    res.status(400).json('Input invalid')
   }
 }
 
@@ -104,7 +102,7 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
     // validation input
     res.status(200).json(await getRangeEntries(s, e))
   } else {
-    res.status(400).send('Input invalid')
+    res.status(400).json('Input invalid')
   }
 }
 
