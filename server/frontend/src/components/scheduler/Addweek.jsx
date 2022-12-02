@@ -1,4 +1,4 @@
-import "./new.scss";
+import "./editweek.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
 import { useState } from "react";
