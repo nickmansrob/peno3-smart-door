@@ -9,42 +9,44 @@ export async function handleUserView(req: Request, res: Response): Promise<void>
 }
 
 export async function handleAddFace(req: Request, res: Response): Promise<void> {
-  const face = req.body as IncomingNewFace
+  if (req.body){
+    const face = req.body as IncomingNewFace
 
-  const user = (await getUsers(face.id)) as User
+    const user = (await getUsers(face.id)) as User
 
-  if (user && validateFaceDescriptor(face.faceDescriptor)) {
-    if(user.faceDescriptor === '[]'){
-    // validation input
-      try {
-        const result = await prisma.user.update({
-          where: {
-            id: face.id,
-          },
-          data: {
-            faceDescriptor: JSON.stringify(face.faceDescriptor),
-            enabled: true,
-          },
-        })
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({
-          error: 'Facedescriptor could not be updated.',
-        })
+    if (user && validateFaceDescriptor(face.faceDescriptor)) {
+      if(user.faceDescriptor === '[]'){
+      // validation input
+        try {
+          const result = await prisma.user.update({
+            where: {
+              id: face.id,
+            },
+            data: {
+              faceDescriptor: JSON.stringify(face.faceDescriptor),
+              enabled: true,
+            },
+          })
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json({
+            error: 'Facedescriptor could not be updated.',
+          })
+        }
+      }
+      else {
+        res.status(409).json('facedescriptor already exists')
       }
     }
     else {
-      res.status(400).json({
-        error: 'Invalid facedescriptor',
-      })
+      res.status(400).json('Invalid facedescriptor')
     }
   }
   else {
-    res.status(400).json({
-      error: 'Invalid facedescriptor',
-    })
+    res.status(400).json('Bad Request')
   }
+
 }
 
 export async function handleRolesView(_req: Request, res: Response): Promise<void> {
