@@ -68,16 +68,15 @@ const Edit = () => {
         </div>
         <div className="bottom">
           <form>
-            <div className="day">
-              <label>Day</label>
-              <DropdownList
-                data={days}
-                value={day}
-                onChange={(day) => setDay(day)}
-              />
-            </div>
-
             <div className="right">
+              <div className="roller">
+                <label>Day</label>
+                <DropdownList
+                  data={days}
+                  value={day}
+                  onChange={(day) => setDay(day)}
+                />
+              </div>
               <div className="roller">
                 <label>Start</label>
                 <DropdownList
@@ -91,7 +90,6 @@ const Edit = () => {
                   onChange={(minute) => setMinute(minute)}
                 />
               </div>
-              
 
               <div className="roller">
                 <label>End</label>
@@ -107,13 +105,11 @@ const Edit = () => {
                 />
               </div>
               <button>Edit</button>
-              </div>
-            </form>
-            
-          </div>
+            </div>
+          </form>
         </div>
       </div>
-    
+    </div>
   );
 };
 
