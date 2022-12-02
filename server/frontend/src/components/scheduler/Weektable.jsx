@@ -8,24 +8,23 @@ import { DisabledByDefault } from "@mui/icons-material";
 
 const Weektable = () => {
   const userId = useParams();
-  console.log(userId);
-  const [allowances, setAllowances] = useState([]);
-
+  const [permissions, setPermissions] = useState([]);
   useEffect(() => {
     const requestOptions = {
       method: "GET",
     };
 
-    fetch("https://styx.rndevelopment.be/api/user_restrictions", requestOptions)
+    fetch(`https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
-        setAllowances(data);
+        setPermissions(data);
+        console.log(permissions)
       });
   });
 
   const columns = [
     { field: "id", headerName: "ID", flex: 1.5 },
-    { field: "day", headerName: "Day", flex: 3 },
+    { field: "weekday", headerName: "Day", flex: 3 },
     { field: "start", headerName: "Starting time", flex: 4 },
     { field: "end", headerName: "Ending time", flex: 4 },
     {
@@ -69,13 +68,8 @@ const Weektable = () => {
     },
   ];
 
-  const rows = [
-    { id: 1, day: "Monday", start: "17h30", end: "19h30" },
-    { id: 2, day: "Tuesday", start: "17h30", end: "19h30" },
-    { id: 3, day: "Wednesday", start: "13h00", end: "14h00" },
-    { id: 4, day: "Monday", start: "12h30", end: "20h30" },
-  ];
-
+  const rows = permissions
+   
   return (
     <div className="datatable">
       <DataGrid
