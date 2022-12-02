@@ -12,6 +12,7 @@ export async function start(): Promise<void> {
     app.post('/access_face', handleFace)
     app.post('/access_otp', handleOtp)
     app.post('/get_firstName', handleId)
+    app.post('/role_otp', handleOtpRole)
 
     app.listen(port, () => console.log(`Server is running at http://localhost:${port}`));
 }
@@ -52,22 +53,6 @@ async function handleFace(req: Request, res: Response) : Promise<void> {
 
 }
 
-// Added simple handler
-async function handleId(req: Request, res: Response): Promise<void> {
-  if (req.body) {
-    const stream = req.body as IncomingOtp
-    const user = getUserById(stream.id)
-
-    if (user === undefined) {
-      res.status(401).json({firstName: null})
-    } else {
-      res.status(200).json({firstName: user.firstName})
-    }
-  } else {
-    res.sendStatus(400)
-  }
-}
-
 // Changed heavily to facilitate testing of the Raspberry Pi frontend
 async function handleOtp(req: Request, res: Response): Promise<void> {
   if (req.body) {
@@ -81,6 +66,42 @@ async function handleOtp(req: Request, res: Response): Promise<void> {
         res.status(200).json(evaluateAccess('GRANTED', user.firstName))
       } else {
         res.status(401).json(evaluateAccess('DENIED', user.firstName))
+      }
+    }
+  } else {
+    res.sendStatus(400)
+  }
+}
+
+// Added simple handler
+async function handleId(req: Request, res: Response): Promise<void> {
+  if (req.body) {
+    const stream = req.body as Id
+    const user = getUserById(stream.id)
+
+    if (user === undefined) {
+      res.status(401).json({firstName: null})
+    } else {
+      res.status(200).json({firstName: user.firstName})
+    }
+  } else {
+    res.sendStatus(400)
+  }
+}
+
+// Added simple handler
+async function handleOtpRole(req: Request, res: Response): Promise<void> {
+  if (req.body) {
+    const stream = req.body as IncomingOtp
+    const user = getUserById(stream.id)
+
+    if (user === undefined) {
+      res.status(401).json({roleId: null, firstName: null})
+    } else {
+      if (user.password === stream.otp) {
+        res.status(200).json({roleId: user.role.name, firstName: user.firstName})
+      } else {
+        res.status(401).json({roleId: null, firstName: user.firstName})
       }
     }
   } else {

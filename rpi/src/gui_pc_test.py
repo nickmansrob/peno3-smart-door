@@ -321,7 +321,7 @@ class ID(Fragment):
       msg = r.json()
       print(msg)
       
-      if msg["firstName"] is None:
+      if r.status_code == 401:
         Fragment.manager.activate("error", message="Access denied.")
       else:
         Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], status=self.kwargs["status"])
@@ -428,6 +428,25 @@ class OTP(Fragment):
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
+  def sendRoleRequest(self, id, otp):
+    body = {"id": id,
+            "otp": otp}
+    r = requests.post(url=URL+"/role_otp", json=body)
+    
+    print(r.status_code)
+    if r.status_code in [200, 401]:
+      msg = r.json()
+      print(msg)
+
+      if r.status_code == 401:
+        Fragment.manager.activate("error", message="Access denied.")
+      elif msg["roleId"] == "ADMIN":
+        Fragment.manager.activate("add_user")
+      else:
+        Fragment.manager.activate("error", message="Access denied.")
+    else:
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+
   def onActivate(self):
     self.label_2.setText("Hello {}".format(self.kwargs["firstName"]))
 
@@ -442,7 +461,7 @@ class OTP(Fragment):
         if self.kwargs["status"] == "normal":
           self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
         elif self.kwargs["status"] == "add_user":
-          print("Not yet implemented")
+          self.sendRoleRequest(self.kwargs["idCode"], self.otpCode)
           pass
       else:
         print("Fill in your otp")
