@@ -10,7 +10,6 @@ const Single = () => {
   const [roles, setRoles] = useState([]);
 
   const id = useParams();
-  console.log(id.userId);
 
   useEffect(() => {
     const requestOptions = {

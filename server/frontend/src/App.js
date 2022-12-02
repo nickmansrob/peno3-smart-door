@@ -34,7 +34,10 @@ function App() {
             </Route>
             <Route path = 'login' element = {<Login/>}
             ></Route>
-            <Route path = 'weeklytable' element= {<Weeklytable/>} ></Route>
+            <Route path = 'weeklytable' element= {<Weeklytable/>} >
+            <Route path = ':userId' element = {<Weeklytable/>}>
+            </Route>
+            </Route>
             <Route path = 'editweekly' element= {<Editweekly/>} >
             <Route path = ':userId' element = {<Editweekly/>}>
             </Route>
