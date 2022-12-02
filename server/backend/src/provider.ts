@@ -1,7 +1,7 @@
 import express, { Express, Response, Request } from 'express'
 import cors from 'cors'
 import { DateTime } from 'luxon'
-import { handleFace, handleOtp } from './access.js'
+import { handleAdminAccess, handleFace, handleGetName, handleOtp } from './access.js'
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
@@ -14,8 +14,18 @@ import {
   handleUserView,
 } from './user.js'
 import { validateEndBiggerThanStart } from './validation.js'
-import { handleRolePermissionView, handleNewRolePermission, handleEditRolePermission, handleDeleteRolePermission } from './role_permission.js'
-import { handleUserPermissionView, handleNewUserPermission, handleEditUserPermission, handleDeleteUserPermission } from './user_permission.js'
+import {
+  handleRolePermissionView,
+  handleNewRolePermission,
+  handleEditRolePermission,
+  handleDeleteRolePermission,
+} from './role_permission.js'
+import {
+  handleUserPermissionView,
+  handleNewUserPermission,
+  handleEditUserPermission,
+  handleDeleteUserPermission,
+} from './user_permission.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()
@@ -56,6 +66,8 @@ export async function start(): Promise<void> {
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)
   app.post('/add_face', handleAddFace)
+  app.post('/access_admin', handleAdminAccess)
+  app.post('/get_name', handleGetName)
 
   app.get('/entries', handleGetEntries)
   app.get('/latest_entries', handleLatestEntries)

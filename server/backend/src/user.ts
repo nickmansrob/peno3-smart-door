@@ -29,12 +29,12 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
     } catch (e) {
       console.error(e)
       res.status(500).json({
-        error: 'User could not be updated.',
+        error: 'Facedescriptor could not be updated.',
       })
     }
   } else {
     res.status(400).json({
-      error: 'Invalid new employee',
+      error: 'Problem facedescriptor',
     })
   }
 }
@@ -217,7 +217,7 @@ export async function getLatestEnabledUserRecords(amount?: number): Promise<User
       select: {
         records: {
           where: {
-            state: 'ENTER'
+            state: 'ENTER',
           },
           orderBy: {
             timestamp: 'desc',
@@ -228,7 +228,7 @@ export async function getLatestEnabledUserRecords(amount?: number): Promise<User
       where: {
         enabled: true,
       },
-      take: amount
+      take: amount,
     })
   ).filter(record => record.records.length !== 0)
 
@@ -258,9 +258,9 @@ export async function getRangeRecords(s: DateTime, e: DateTime) {
           where: {
             timestamp: {
               lte: e.toString(),
-              gte: s.toString()
+              gte: s.toString(),
             },
-            state: 'ENTER'
+            state: 'ENTER',
           },
           orderBy: {
             timestamp: 'desc',

@@ -3,8 +3,8 @@ import { prisma } from './database.js'
 import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isPermitted } from './permission.js'
-import { IncomingFace, IncomingOtp } from './types.js'
-import { euclidDistance, evaluateAccess, serializeFaceDescriptor } from './util.js'
+import { IncomingFace, IncomingOtp, Role } from './types.js'
+import { euclidDistance, evaluateAccess, evaluateAdminAccess, getRole, serializeFaceDescriptor } from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 
 export async function handleFace(req: Request, res: Response): Promise<void> {
@@ -83,6 +83,73 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
           }
         } else {
           res.status(400).json('Incoming OTP invalid')
+        }
+      } else {
+        res.status(400).json('User does not exist')
+      }
+    } else {
+      res.status(400).json('OTP Validation failed')
+    }
+  } else {
+    res.status(400).json('Bad request')
+  }
+}
+
+/**
+ *
+ * @param req id as number
+ * @param res  firstName and lastName of person behind the id
+ *
+ */
+export async function handleGetName(req: Request, res: Response): Promise<void> {
+  if (req.body) {
+    const userId = req.body as number
+
+    if (userId) {
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: userId,
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        })
+        res.json(user)
+      } catch (e) {
+        console.error(e)
+        res.status(403).json({
+          error: 'User could not be found.',
+        })
+      }
+    } else {
+      res.status(400).send('The send id is not a number')
+    }
+  } else {
+    res.status(400).send()
+  }
+}
+
+export async function handleAdminAccess(req: Request, res: Response): Promise<void> {
+  if (req.body) {
+    const stream = req.body as IncomingOtp
+    if (validateIncomingOtp(stream)) {
+      // validation input
+      const user = await prisma.user.findUnique({
+        where: {
+          id: stream.id,
+        },
+      })
+
+      if (user) {
+        const otpHelper = createOtp(user.tfaToken)
+
+        if (validateToken(otpHelper, stream.otp) != null) {
+          // User allowed
+          res.status(200).json(evaluateAdminAccess('GRANTED', user.firstName, await getRole(user.roleId)))
+        } else {
+          res.status(401).json(evaluateAdminAccess('DENIED', user.firstName, await getRole(user.roleId)))
         }
       } else {
         res.status(400).json('User does not exist')
