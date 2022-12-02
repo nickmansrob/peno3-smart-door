@@ -1,7 +1,7 @@
 import express, { Express, Response, Request } from 'express'
 import cors from 'cors'
 import { DateTime } from 'luxon'
-import { handleFace, handleOtp } from './access.js'
+import { handleAdminAccess, handleFace, handleGetName, handleOtp } from './access.js'
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
