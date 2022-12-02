@@ -1,6 +1,7 @@
+import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
-import { CustomInterval, OutgoingAccess, UserRecord } from './types.js'
+import { CustomInterval, OutgoingAccess, OutgoingAdminAccess, Role, UserRecord } from './types.js'
 import { getLatestEnabledUserRecords } from './user.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
@@ -22,6 +23,13 @@ export function evaluateAccess(
 ): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access }
+}
+
+export function evaluateAdminAccess(
+  access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
+  firstName: string, role: Role
+): OutgoingAdminAccess {
+  return {firstName, access, role: role.name}
 }
 
 /**
@@ -76,3 +84,15 @@ export function inInterval(currentTime: number, permissionsInterval: CustomInter
     return false
   }
 }
+
+export async function getRole(roleId: number): Promise<Role> {
+  const role = await prisma.role.findUnique({
+    where: {
+      id: roleId
+    }
+  })
+
+  return role as Role
+}
+
+

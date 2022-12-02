@@ -29,12 +29,12 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
     } catch (e) {
       console.error(e)
       res.status(500).json({
-        error: 'User could not be updated.',
+        error: 'Facedescriptor could not be updated.',
       })
     }
   } else {
     res.status(400).json({
-      error: 'Invalid new employee',
+      error: 'Problem facedescriptor',
     })
   }
 }

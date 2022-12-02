@@ -56,6 +56,8 @@ export async function start(): Promise<void> {
   app.post('/access_face', handleFace)
   app.post('/access_otp', handleOtp)
   app.post('/add_face', handleAddFace)
+  app.post('/access_admin', handleAdminAccess)
+  app.post('/get_name', handleGetName)
 
   app.get('/entries', handleGetEntries)
   app.get('/latest_entries', handleLatestEntries)
