@@ -92,9 +92,9 @@ const Edit = () => {
 
   return (
     <div className="new">
-      <Sidebar></Sidebar>
+      
       <div className="newContainer">
-        <Navbar />
+       
         <div className="top">
           <h1>Edit Timeperiod (id:{permissionId})</h1>
         </div>

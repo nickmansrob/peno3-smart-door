@@ -1,4 +1,11 @@
+.weeklytable {
+    display: flex;
+    width: 100%;
+    .weektableContainer{
+    flex:6
 
+}
     .title{
         text-align: center ;
     }
+}
