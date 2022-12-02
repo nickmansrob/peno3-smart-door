@@ -23,22 +23,15 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 
   if (records) {
     let currentDay = interval.start
-    const dateRange = []
+    const dateRange = [] as string[]
     while (interval.contains(currentDay)) {
-      dateRange.push(currentDay.toFormat('yyyy-MM-dd'))
+      dateRange.push(currentDay.toFormat('dd/MM/yyyy'))
       currentDay = currentDay.plus({ days: 1 })
     }
 
-    const recsPerUser = dateRange.map(day =>
-      records.map(record =>
-        record.records.filter(
-          userRecord => DateTime.fromISO(userRecord.timestamp.toString()).toFormat('yyyy-MM-dd') === day,
-        ),
-      ),
-    )
+    console.log(records)
 
-    console.log(recsPerUser)
-
+    const uniqueRecords = records
     return []
   } else {
     return []

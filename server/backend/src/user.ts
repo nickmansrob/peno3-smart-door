@@ -170,15 +170,16 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = parseInt(req.query.id as string)
-    if (typeof userId === 'number') {
+    const userId = req.body as {id: number}
+    if (typeof userId.id === 'number') {
+      console.log(userId.id)
       // validation input
       try {
         const result = await prisma.user.update({
-          where: { id: userId },
+          where: { id: userId.id },
           data: {
-            firstName: `deletedUser${userId}`,
-            lastName: `deletedUser${userId}`,
+            firstName: `deletedUser${userId.id}`,
+            lastName: `deletedUser${userId.id}`,
             faceDescriptor: '[]',
             enabled: false,
           },
