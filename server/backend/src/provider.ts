@@ -5,17 +5,7 @@ import { handleFace, handleOtp } from './access.js'
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
-  handleDeleteRolePermission,
-  handleDeleteUserPermission,
-  handleEditRolePermission,
-  handleEditUserPermission,
-  handleNewRolePermission,
-  handleNewUserPermission,
-  handleRolePermissionView,
-  handleUserPermissionView,
-} from './permission.js'
-import {
-  getLatestUserRecords,
+  getLatestEnabledUserRecords,
   handleAddFace,
   handleDeleteUser,
   handleEditUser,
@@ -24,6 +14,8 @@ import {
   handleUserView,
 } from './user.js'
 import { validateEndBiggerThanStart } from './validation.js'
+import { handleRolePermissionView, handleNewRolePermission, handleEditRolePermission, handleDeleteRolePermission } from './role_permission.js'
+import { handleUserPermissionView, handleNewUserPermission, handleEditUserPermission, handleDeleteUserPermission } from './user_permission.js'
 
 export async function start(): Promise<void> {
   const server: Express = express()
@@ -105,5 +97,5 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
 }
 
 async function handleLatestStatus(_req: Request, res: Response): Promise<void> {
-  res.status(200).json(await getLatestUserRecords())
+  res.status(200).json(await getLatestEnabledUserRecords())
 }

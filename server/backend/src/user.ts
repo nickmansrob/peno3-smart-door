@@ -1,4 +1,5 @@
 import { Response, Request } from 'express'
+import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { IncomingNewFace, IncomingUserEdit, User, UserRecord } from './types.js'
 import { validateFaceDescriptor, validateNewUser, validateIncomingUserEdit } from './validation.js'
@@ -210,11 +211,14 @@ export async function getAllActiveUsers(): Promise<number> {
   }
 }
 
-export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | undefined> {
+export async function getLatestEnabledUserRecords(amount?: number): Promise<UserRecord[] | undefined> {
   const records = (
     await prisma.user.findMany({
       select: {
         records: {
+          where: {
+            state: 'ENTER'
+          },
           orderBy: {
             timestamp: 'desc',
           },
@@ -224,6 +228,7 @@ export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | unde
       where: {
         enabled: true,
       },
+      take: amount
     })
   ).filter(record => record.records.length !== 0)
 
@@ -245,39 +250,23 @@ export async function getLatestEnabledUserRecords(): Promise<UserRecord[] | unde
   }
 }
 
-/**
- * @returns the latest record for each user or undefined if no records are present
- */
-
-export async function getLatestUserRecords(): Promise<UserRecord[] | undefined> {
-  // no validation needed
-  const records = (
+export async function getRangeRecords(s: DateTime, e: DateTime) {
+  return (
     await prisma.user.findMany({
       select: {
         records: {
+          where: {
+            timestamp: {
+              lte: e.toString(),
+              gte: s.toString()
+            },
+            state: 'ENTER'
+          },
           orderBy: {
             timestamp: 'desc',
           },
-          take: 1,
         },
       },
     })
   ).filter(record => record.records.length !== 0)
-
-  if (records) {
-    return records.map(object => {
-      if (object.records.length > 1) {
-        console.warn('Latest userRecord has multiple records! Taking the first one.')
-      }
-
-      const record = {
-        id: object.records[0]?.userId,
-        timestamp: object.records[0]?.timestamp.toISOString(),
-        method: object.records[0]?.method,
-        state: object.records[0]?.state,
-      } as UserRecord
-
-      return record
-    })
-  }
 }

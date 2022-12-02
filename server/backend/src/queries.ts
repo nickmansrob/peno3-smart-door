@@ -1,6 +1,6 @@
 import { DateTime, Interval } from 'luxon'
 import { LatestEntry } from './types.js'
-import { getAllActiveUsers, getLatestEnabledUserRecords, getLatestUserRecords, getUsers } from './user.js'
+import { getAllActiveUsers, getLatestEnabledUserRecords, getRangeRecords, getUsers } from './user.js'
 
 export async function getEntries(): Promise<{ inside: number; total: number }> {
   // Realtime monitor
@@ -9,7 +9,7 @@ export async function getEntries(): Promise<{ inside: number; total: number }> {
   const total = await getAllActiveUsers()
 
   if (records) {
-    const inside = records.filter(record => record.state === 'ENTER').length
+    const inside = records.length
     return { inside, total }
   } else {
     return { inside: 0, total }
@@ -18,12 +18,10 @@ export async function getEntries(): Promise<{ inside: number; total: number }> {
 
 export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[]> {
   // Disabled users allowed
-  const records = await getLatestUserRecords()
+  const records = await getRangeRecords(s, e)
   const interval = Interval.fromDateTimes(s, e) // s and e already validated in provider
 
   if (records) {
-    const rangeEntries = records.filter(record => interval.contains(DateTime.fromISO(record.timestamp)))
-
     let currentDay = interval.start
     const dateRange = []
     while (interval.contains(currentDay)) {
@@ -31,9 +29,11 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
       currentDay = currentDay.plus({ days: 1 })
     }
 
-    return dateRange.map(
-      day => rangeEntries.filter(record => DateTime.fromISO(record.timestamp).toFormat('yyyy-MM-dd') === day).length,
-    )
+    const recsPerUser = dateRange.map(day => records.map(record => record.records.filter(userRecord => DateTime.fromISO(userRecord.timestamp.toString()).toFormat('yyyy-MM-dd') === day)))
+
+    console.log(recsPerUser)
+
+    return []
   } else {
     return []
   }
@@ -42,13 +42,11 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
   // NO disabled users
   // number validated in provider
-  const records = await getLatestEnabledUserRecords()
+  const records = await getLatestEnabledUserRecords(amount)
 
   if (records) {
     return await Promise.all(
       records
-        .filter(record => record.state === 'ENTER')
-        .slice(0, amount)
         .map(async record => {
           const user = await getUsers(record.id)
           if (user) {

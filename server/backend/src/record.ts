@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { UserRecord } from './types.js'
-import { getLatestUserRecords } from './user.js'
+import { getLatestEnabledUserRecords } from './user.js'
 import { findNextState } from './util.js'
 
 export async function handleRecordView(req: Request, res: Response): Promise<void> {
@@ -35,7 +35,7 @@ export async function getRecords(id?: number) {
  */
 export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Promise<boolean> {
   // no validation needed
-  const latestUserRecords = (await getLatestUserRecords()) as UserRecord[]
+  const latestUserRecords = (await getLatestEnabledUserRecords()) as UserRecord[]
   if (latestUserRecords) {
     const nextState = await findNextState(userId)
     try {
