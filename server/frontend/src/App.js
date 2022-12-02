@@ -2,7 +2,7 @@ import Home from "./pages/home/Home";
 import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
-
+import Addweekly from "./pages/weekly/Addweekly";
 import Edit from "./pages/edit/Edit";
 import Login from "./pages/login/Login"
 import Weeklytable from "./pages/weekly/Weeklytable"
@@ -42,6 +42,12 @@ function App() {
             <Route path = ':userId' element = {<Editweekly/>}>
             </Route>
             </Route>
+
+            <Route path = 'addweekly' element= {<Addweekly/>} >
+            <Route path = ':userId' element = {<Addweekly/>}>
+            </Route>
+            </Route>
+           
            
             <Route path = 'edit' element= {<Edit/>}>
             <Route path = ':userId' element = {<Edit/>}>
