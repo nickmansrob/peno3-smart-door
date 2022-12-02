@@ -46,8 +46,9 @@ export async function handleNewUserPermission(req: Request, res: Response): Prom
           console.error(e)
           res.status(500).json({ error: 'The permissions could not be created' })
         }
+      }
       else {
-        res.status(400).send('There already is a permissions for this user')
+        res.status(409).send('There already is a permissions for this user')
       }
     } else {
       res.status(400).send('The permissions has the wrong format')

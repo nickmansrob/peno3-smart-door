@@ -178,7 +178,7 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
  */
 export async function handleDeleteUser(req: Request, res: Response): Promise<void> {
   if (req.body) {
-    const userId = req.body as {id: number}
+    const userId = req.body as { id: number }
     if (typeof userId.id === 'number') {
       console.log(userId.id)
       // validation input
