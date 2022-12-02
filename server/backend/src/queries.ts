@@ -29,10 +29,21 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
       currentDay = currentDay.plus({ days: 1 })
     }
 
-    console.log(records)
+    // Filters out multiple entries per day per user and rewrites the record to dd/MM/yyyy
+    const uniqueRecords = records.flatMap(userRecord =>
+      userRecord.records
+        .filter(
+          (tag, index, array) =>
+            array.findIndex(
+              t => t.timestamp.toLocaleDateString('en-GB') == tag.timestamp.toLocaleDateString('en-GB'),
+            ) == index,
+        )
+        .map(uniqueRecord => {
+          return { userId: uniqueRecord.userId, timestamp: uniqueRecord.timestamp.toLocaleDateString('en-GB') }
+        }),
+    )
 
-    const uniqueRecords = records
-    return []
+    return dateRange.map(day => uniqueRecords.filter(record => record.timestamp === day).length)
   } else {
     return []
   }
