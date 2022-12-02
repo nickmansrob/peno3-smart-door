@@ -64,7 +64,7 @@ const Edit = () => {
                 <label>End Timeperiod</label>
                 <input type="text" placeholder={user.lastName} />
               </div>
-              <button>Edit</button>
+              <button>Action</button>
             </form>
           </div>
         </div>
