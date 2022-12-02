@@ -91,6 +91,7 @@ const Edit = () => {
                   onChange={(minute) => setMinute(minute)}
                 />
               </div>
+              
 
               <div className="roller">
                 <label>End</label>
@@ -105,12 +106,14 @@ const Edit = () => {
                   onChange={(minute) => setMinute(minute)}
                 />
               </div>
-              <button>Action</button>
+              <button>Edit</button>
+              </div>
             </form>
+            
           </div>
         </div>
       </div>
-    </div>
+    
   );
 };
 
