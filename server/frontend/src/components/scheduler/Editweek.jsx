@@ -19,39 +19,54 @@ const Edit = () => {
       method: "GET",
     };
 
-    fetch(`https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`, requestOptions)
+    fetch(
+      `https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`,
+      requestOptions
+    )
       .then((res) => res.json())
       .then((data) => {
         setPermissions(data);
-        console.log(permissions)
+        console.log(permissions);
       });
-  });
+  }, []);
 
   const [user, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [day, setDay] = useState([]);
-  const [starthour, setStarthour] = useState([]);
-  const [endhour, setEndhour] = useState([]);
-  const [startminute, setStartminute] = useState([]);
-  const [endminute, setEndminute] = useState([]);
+  const [day, setDay] = useState("");
+  const [starthour, setStarthour] = useState(0);
+  const [endhour, setEndhour] = useState(0);
+  const [startminute, setStartminute] = useState(0);
+  const [endminute, setEndminute] = useState(0);
   const minutes = [];
   for (let i = 0; i < 61; i++) {
     minutes.push(i);
   }
-  const days = [
-    "MON",
-    "TUE",
-    "WED",
-    "THU",
-    "FRI",
-    "SAT",
-    "SUN",
-  ];
+  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const hours = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
   ];
 
+  const buttonPressed = () => {
+    const bodydata = {
+      id: Number(userId),
+      s: starthour * 100 + startminute,
+      e: endhour * 100 + endminute,
+      weekday: day,
+    };
+    fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodydata),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      });
+    console.log(bodydata);
+  };
 
   // useEffect(() => {
   //   const requestOptions = {
@@ -88,7 +103,6 @@ const Edit = () => {
             <div className="day">
               <label>Day</label>
               <DropdownList
-              
                 data={days}
                 placeholder="MON"
                 value={day}
@@ -100,7 +114,6 @@ const Edit = () => {
               <div className="roller">
                 <label>Start</label>
                 <DropdownList
-                
                   data={hours}
                   value={starthour}
                   defaultValue="1"
@@ -116,7 +129,6 @@ const Edit = () => {
               <div className="roller">
                 <label>End</label>
                 <DropdownList
-                
                   data={hours}
                   value={endhour}
                   onChange={(endhour) => setEndhour(endhour)}
@@ -127,7 +139,9 @@ const Edit = () => {
                   onChange={(endminute) => setEndminute(endminute)}
                 />
               </div>
-              <button>Edit</button>
+              <button type="button" onClick={buttonPressed}>
+                Edit
+              </button>
             </div>
           </form>
         </div>

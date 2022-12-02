@@ -1,4 +1,4 @@
-import "./editweek.scss";
+import "./addweek.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
 import { useState } from "react";
@@ -10,30 +10,44 @@ import { isDOMComponent } from "react-dom/test-utils";
 const Addweek = () => {
   const [user, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
-  const [day, setDay] = useState([]);
-  const [hour, setHour] = useState([]);
-  const [minute, setMinute] = useState([]);
-  const [hourE, setHourE] = useState([]);
-  const [minuteE, setMinuteE] = useState([]);
+  const [day, setDay] = useState("");
+  const [hour, setHour] = useState(0);
+  const [minute, setMinute] = useState(0);
+  const [hourE, setHourE] = useState(0);
+  const [minuteE, setMinuteE] = useState(0);
   const minutes = [];
   for (let i = 0; i < 61; i++) {
     minutes.push(i);
   }
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const hours = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
   ];
   const id = useParams();
-
+  const buttonPressed = () => {
+    const bodydata = {
+      id: Number(id.userId),
+      s: hour * 100 + minute,
+      e: hourE * 100 + minuteE,
+      weekday: day,
+    };
+    console.log(bodydata);
+    fetch("https://styx.rndevelopment.be/api/user_permissions", {
+      method: "POST",
+      body: JSON.stringify(bodydata),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((bodydata) => {
+        console.log(bodydata);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
   // useEffect(() => {
   //   const requestOptions = {
   //     method: "GET",
@@ -102,7 +116,9 @@ const Addweek = () => {
                   onChange={(minuteE) => setMinuteE(minuteE)}
                 />
               </div>
-              <button>Add</button>
+              <button type="button" onClick={buttonPressed}>
+                Add
+              </button>
             </div>
           </form>
         </div>
