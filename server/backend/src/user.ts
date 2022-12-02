@@ -13,28 +13,36 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
 
   const user = (await getUsers(face.id)) as User
 
-  if (user && user.faceDescriptor === '[]' && validateFaceDescriptor(face.faceDescriptor)) {
+  if (user && validateFaceDescriptor(face.faceDescriptor)) {
+    if(user.faceDescriptor === '[]'){
     // validation input
-    try {
-      const result = await prisma.user.update({
-        where: {
-          id: face.id,
-        },
-        data: {
-          faceDescriptor: JSON.stringify(face.faceDescriptor),
-          enabled: true,
-        },
-      })
-      res.json(result)
-    } catch (e) {
-      console.error(e)
-      res.status(500).json({
-        error: 'Facedescriptor could not be updated.',
+      try {
+        const result = await prisma.user.update({
+          where: {
+            id: face.id,
+          },
+          data: {
+            faceDescriptor: JSON.stringify(face.faceDescriptor),
+            enabled: true,
+          },
+        })
+        res.json(result)
+      } catch (e) {
+        console.error(e)
+        res.status(500).json({
+          error: 'Facedescriptor could not be updated.',
+        })
+      }
+    }
+    else {
+      res.status(400).json({
+        error: 'Invalid facedescriptor',
       })
     }
-  } else {
+  }
+  else {
     res.status(400).json({
-      error: 'Problem facedescriptor',
+      error: 'Invalid facedescriptor',
     })
   }
 }
