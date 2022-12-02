@@ -8,14 +8,9 @@ import dlib
 import requests
 
 current_dir = os.path.dirname(__file__)
-"""name = "Milo"
-welcome_string = "Welcome " + name + "!"
-received_id = "000000"
-received_otp = "123456"
-recognised = False # temporary face recognition check"""
 
-# URL = "https://styx.rndevelopment.be/api"
-URL = "http://localhost:3000"
+URL = "https://styx.rndevelopment.be/api"
+#URL = "http://localhost:3000"
 
 
 class KeyPad(QtCore.QThread):
@@ -122,7 +117,7 @@ class Home(Fragment):
 
     self.adminModeCombination = ''.join([KeyPad.KEY_BACKWARD, KeyPad.KEY_FORWARD])
     self.gotAdminModeCombination = False
-    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition"))
+    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition", status="normal"))
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
@@ -179,6 +174,8 @@ class Camera(QtCore.QRunnable):
   def __init__(self) -> None:
     super().__init__()
     
+    self.setAutoDelete(False)
+
     self.running = False
     self.camera = cv2.VideoCapture(0)
 
@@ -215,6 +212,8 @@ class FaceRecognition(Fragment):
   def __init__(self) -> None:
     super().__init__("face_recognition")
 
+    self.waiting_for_confirmation = False
+
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
     self.label_1.setText("")
@@ -233,12 +232,12 @@ class FaceRecognition(Fragment):
     self.label_3.setScaledContents(True)
 
     self.camera = Camera()
-    self.camera.setAutoDelete(False)
     self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
-    self.camera.signals.descriptor_available.connect(self.sendAccessRequest)
+    self.camera.signals.descriptor_available.connect(self.onFaceDescriptorAvailable)
+
+    self.tempFaceDescriptor = None
   
   def sendAccessRequest(self, faceDescriptor):
-    self.camera.signals.exit_loop.emit()
     body = {"faceDescriptor": faceDescriptor.tolist()}
     r = requests.post(url=URL+"/access_face", json=body)
 
@@ -258,8 +257,44 @@ class FaceRecognition(Fragment):
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
+  def sendAddFaceRequest(self, id, faceDescriptor):
+    body = {"id": id, "faceDescriptor": faceDescriptor.tolist()}
+    r = requests.post(url=URL+"/add_face", json=body)
+
+    print(r.status_code)
+    print(r.json())
+    if r.status_code == 200: 
+      self.label_2.setText("Successfully added face descriptor.")
+      QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
+    elif r.status_code == 409:
+      self.label_2.setText("Failed: user face descriptor already exists.")
+      QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
+    else:
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+
+  def onFaceDescriptorAvailable(self, faceDescriptor):
+    self.camera.signals.exit_loop.emit()
+    if self.kwargs["status"] == "normal":
+      self.sendAccessRequest(faceDescriptor)
+    elif self.kwargs["status"] == "add_user":
+      self.waiting_for_confirmation = True
+      self.tempFaceDescriptor = faceDescriptor
+      self.label_2.setText("Dis foto gud?")
+
   def onActivate(self):
+    self.waiting_for_confirmation = False
+    self.tempFaceDescriptor = None
+    self.label_2.setText("Please stand in front of the camera")
     QtCore.QThreadPool.globalInstance().tryStart(self.camera)
+
+  def onKeyPress(self, key: str):
+    if self.waiting_for_confirmation:
+      if key == KeyPad.KEY_FORWARD:
+        self.sendAddFaceRequest(self.kwargs["idCode"], self.tempFaceDescriptor)
+      elif key == KeyPad.KEY_BACKWARD:
+        self.onActivate()
+      else:
+        print("Please enter + or -")
 
 
 class ID(Fragment):
@@ -314,14 +349,14 @@ class ID(Fragment):
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
-    r = requests.post(url=URL+"/get_firstName", json=body)
+    r = requests.post(url=URL+"/get_name", json=body)
     
     print(r.status_code)
-    if r.status_code in [200, 401]:
+    if r.status_code in [200, 403]:
       msg = r.json()
       print(msg)
       
-      if r.status_code == 401:
+      if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       else:
         Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], status=self.kwargs["status"])
@@ -413,11 +448,13 @@ class OTP(Fragment):
     r = requests.post(url=URL+"/access_otp", json=body)
     
     print(r.status_code)
-    if r.status_code in [200, 401]:
+    if r.status_code in [200, 401, 403]:
       msg = r.json()
       print(msg)
 
-      if msg["access"] == "GRANTED":
+      if r.status_code == 403:
+        Fragment.manager.activate("error", message="Access denied.")
+      elif msg["access"] == "GRANTED":
         Fragment.manager.activate("verified", name=msg["firstName"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
@@ -431,17 +468,17 @@ class OTP(Fragment):
   def sendRoleRequest(self, id, otp):
     body = {"id": id,
             "otp": otp}
-    r = requests.post(url=URL+"/role_otp", json=body)
+    r = requests.post(url=URL+"/access_admin", json=body)
     
     print(r.status_code)
-    if r.status_code in [200, 401]:
+    if r.status_code in [200, 401, 403]:
       msg = r.json()
       print(msg)
 
-      if r.status_code == 401:
+      if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
-      elif msg["roleId"] == "ADMIN":
-        Fragment.manager.activate("add_user")
+      elif msg["access"] == "GRANTED":
+        Fragment.manager.activate("add_userID")
       else:
         Fragment.manager.activate("error", message="Access denied.")
     else:
@@ -535,10 +572,14 @@ class Error(Fragment):
     QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home"))  
 
 
-class AddUser(Fragment):
+class AddUserID(Fragment):
 
   def __init__(self) -> None:
-    super().__init__("add_user")
+    super().__init__("add_userID")
+
+    self.waiting_for_confirmation = False
+
+    self.idCode = ""
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
@@ -549,25 +590,103 @@ class AddUser(Fragment):
     font = QtGui.QFont("Roboto", 24)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Stand in front of the camera and press # to register.")
+    self.label_2.setText("Enter the ID of the user you would like to add.")
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
+    labelPositions = [(44, 250), (163, 250), (282, 250), (422, 250), (541, 250), (660, 250)]
+
+    self.labels = []
+    for i in range(6):
+      textlabel = QtWidgets.QLabel(self)
+      textlabel.setGeometry(QtCore.QRect(labelPositions[i][0], labelPositions[i][1], 96, 96))
+      textlabel.setAlignment(QtCore.Qt.AlignCenter)
+      textlabel.setFont(font)
+
+      self.labels.append(textlabel)
+    
+  
+  def resetLabel(self, label):
+    label.setStyleSheet("background-color: rgb(84, 165, 124);"
+                        "border-top-left-radius :9px;"
+                        "border-top-right-radius : 9px; "
+                        "border-bottom-left-radius : 9px; "
+                        "border-bottom-right-radius : 9px")
+    label.setText("")
+  
+  def fillLabel(self, label, number):
+    label.setStyleSheet("border: 4px solid rgb(84, 165, 124);"
+                        "color: rgb(157, 206, 191);"
+                        "border-top-left-radius :9px;"
+                        "border-top-right-radius : 9px; "
+                        "border-bottom-left-radius : 9px; "
+                        "border-bottom-right-radius : 9px")
+    label.setText(number)
+
+  def sendGetFirstNameRequest(self, id):
+    body = {"id": id}
+    r = requests.post(url=URL+"/get_name", json=body)
+    
+    print(r.status_code)
+    if r.status_code in [200, 403]:
+      msg = r.json()
+      print(msg)
+      
+      if r.status_code == 403:
+        self.label_2.setText("User doesn't exist, please try again.")
+        self.idCode = ""
+        for label in self.labels:
+          self.resetLabel(label)
+      else:
+        self.label_2.setText("Would you like to add {}".format(msg["firstName"]))
+        self.waiting_for_confirmation = True
+    else:
+      Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
+
+
   def onActivate(self):
-    QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home")) # temporary
+    self.waiting_for_confirmation = False
+    self.label_2.setText("Enter the ID of the user you would like to add.")
+    self.idCode = ""
+
+    for label in self.labels:
+      self.resetLabel(label)
+
+
+  def onKeyPress(self, key: str):
+    if key == KeyPad.KEY_FORWARD:
+      if len(self.idCode) == 6:
+        if self.waiting_for_confirmation:
+          Fragment.manager.activate("face_recognition", status="add_user", idCode=int(self.idCode))
+        else:
+          self.sendGetFirstNameRequest(int(self.idCode))
+      else:
+        print("Fill in your employee-ID")
+    elif key == KeyPad.KEY_BACKWARD:
+      if self.waiting_for_confirmation:
+        self.onActivate()
+      elif len(self.idCode) > 0:
+        self.idCode = self.idCode[:-1]
+        self.resetLabel(self.labels[len(self.idCode)])
+    else:
+      if len(self.idCode) == 6:
+        print("Press \'+\' to continue")
+      elif len(key) == 1:
+        self.fillLabel(self.labels[len(self.idCode)], key)
+        self.idCode += key
+    
 
 
 def main():
 
     QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf"))
 
-    # splash = Splash() # must be defined first
     home = Home()
     face_recognition = FaceRecognition()
     id = ID()
     otp = OTP()
     verified = Verified()
     error = Error()
-    add_user = AddUser()
+    add_userID = AddUserID()
 
     Fragment.manager.start(800, 480)
 
