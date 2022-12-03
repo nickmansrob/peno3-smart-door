@@ -2,8 +2,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import Qt
 import os
 import numpy as np
-import cv2
-import keyboard
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+import RPi.GPIO as GPIO
 import dlib
 import requests
 
@@ -15,8 +16,8 @@ URL = "https://styx.rndevelopment.be/api"
 
 class KeyPad(QtCore.QThread):
 
-  KEY_FORWARD = '+'
-  KEY_BACKWARD = '-'
+  KEY_FORWARD = '#'
+  KEY_BACKWARD = '*'
 
   class Key:
     
@@ -35,20 +36,38 @@ class KeyPad(QtCore.QThread):
 
   def __init__(self) -> None:
     super().__init__()
-    self.keys = [self.Key('0'), self.Key('1'), self.Key('2'), self.Key('3'), self.Key('4'), 
-                 self.Key('5'), self.Key('6'), self.Key('7'), self.Key('8'), self.Key('9'), 
-                 self.Key(self.KEY_BACKWARD), self.Key(self.KEY_FORWARD)]
-    self.combinations = [self.KeyCombination([self.keys[10], self.keys[11]])]
+    
+    self.row_pins = [25, 8, 7, 12]
+    self.col_pins = [16, 20, 21]
+    
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+
+    for pin in self.col_pins:
+        GPIO.setup(pin, GPIO.OUT)
+
+    for pin in self.row_pins:
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    
+    self.keys = [[self.Key('1'), self.Key('4'), self.Key('7'), self.Key(self.KEY_BACKWARD)],
+                 [self.Key('2'), self.Key('5'), self.Key('8'), self.Key('0')],
+                 [self.Key('3'), self.Key('6'), self.Key('9'), self.Key(self.KEY_FORWARD)]]
+    self.combinations = [self.KeyCombination([self.keys[0][3], self.keys[2][3]])]
 
   def run(self):
     while True:
-      for key in self.keys:
-        if keyboard.is_pressed(key.code):
-          if not key.pressed:
-            key.pressed = True
-            self.keyPressed.emit(key.code)
-        elif key.pressed:
-          key.pressed = False
+      for col in range(3):
+        GPIO.output(self.col_pins[col], GPIO.HIGH)
+        for row in range(4):
+          key = self.keys[col][row]
+          if GPIO.input(self.row_pins[row]) == 1:
+            if not key.pressed:
+              key.pressed = True
+              self.keyPressed.emit(key.code)
+          elif key.pressed:
+            key.pressed = False
+              
+        GPIO.output(self.col_pins[col], GPIO.LOW)
       
       for combo in self.combinations:
         if all(key.pressed for key in combo.keys):
@@ -58,7 +77,7 @@ class KeyPad(QtCore.QThread):
         elif combo.pressed:
           combo.pressed = False
       
-      self.msleep(5)
+      self.msleep(10)
 
 
 class FragmentManager:
@@ -176,7 +195,8 @@ class Camera(QtCore.QRunnable):
     self.setAutoDelete(False)
 
     self.running = False
-    self.camera = cv2.VideoCapture(0)
+    self.camera = PiCamera(resolution=(320, 320))
+    self.img = np.empty((320, 320, 3), dtype=np.uint8)
 
     self.signals = CameraSignals()
     self.signals.exit_loop.connect(self.stop)
@@ -186,20 +206,16 @@ class Camera(QtCore.QRunnable):
   def run(self):
     self.running = True
     while self.running:
-      return_value, img = self.camera.read()
-      assert return_value == True
+      self.camera.capture(self.img, "rgb")
+      height, width, channel = self.img.shape
 
-      img = cv2.flip(img, 1)
-      img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-      height, width, channel = img.shape
-
-      qImg = QtGui.QImage(img.data, width, height, QtGui.QImage.Format_RGB888)
+      qImg = QtGui.QImage(self.img.data, width, height, QtGui.QImage.Format_RGB888)
       qPixmap = QtGui.QPixmap.fromImage(qImg)
       self.signals.pixmap_available.emit(qPixmap)
 
-      boundingBox = self.faceEncoder.detectFace(img)
+      boundingBox = self.faceEncoder.detectFace(self.img)
       if boundingBox is not None:
-        faceDescriptor = self.faceEncoder.calculateEmbedding(img, boundingBox)
+        faceDescriptor = self.faceEncoder.calculateEmbedding(self.img, boundingBox)
         self.signals.descriptor_available.emit(faceDescriptor)
         self.stop()
   
