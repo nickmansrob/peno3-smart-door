@@ -1,24 +1,13 @@
 .datatable {
-    height: 600px;
-    width: 97%;
-    padding: 20px;
-   font-size: large;
-    
- 
- 
-   
-      
-    
-  
-    .cellAction {
+  height: 600px;
+  width: 98%;
+  padding: 20px;
+  font-size: large;
 
-      display: flex;
-      
-      
+  .cellAction {
+    display: flex;
 
-      align-items: center;
-      gap: 15px;
-      
-      
-    }
+    align-items: center;
+    gap: 15px;
   }
+}

@@ -14,7 +14,8 @@ const New = () => {
   const [group, setGroup] = useState("");
   const [isShown, setIsShown] = useState(false);
   const array = new Int8Array(15);
-  const [rand, setRand] = useState(array);
+  const scndarray = crypto.getRandomValues(array);
+  const [rand, setRand] = useState(scndarray);
 
   useEffect(() => {
     const requestOptions = {
