@@ -297,25 +297,15 @@ class FaceRecognition(Fragment):
         print("Please enter + or -")
 
 
-class ID(Fragment):
+class NumberInput(Fragment):
 
-  def __init__(self) -> None:
-    super().__init__("id")
+  def __init__(self, id: str) -> None:
+    super().__init__(id)
 
-    self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setText("")
-    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
-    
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
-    self.label_2.setFont(font)
-    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Fill in your employee-ID please")
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-
-    font2 = QtGui.QFont("Roboto", 36)
+    self.label_background = QtWidgets.QLabel(self)
+    self.label_background.setGeometry(QtCore.QRect(0, 0, 800, 480))
+    self.label_background.setText("")
+    self.label_background.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
 
     labelPositions = [(44, 250), (163, 250), (282, 250), (422, 250), (541, 250), (660, 250)]
 
@@ -324,11 +314,11 @@ class ID(Fragment):
       textlabel = QtWidgets.QLabel(self)
       textlabel.setGeometry(QtCore.QRect(labelPositions[i][0], labelPositions[i][1], 96, 96))
       textlabel.setAlignment(QtCore.Qt.AlignCenter)
-      textlabel.setFont(font2)
+      textlabel.setFont(QtGui.QFont("Roboto", 36))
 
       self.labels.append(textlabel)
     
-    self.idCode = ""
+    self.code = ""
   
   def resetLabel(self, label):
     label.setStyleSheet("background-color: rgb(84, 165, 124);"
@@ -346,6 +336,43 @@ class ID(Fragment):
                         "border-bottom-left-radius : 9px; "
                         "border-bottom-right-radius : 9px")
     label.setText(number)
+  
+  def onCodeEntered(self): # virtual method
+    pass
+  
+  def onActivate(self):
+    for label in self.labels:
+      self.resetLabel(label)
+    
+    self.code = ""
+  
+  def onKeyPress(self, key: str):
+    if key == KeyPad.KEY_FORWARD:
+      if len(self.code) == 6:
+        self.onCodeEntered()
+    elif key == KeyPad.KEY_BACKWARD:
+      if len(self.code) > 0:
+        self.code = self.code[:-1]
+        self.resetLabel(self.labels[len(self.code)])
+    else:
+      if len(self.code) == 6:
+        print("Press \'+\' to continue")
+      elif len(key) == 1:
+        self.fillLabel(self.labels[len(self.code)], key)
+        self.code += key
+    
+
+class ID(NumberInput):
+
+  def __init__(self) -> None:
+    super().__init__("id")
+    
+    self.label_1 = QtWidgets.QLabel(self)
+    self.label_1.setGeometry(QtCore.QRect(0, 100, 800, 51))
+    self.label_1.setFont(QtGui.QFont("Roboto", 24))
+    self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
+    self.label_1.setText("Fill in your employee-ID please")
+    self.label_1.setAlignment(QtCore.Qt.AlignCenter)
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
@@ -364,83 +391,31 @@ class ID(Fragment):
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
   def onActivate(self):
-    for label in self.labels:
-      self.resetLabel(label)
-    
-    self.idCode = ""
+    super().onActivate()
   
-  def onKeyPress(self, key: str):
-    if key == KeyPad.KEY_FORWARD:
-      if len(self.idCode) == 6:
-        self.sendGetFirstNameRequest(int(self.idCode))
-      else:
-        print("Fill in your employee-ID")
-    elif key == KeyPad.KEY_BACKWARD:
-      if len(self.idCode) > 0:
-        self.idCode = self.idCode[:-1]
-        self.resetLabel(self.labels[len(self.idCode)])
-    else:
-      if len(self.idCode) == 6:
-        print("Press \'+\' to continue")
-      elif len(key) == 1:
-        self.fillLabel(self.labels[len(self.idCode)], key)
-        self.idCode += key
+  def onCodeEntered(self):
+    self.sendGetFirstNameRequest(int(self.code))
 
 
-class OTP(Fragment):
+class OTP(NumberInput):
 
   def __init__(self) -> None:
     super().__init__("otp")
-
+    
     self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setText("")
-    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
-    
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 50, 800, 51))
+    self.label_1.setGeometry(QtCore.QRect(0, 50, 800, 51))
     font = QtGui.QFont("Roboto", 36)
-    self.label_2.setFont(font)
-    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+    self.label_1.setFont(font)
+    self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
+    self.label_1.setAlignment(QtCore.Qt.AlignCenter)
 
-    self.label_3 = QtWidgets.QLabel(self)
-    self.label_3.setGeometry(QtCore.QRect(0, 100, 800, 51))
+    self.label_2 = QtWidgets.QLabel(self)
+    self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
     font2 = QtGui.QFont("Roboto", 24)
-    self.label_3.setFont(font2)
-    self.label_3.setStyleSheet("color: rgb(162, 198, 234);")
-    self.label_3.setText("Enter the 6-digit code from your authenticator app")
-    self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-
-    labelPositions = [(44, 250), (163, 250), (282, 250), (422, 250), (541, 250), (660, 250)]
-
-    self.labels = []
-    for i in range(6):
-      textlabel = QtWidgets.QLabel(self)
-      textlabel.setGeometry(QtCore.QRect(labelPositions[i][0], labelPositions[i][1], 96, 96))
-      textlabel.setAlignment(QtCore.Qt.AlignCenter)
-      textlabel.setFont(font)
-
-      self.labels.append(textlabel)
-    
-    self.otpCode = ""
-  
-  def resetLabel(self, label):
-    label.setStyleSheet("background-color: rgb(84, 165, 124);"
-                        "border-top-left-radius :9px;"
-                        "border-top-right-radius : 9px; "
-                        "border-bottom-left-radius : 9px; "
-                        "border-bottom-right-radius : 9px")
-    label.setText("")
-  
-  def fillLabel(self, label, number):
-    label.setStyleSheet("border: 4px solid rgb(84, 165, 124);"
-                        "color: rgb(157, 206, 191);"
-                        "border-top-left-radius :9px;"
-                        "border-top-right-radius : 9px; "
-                        "border-bottom-left-radius : 9px; "
-                        "border-bottom-right-radius : 9px")
-    label.setText(number)
+    self.label_2.setFont(font2)
+    self.label_2.setStyleSheet("color: rgb(162, 198, 234);")
+    self.label_2.setText("Enter the 6-digit code from your authenticator app")
+    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
   def sendAccessRequest(self, id, otp):
     body = {"id": id,
@@ -485,33 +460,14 @@ class OTP(Fragment):
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
   def onActivate(self):
-    self.label_2.setText("Hello {}".format(self.kwargs["firstName"]))
-
-    for label in self.labels:
-      self.resetLabel(label)
-    
-    self.otpCode = ""
+    super().onActivate()
+    self.label_1.setText("Hello {}".format(self.kwargs["firstName"]))
   
-  def onKeyPress(self, key: str):
-    if key == KeyPad.KEY_FORWARD:
-      if len(self.otpCode) == 6:
-        if self.kwargs["status"] == "normal":
-          self.sendAccessRequest(self.kwargs["idCode"], self.otpCode)
-        elif self.kwargs["status"] == "add_user":
-          self.sendRoleRequest(self.kwargs["idCode"], self.otpCode)
-          pass
-      else:
-        print("Fill in your otp")
-    elif key == KeyPad.KEY_BACKWARD:
-      if len(self.otpCode) > 0:
-        self.otpCode = self.otpCode[:-1]
-        self.resetLabel(self.labels[len(self.otpCode)])
-    else:
-      if len(self.otpCode) == 6:
-        print("Press \'+\' to continue")
-      elif len(key) == 1:
-        self.fillLabel(self.labels[len(self.otpCode)], key)
-        self.otpCode += key
+  def onCodeEntered(self):
+    if self.kwargs["status"] == "normal":
+      self.sendAccessRequest(self.kwargs["idCode"], self.code)
+    elif self.kwargs["status"] == "add_user":
+      self.sendRoleRequest(self.kwargs["idCode"], self.code)
       
 
 class Verified(Fragment):
@@ -572,55 +528,20 @@ class Error(Fragment):
     QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home"))  
 
 
-class AddUserID(Fragment):
+class AddUserID(NumberInput):
 
   def __init__(self) -> None:
     super().__init__("add_userID")
 
     self.waiting_for_confirmation = False
 
-    self.idCode = ""
-
     self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 0, 800, 480))
-    self.label_1.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
-
-    self.label_2 = QtWidgets.QLabel(self)
-    self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
+    self.label_1.setGeometry(QtCore.QRect(0, 100, 800, 51))
     font = QtGui.QFont("Roboto", 24)
-    self.label_2.setFont(font)
-    self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
-    self.label_2.setText("Enter the ID of the user you would like to add.")
-    self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-
-    labelPositions = [(44, 250), (163, 250), (282, 250), (422, 250), (541, 250), (660, 250)]
-
-    self.labels = []
-    for i in range(6):
-      textlabel = QtWidgets.QLabel(self)
-      textlabel.setGeometry(QtCore.QRect(labelPositions[i][0], labelPositions[i][1], 96, 96))
-      textlabel.setAlignment(QtCore.Qt.AlignCenter)
-      textlabel.setFont(font)
-
-      self.labels.append(textlabel)
-    
-  
-  def resetLabel(self, label):
-    label.setStyleSheet("background-color: rgb(84, 165, 124);"
-                        "border-top-left-radius :9px;"
-                        "border-top-right-radius : 9px; "
-                        "border-bottom-left-radius : 9px; "
-                        "border-bottom-right-radius : 9px")
-    label.setText("")
-  
-  def fillLabel(self, label, number):
-    label.setStyleSheet("border: 4px solid rgb(84, 165, 124);"
-                        "color: rgb(157, 206, 191);"
-                        "border-top-left-radius :9px;"
-                        "border-top-right-radius : 9px; "
-                        "border-bottom-left-radius : 9px; "
-                        "border-bottom-right-radius : 9px")
-    label.setText(number)
+    self.label_1.setFont(font)
+    self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
+    self.label_1.setText("Enter the ID of the user you would like to add.")
+    self.label_1.setAlignment(QtCore.Qt.AlignCenter)
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
@@ -632,49 +553,34 @@ class AddUserID(Fragment):
       print(msg)
       
       if r.status_code == 403:
-        self.label_2.setText("User doesn't exist, please try again.")
-        self.idCode = ""
+        self.label_1.setText("User doesn't exist, please try again.")
+        self.code = ""
         for label in self.labels:
           self.resetLabel(label)
       else:
-        self.label_2.setText("Would you like to add {}".format(msg["firstName"]))
+        self.label_1.setText("Would you like to add {}".format(msg["firstName"]))
         self.waiting_for_confirmation = True
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
 
   def onActivate(self):
+    super().onActivate()
     self.waiting_for_confirmation = False
-    self.label_2.setText("Enter the ID of the user you would like to add.")
-    self.idCode = ""
-
-    for label in self.labels:
-      self.resetLabel(label)
-
+    self.label_1.setText("Enter the ID of the user you would like to add.")
+  
+  def onCodeEntered(self):
+    self.sendGetFirstNameRequest(int(self.code))
 
   def onKeyPress(self, key: str):
-    if key == KeyPad.KEY_FORWARD:
-      if len(self.idCode) == 6:
-        if self.waiting_for_confirmation:
-          Fragment.manager.activate("face_recognition", status="add_user", idCode=int(self.idCode))
-        else:
-          self.sendGetFirstNameRequest(int(self.idCode))
-      else:
-        print("Fill in your employee-ID")
-    elif key == KeyPad.KEY_BACKWARD:
-      if self.waiting_for_confirmation:
+    if self.waiting_for_confirmation:
+      if key == KeyPad.KEY_FORWARD:
+        Fragment.manager.activate("face_recognition", status="add_user", idCode=int(self.code))
+      elif key == KeyPad.KEY_BACKWARD:
         self.onActivate()
-      elif len(self.idCode) > 0:
-        self.idCode = self.idCode[:-1]
-        self.resetLabel(self.labels[len(self.idCode)])
     else:
-      if len(self.idCode) == 6:
-        print("Press \'+\' to continue")
-      elif len(key) == 1:
-        self.fillLabel(self.labels[len(self.idCode)], key)
-        self.idCode += key
+      super().onKeyPress(key)
     
-
 
 def main():
 
