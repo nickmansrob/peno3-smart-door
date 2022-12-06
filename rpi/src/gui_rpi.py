@@ -5,8 +5,29 @@ import numpy as np
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import RPi.GPIO as GPIO
+from gpiozero import Servo
+import time
 import dlib
 import requests
+"""
+from dotenv import dotenv_values
+import jwt
+
+env = dotenv_values(".env")  # take environment variables from .env.
+
+# Usage
+
+# Use an Authorization header in each request
+# which contains the value
+# "Bearer " + getToken()
+
+def getToken():
+  if env["secret"]:
+    secret = env["secret"]
+  else:
+    secret = 'fakesecret'
+
+  return jwt.encode({"data": "python", "exp": 5}, secret)"""
 
 current_dir = os.path.dirname(__file__)
 
@@ -97,7 +118,7 @@ class FragmentManager:
   
   def start(self, width, height):
     self.stackedWidget.resize(width, height)
-    self.stackedWidget.show()
+    self.stackedWidget.showFullScreen()
 
     keyPad = KeyPad()
     keyPad.keyPressed.connect(lambda key: self.stackedWidget.currentWidget().onKeyPress(key))
@@ -509,10 +530,31 @@ class Verified(Fragment):
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
   
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+
+    self.buzzerPin = 23
+    GPIO.setup(self.buzzerPin, GPIO.OUT)
+    GPIO.output(self.buzzerPin, GPIO.LOW)
+    """
+    self.servo = Servo(24)
+    self.servo.min()"""
+    GPIO.setup(24, GPIO.OUT)
+    self.pwm = GPIO.PWM(24, 1000)
+    self.pwm.start(50)
+  
   def onActivate(self):
+    # self.servo.max()
+    self.pwm.ChangeFrequency(2000)
     self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
-
+    GPIO.output(self.buzzerPin, GPIO.HIGH)
+    QtCore.QTimer.singleShot(150, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
+    QtCore.QTimer.singleShot(275, lambda: GPIO.output(self.buzzerPin, GPIO.HIGH))
+    QtCore.QTimer.singleShot(425, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
+    QtCore.QTimer.singleShot(1800, lambda: self.servo.min())
+    self.pwm.ChangeFrequency(1000)
+    
 
 class Error(Fragment):
 
@@ -538,9 +580,18 @@ class Error(Fragment):
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
 
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+
+    self.buzzerPin = 23
+    GPIO.setup(self.buzzerPin, GPIO.OUT)
+    GPIO.output(self.buzzerPin, GPIO.LOW)
+
   def onActivate(self):
     self.textlabel.setText(self.kwargs["message"])
-    QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home"))  
+    QtCore.QTimer.singleShot(4000, lambda: Fragment.manager.activate("home"))
+    GPIO.output(self.buzzerPin, GPIO.HIGH)
+    QtCore.QTimer.singleShot(750, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
 
 
 class AddUserID(NumberInput):
