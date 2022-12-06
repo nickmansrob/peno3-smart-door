@@ -118,22 +118,26 @@ console.log(permissions)
   const rows = permissions;
 
   return (
+    <div>
+      <div className="buttonzone">
+    <Link
+      to={`/addweekly/${userId.userId}`}
+      style={{ textDecoration: "none" }}>
+
+      <button  className="addButton">
+              Add Permission
+            </button>
+    </Link>
+  </div>
     <div className="datatable">
       <DataGrid
         rows={rows}
         columns={columns}
         pageSize={9}
         rowsPerPageOptions={[5]}
-      />
-      <div className="buttonzone">
-        <Link
-          to={`/addweekly/${userId.userId}`}
-          style={{ textDecoration: "none" }}
-        >
-          <div>Add Permission</div>
-        </Link>
+      /></div>
+      
       </div>
-    </div>
   );
 };
 
