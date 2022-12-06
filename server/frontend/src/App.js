@@ -8,11 +8,21 @@ import Login from "./pages/login/Login"
 import Weeklytable from "./pages/weekly/Weeklytable"
 import Editweekly from "./pages/weekly/Editweekly";
 
+import { sign } from 'jsonwebtoken'
+
 import {
   BrowserRouter,
   Routes,
   Route,
 } from 'react-router-dom'
+
+export function getJWT() {
+  const secret = 'fakesecret'
+  return sign({
+    data: 'styx-frontend',
+    exp: 5
+  }, secret)
+}
 
 //import { Schema } from "@mui/icons-material";
 

@@ -4,7 +4,7 @@ import Navbar from "../navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import "react-widgets/styles.css";
+//import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Addweek = () => {
   const [day, setDay] = useState("");
@@ -81,6 +81,7 @@ const Addweek = () => {
               <div className="roller">
                 <label>Day</label>
                 <DropdownList
+                  className="dropdown"
                   data={days}
                   value={day}
                   onChange={(day) => setDay(day)}
@@ -89,11 +90,13 @@ const Addweek = () => {
               <div className="roller">
                 <label>Start</label>
                 <DropdownList
+                  className="dropdown"
                   data={hours}
                   value={hour}
                   onChange={(hour) => setHour(hour)}
                 />
                 <DropdownList
+                  className="dropdown"
                   data={minutes}
                   value={minute}
                   onChange={(minute) => setMinute(minute)}
@@ -103,17 +106,23 @@ const Addweek = () => {
               <div className="roller">
                 <label>End</label>
                 <DropdownList
+                  className="dropdown"
                   data={hours}
                   value={hourE}
                   onChange={(hourE) => setHourE(hourE)}
                 />
                 <DropdownList
+                  className="dropdown"
                   data={minutes}
                   value={minuteE}
                   onChange={(minuteE) => setMinuteE(minuteE)}
                 />
               </div>
-              <button type="button" onClick={buttonPressed}>
+              <button
+                className="addbutton"
+                type="button"
+                onClick={buttonPressed}
+              >
                 Add
               </button>
             </div>

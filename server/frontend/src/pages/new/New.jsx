@@ -6,6 +6,7 @@ import Qr from "../../components/qr/Qr";
 import base32Encode from "base32-encode";
 import DropdownList from "react-widgets/DropdownList";
 import "react-widgets/styles.css";
+import { getJWT } from "../../App";
 const New = () => {
   const [roles, setRoles] = useState([]);
   const rolenames = Array.from(roles, (x) => x.name);
@@ -44,6 +45,7 @@ const New = () => {
       body: JSON.stringify(bodydata),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${getJWT}`,
       },
     })
       .then((response) => response.json())

@@ -48,11 +48,12 @@
             }
           }
         }
-        button {
+        .addbutton {
           width: 50%;
-          background-color: rgb(163, 11, 11);
+          background-color: rgb(11, 26, 163);
           color: white;
           cursor: pointer;
+          align-self: flex-end;
         }
       }
     }
