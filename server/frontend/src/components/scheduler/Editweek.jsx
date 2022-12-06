@@ -66,6 +66,11 @@ const Edit = () => {
         console.log(data);
       });
     console.log(bodydata);
+    setDay("");
+    setEndhour(0);
+    setEndminute(0);
+    setStarthour(0);
+    setStartminute(0);
   };
 
   // useEffect(() => {

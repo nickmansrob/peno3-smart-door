@@ -16,6 +16,7 @@ const New = () => {
   const array = new Int8Array(15);
   const scndarray = crypto.getRandomValues(array);
   const [rand, setRand] = useState(scndarray);
+  const [ansId, setAnsId] = useState("");
 
   useEffect(() => {
     const requestOptions = {
@@ -48,7 +49,7 @@ const New = () => {
     })
       .then((response) => response.json())
       .then((bodydata) => {
-        console.log(bodydata);
+        setAnsId(bodydata.id);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -104,6 +105,7 @@ const New = () => {
             </form>
           </div>
         </div>
+        <div className="bottom">Id: {ansId}</div>
       </div>
     </div>
   );
