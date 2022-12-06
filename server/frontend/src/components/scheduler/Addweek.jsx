@@ -4,7 +4,7 @@ import Navbar from "../navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import "react-widgets/styles.css";
+// import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Addweek = () => {
   const [day, setDay] = useState("");
@@ -76,44 +76,59 @@ const Addweek = () => {
           <h1>Add Permission</h1>
         </div>
         <div className="bottom">
-          <form>
+          <form className="weekform">
             <div className="right">
               <div className="roller">
-                <label>Day</label>
-                <DropdownList
-                  data={days}
-                  value={day}
-                  onChange={(day) => setDay(day)}
-                />
+                <label>Day </label>
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={days}
+                    value={day}
+                    onChange={(day) => setDay(day)}
+                  />
+                </div>
               </div>
               <div className="roller">
-                <label>Start</label>
-                <DropdownList
-                  data={hours}
-                  value={hour}
-                  onChange={(hour) => setHour(hour)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={minute}
-                  onChange={(minute) => setMinute(minute)}
-                />
+                <label>Start </label>
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={hours}
+                    value={hour}
+                    onChange={(hour) => setHour(hour)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={minutes}
+                    value={minute}
+                    onChange={(minute) => setMinute(minute)}
+                  />
+                </div>
               </div>
 
               <div className="roller">
-                <label>End</label>
-                <DropdownList
-                  data={hours}
-                  value={hourE}
-                  onChange={(hourE) => setHourE(hourE)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={minuteE}
-                  onChange={(minuteE) => setMinuteE(minuteE)}
-                />
+                <label>End </label>
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={hours}
+                    value={hourE}
+                    onChange={(hourE) => setHourE(hourE)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={minutes}
+                    value={minuteE}
+                    onChange={(minuteE) => setMinuteE(minuteE)}
+                  />
+                </div>
               </div>
-              <button type="button" onClick={buttonPressed}>
+              <button
+                className="addbutton"
+                type="button"
+                onClick={buttonPressed}
+              >
                 Add
               </button>
             </div>

@@ -92,54 +92,67 @@ const Edit = () => {
 
   return (
     <div className="new">
-      
       <div className="newContainer">
-       
         <div className="top">
           <h1>Edit Timeperiod (id:{permissionId})</h1>
         </div>
         <div className="bottom">
-          <form>
-            <div className="day">
-              <label>Day</label>
-              <DropdownList
-                data={days}
-                placeholder="MON"
-                value={day}
-                onChange={(day) => setDay(day)}
-              />
-            </div>
-
+          <form className="weekform">
             <div className="right">
               <div className="roller">
+                <label>Day</label>
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={days}
+                    placeholder="MON"
+                    value={day}
+                    onChange={(day) => setDay(day)}
+                  />
+                </div>
+              </div>
+
+              <div className="roller">
                 <label>Start</label>
-                <DropdownList
-                  data={hours}
-                  value={starthour}
-                  defaultValue="1"
-                  onChange={(starthour) => setStarthour(starthour)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={startminute}
-                  onChange={(startminute) => setStartminute(startminute)}
-                />
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={hours}
+                    value={starthour}
+                    defaultValue="1"
+                    onChange={(starthour) => setStarthour(starthour)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={minutes}
+                    value={startminute}
+                    onChange={(startminute) => setStartminute(startminute)}
+                  />
+                </div>
               </div>
 
               <div className="roller">
                 <label>End</label>
-                <DropdownList
-                  data={hours}
-                  value={endhour}
-                  onChange={(endhour) => setEndhour(endhour)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={endminute}
-                  onChange={(endminute) => setEndminute(endminute)}
-                />
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={hours}
+                    value={endhour}
+                    onChange={(endhour) => setEndhour(endhour)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={minutes}
+                    value={endminute}
+                    onChange={(endminute) => setEndminute(endminute)}
+                  />
+                </div>
               </div>
-              <button type="button" onClick={buttonPressed}>
+              <button
+                className="addbutton"
+                type="button"
+                onClick={buttonPressed}
+              >
                 Edit
               </button>
             </div>
