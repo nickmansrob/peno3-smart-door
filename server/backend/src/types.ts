@@ -72,6 +72,7 @@ export type OutgoingAccess = {
   firstName: string
   timestamp: string
   access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED'
+  status?: string
 }
 
 export type OutgoingAdminAccess = {

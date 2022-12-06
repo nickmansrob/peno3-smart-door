@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { CustomInterval, OutgoingAccess, OutgoingAdminAccess, Role, UserRecord } from './types.js'
@@ -20,9 +19,10 @@ export function serializeFaceDescriptor(arr: string): number[] {
 export function evaluateAccess(
   access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
   firstName: string,
+  status?: string
 ): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
-  return { firstName, timestamp: date, access }
+  return { firstName, timestamp: date, access, status }
 }
 
 export function evaluateAdminAccess(
@@ -38,7 +38,7 @@ export function evaluateAdminAccess(
  * @param userId the id of the user
  * @returns the next state of the user
  */
-export async function findNextState(userId: number): Promise<string> {
+export async function findNextState(userId: number): Promise<'ENTER' | 'LEAVE'> {
   const latestUserRecords = (await getLatestEnabledUserEntries()) as UserRecord[]
 
   const lastUserState = latestUserRecords.filter(record => record.id === userId)
@@ -51,6 +51,22 @@ export async function findNextState(userId: number): Promise<string> {
     }
   } else {
     return 'ENTER'
+  }
+}
+
+/**
+ *
+ * @param userId the id of the user
+ * @returns the current state of the user
+ */
+export async function findCurrentState(userId: number): Promise<'ENTER' | 'LEAVE'> {
+  const latestUserRecords = (await getLatestEnabledUserEntries()) as UserRecord[]
+
+  const lastUserState = latestUserRecords.filter(record => record.id === userId)
+  if (lastUserState.length > 0) {
+    return lastUserState[0].state
+  } else {
+    return 'LEAVE'
   }
 }
 

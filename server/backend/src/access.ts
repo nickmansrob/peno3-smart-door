@@ -4,7 +4,7 @@ import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isPermitted } from './permission.js'
 import { IncomingFace, IncomingOtp, Id } from './types.js'
-import { euclidDistance, evaluateAccess, evaluateAdminAccess, getRole, serializeFaceDescriptor } from './util.js'
+import { euclidDistance, evaluateAccess, evaluateAdminAccess, findCurrentState, getRole, serializeFaceDescriptor } from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 
 export async function handleFace(req: Request, res: Response): Promise<void> {
@@ -34,7 +34,7 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
           if (await isPermitted(matchedUser.id, matchedUser.roleId)) {
             // Can access
             createRecord(matchedUser.id, 'FACE')
-            res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName))
+            res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName, await findCurrentState(matchedUser.id)))
           } else {
             // Permitted
             res.status(401).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
@@ -74,7 +74,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
             // User allowed
             const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
             if (await recordCheck) {
-              res.status(200).json(evaluateAccess('GRANTED', user.firstName))
+              res.status(200).json(evaluateAccess('GRANTED', user.firstName, await findCurrentState(user.id)))
             } else {
               res.status(500).json(evaluateAccess('ERROR', user.firstName))
             }
