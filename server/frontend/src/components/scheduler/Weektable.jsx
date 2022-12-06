@@ -70,7 +70,7 @@ const Weektable = () => {
       },
     },
   ];
-  console.log(permissions[0].start[-2,-1])
+
  /* for (let i < permissions.length; i++){
     permissions[i].start= permissions[i].start[-3,-1]
   }
