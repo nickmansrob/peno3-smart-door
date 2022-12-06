@@ -27,9 +27,41 @@ const Weektable = () => {
 
   const columns = [
     { field: "id", headerName: "ID", flex: 1.5 },
-    { field: "weekday", headerName: "Day", flex: 3 },
-    { field: "start", headerName: "Starting time", flex: 4 },
-    { field: "end", headerName: "Ending time", flex: 4 },
+    { field: "weekday", headerName: "Day", flex: 3,
+    renderCell:(params)=> {
+      if(params.row.weekday == "MON")return(<div>Monday</div>);
+      if(params.row.weekday == "TUE")return(<div>Tuesday</div>);
+      if(params.row.weekday == "WED")return(<div>Wednesday</div>);
+      if(params.row.weekday == "THU")return(<div>Thursday</div>);
+      if(params.row.weekday == "FRI")return(<div>Friday</div>);
+      if(params.row.weekday == "SAT")return(<div>Saturday</div>);
+      if(params.row.weekday == "SUN")return(<div>Sunday</div>);
+
+    }},
+    { field: "start", headerName: "Starting time", flex: 4 ,
+  renderCell:(params)=> {
+    const hour = (JSON.stringify(params.row.start)).slice(0,-2)
+    const minute = (JSON.stringify(params.row.start)).slice(-2)
+    
+    return(
+      <div>
+       {hour }:{minute}
+      </div>
+
+    );
+  }},
+    { field: "end", headerName: "Ending time", flex: 4,
+    renderCell:(params)=> {
+      const hour = (JSON.stringify(params.row.end)).slice(0,-2)
+      const minute = (JSON.stringify(params.row.end)).slice(-2)
+      
+      return(
+        <div>
+         {hour }:{minute}
+        </div>
+  
+      );
+    } },
     {
       field: "edit",
       headerName: "Edit",
@@ -70,11 +102,19 @@ const Weektable = () => {
       },
     },
   ];
+/*const allowances = permissions
+console.log(allowances)
+for (let i =0;i <allowances.length;i++){
+  const hour = JSON.stringify(allowances[i].start).slice(0,-2)
+  const minute = JSON.stringify(allowances[i].start).slice(-2)
+  console.log(hour + ":" + minute)
+  allowances[i].start = hour + ":" + minute
+  console.log(allowances)
+}
 
- /* for (let i < permissions.length; i++){
-    permissions[i].start= permissions[i].start[-3,-1]
-  }
 */
+console.log(permissions)
+
   const rows = permissions;
 
   return (
