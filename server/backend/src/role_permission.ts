@@ -27,30 +27,35 @@ export async function getRolePermissions(id?: number) {
 }
 
 export async function handleNewRolePermission(req: Request, res: Response): Promise<void> {
-  const permissions = req.body as IncomingPermission
-  if (validatePermission(permissions)) {
-    // validation input
-    if ((await findRolePermission(permissions)).length === 0) {
-      // validation amount of
-      try {
-        const result = await prisma.rolePermission.create({
-          data: {
-            roleId: permissions.id,
-            start: permissions.s,
-            end: permissions.e,
-            weekday: permissions.weekday,
-          },
-        })
-        res.json(result)
-      } catch (e) {
-        console.error(e)
-        res.status(500).json({ error: 'The permissions could not be created' })
+  if (req.body){
+    const permissions = req.body as IncomingPermission
+    if (validatePermission(permissions)) {
+      // validation input
+      if ((await findRolePermission(permissions)).length === 0) {
+        // validation amount of
+        try {
+          const result = await prisma.rolePermission.create({
+            data: {
+              roleId: permissions.id,
+              start: permissions.s,
+              end: permissions.e,
+              weekday: permissions.weekday,
+            },
+          })
+          res.json(result)
+        } catch (e) {
+          console.error(e)
+          res.status(500).json('The permission could not be created')
+        }
+      } else {
+        res.status(409).json(`There already is a permissions for this role with id: ${permissions.id}`)
       }
     } else {
-      res.status(400).send('There already is a permissions for this role')
+      res.status(400).json(`IncomingPermission: ${JSON.stringify(req.body)} invalid`)
     }
-  } else {
-    res.status(400).send('The permissions has the wrong format')
+  }
+  else {
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -95,29 +100,27 @@ export async function handleEditRolePermission(req: Request, res: Response): Pro
               end: permissions.e,
             },
           })
-          res.status(200).send('permissions edited')
+          res.status(200).json('permissions edited')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'permissions could not be edited' })
+          res.status(500).json('permissions could not be edited')
         }
       }
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found permissions failed')
+        res.status(500).json(`Validation of found permissions: ${permissionsIdArray} failed`)
       }
     }
     // validation failed
     else {
       console.error('IncomingPermission invalid')
-      res.status(400).json({
-        error: 'IncomingRestricion invalid',
-      })
+      res.status(400).json(`IncomingPermission: ${JSON.stringify(req.body)} invalid`)
     }
 
     // if there is no req.body
   } else {
-    res.status(400).send()
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -146,28 +149,26 @@ export async function handleDeleteRolePermission(req: Request, res: Response): P
           await prisma.rolePermission.delete({
             where: { id: permissionsId },
           })
-          res.status(200).send('permissions deleted')
+          res.status(200).json('permissions deleted')
         } catch (e) {
           console.error(e)
-          res.status(500).json({ error: 'permissions could not be deleted' })
+          res.status(500).json('permissions could not be deleted')
         }
       }
 
       // validation of results findMany did not return true
       else {
-        res.status(500).send('Validation of found permissions failed')
+        res.status(500).json(`Validation of found permissions: ${permissionsIdArray} failed`)
       }
     }
     // validation failed
     else {
       console.error('IncomingPermission invalid')
-      res.status(400).json({
-        error: 'IncomingRestricion invalid',
-      })
+      res.status(400).json(`IncomingPermission: ${JSON.stringify(req.body)} invalid`)
     }
 
     // if there is no req.body
   } else {
-    res.status(400).send()
+    res.status(400).json('Bad Request')
   }
 }

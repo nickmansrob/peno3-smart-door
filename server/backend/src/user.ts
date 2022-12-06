@@ -14,7 +14,7 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
 
     const user = (await getUsers(face.id)) as User
 
-    if (user && validateFaceDescriptor(face.faceDescriptor)) {
+    if (user && validateFaceDescriptor(face.faceDescriptor)) { // the existence of the user is already checkend on the RPI, so is not really needed here
       if(user.faceDescriptor === '[]'){
       // validation input
         try {
@@ -30,17 +30,15 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
           res.json(result)
         } catch (e) {
           console.error(e)
-          res.status(500).json({
-            error: 'Facedescriptor could not be updated.',
-          })
+          res.status(500).json('Facedescriptor could not be updated.')
         }
       }
       else {
-        res.status(409).json('facedescriptor already exists')
+        res.status(400).json('There already a nonempty faceDescriptor of this User')
       }
     }
     else {
-      res.status(400).json('Invalid facedescriptor')
+      res.status(400).json(`Invalid facedescriptor: ${JSON.stringify(req.body)}`)
     }
   }
   else {
@@ -78,43 +76,36 @@ export async function handleNewUser(req: Request, res: Response): Promise<void> 
   if (req.body) {
     const user = req.body as User
     if (validateNewUser(user)) {
-      console.info(`Incoming user: ${JSON.stringify(user)}`)
-      if (validateNewUser(user)) {
-        // validation input
-        console.log(`Incoming user: ${JSON.stringify(user)}`)
-        try {
-          console.info('Trying to write user')
-          const result = await prisma.user.create({
-            data: {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              faceDescriptor: '[]',
-              tfaToken: user.tfaToken,
-              enabled: false,
-              role: {
-                connect: {
-                  name: user.role.name,
-                },
+      // validation input
+      console.log(`Incoming user: ${JSON.stringify(user)}`)
+      try {
+        console.info('Trying to write user')
+        const result = await prisma.user.create({
+          data: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            faceDescriptor: '[]',
+            tfaToken: user.tfaToken,
+            enabled: false,
+            role: {
+              connect: {
+                name: user.role.name,
               },
             },
-          })
-          console.info('Wrote user')
-          res.json(result)
-        } catch (e) {
-          console.error(e)
-          res.status(500).json({
-            error: 'User could not be created.',
-          })
-        }
-      } else {
-        console.error('faceDescriptor invalid')
-        res.status(400).json({
-          error: 'faceDescriptor invalid',
+          },
         })
+        console.info('Wrote user')
+        res.status(200).json(result)
+      } catch (e) {
+        console.error(e)
+        res.status(500).json('User could not be created.')
       }
     } else {
-      res.status(400).send()
+      console.error('newUser invalid')
+      res.status(400).json(`newUser invalid: ${JSON.stringify(req.body)}`)
     }
+  } else {
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -152,21 +143,17 @@ export async function handleEditUser(req: Request, res: Response): Promise<void>
           res.json(result)
         } catch (e) {
           console.error(e)
-          res.status(500).json({
-            error: 'User could not be edited.',
-          })
+          res.status(500).json('User could not be edited.')
         }
       } else {
-        res.status(400).send('A deleted user can not be edited')
+        res.status(400).json('A deleted user can not be edited')
       }
     } else {
       console.error('IncomingUserEdit invalid')
-      res.status(400).json({
-        error: 'IncomingUserEdit invalid',
-      })
+      res.status(400).json(`IncomingUserEdit invalid: ${JSON.stringify(req.body)}`)
     }
   } else {
-    res.status(400).send()
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -194,19 +181,17 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
             enabled: false,
           },
         })
-        res.json(result)
+        res.status(200).json(result)
       } catch (e) {
-        console.error(e)
-        res.status(500).json({ error: 'User could not be deleted' })
+        console.error(e)  
+        res.status(500).json('User could not be deleted')
       }
     } else {
-      console.error('Id invalid')
-      res.status(400).json({
-        error: 'IncomingUserDelete invalid',
-      })
+      console.error('IncomingUserDelete invalid')
+      res.status(400).json(`IncomingUserDelete invalid ${JSON.stringify(req.body)}`)
     }
   } else {
-    res.status(400).send()
+    res.status(400).json('Bad Request')
   }
 }
 
