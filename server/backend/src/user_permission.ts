@@ -27,7 +27,7 @@ export async function getUserPermissions(id?: number) {
 }
 
 export async function handleNewUserPermission(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const permissions = req.body as IncomingPermission
     if (validatePermission(permissions)) {
       // validation input

@@ -121,7 +121,6 @@ export function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
     typeof userEdit.id === 'number' &&
     typeof userEdit.firstName === 'string' &&
     typeof userEdit.lastName === 'string'
-    
   ) {
     return true
   } else {
