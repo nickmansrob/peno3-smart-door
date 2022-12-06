@@ -23,7 +23,7 @@ const Weektable = () => {
         setPermissions(data);
         console.log(permissions);
       });
-  });
+  },[]);
 
   const columns = [
     { field: "id", headerName: "ID", flex: 1.5 },
@@ -70,7 +70,11 @@ const Weektable = () => {
       },
     },
   ];
-
+  console.log(permissions[0].start[-2,-1])
+ /* for (let i < permissions.length; i++){
+    permissions[i].start= permissions[i].start[-3,-1]
+  }
+*/
   const rows = permissions;
 
   return (
