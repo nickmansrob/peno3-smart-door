@@ -3,7 +3,7 @@ import { prisma } from './database.js'
 import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isPermitted } from './permission.js'
-import { IncomingFace, IncomingOtp, Role, Id } from './types.js'
+import { IncomingFace, IncomingOtp, Id } from './types.js'
 import { euclidDistance, evaluateAccess, evaluateAdminAccess, getRole, serializeFaceDescriptor } from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 

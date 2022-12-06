@@ -5,7 +5,6 @@ import { handleAdminAccess, handleFace, handleGetName, handleOtp } from './acces
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
-  getLatestEnabledUserEntries,
   getLatestEnabledUserRecord,
   handleAddFace,
   handleDeleteUser,

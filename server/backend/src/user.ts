@@ -1,5 +1,4 @@
 import { Response, Request } from 'express'
-import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { IncomingNewFace, IncomingUserEdit, User, UserRecord } from './types.js'
 import { validateFaceDescriptor, validateNewUser, validateIncomingUserEdit } from './validation.js'

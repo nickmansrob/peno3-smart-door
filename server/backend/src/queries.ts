@@ -7,7 +7,6 @@ export async function getEntries(): Promise<{ inside: number; total: number }> {
   // Realtime monitor
   // NO disabled users
   const records = (await getLatestEnabledUserRecord())?.filter(record => record.state === 'ENTER')
-  console.log(records)
   const total = await getAllActiveUsers()
 
   if (records) {
