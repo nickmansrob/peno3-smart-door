@@ -6,10 +6,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { isDOMComponent } from "react-dom/test-utils";
 const Addweek = () => {
-  const [user, setUser] = useState([]);
-  const [roles, setRoles] = useState([]);
   const [day, setDay] = useState("");
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(0);

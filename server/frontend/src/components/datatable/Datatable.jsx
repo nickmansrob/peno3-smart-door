@@ -123,8 +123,8 @@ const Datatable = () => {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={9}
-        rowsPerPageOptions={[9]}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
         checkboxSelection
       />
     </div>
