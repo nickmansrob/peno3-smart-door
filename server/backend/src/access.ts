@@ -44,10 +44,10 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
         }
       }
     } else {
-      res.status(400).json('IncomingFace invalid')
+      res.status(400).json(`IncomingFace ${JSON.stringify(req.body)} invalid`)
     }
   } else {
-    res.status(400).json()
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -88,7 +88,7 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
         res.status(403).json(`User with id: ${stream.id} does not exist`)
       }
     } else {
-      res.status(400).json('OTP Validation failed')
+      res.status(400).json(`OTP Validation of ${JSON.stringify(req.body)} failed`)
     }
   } else {
     res.status(400).json('Bad request')
@@ -117,15 +117,13 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
       res.status(200).json(user)
       if (!user) {
         console.warn(`User with id ${stream.id} could not be found.`)
-        res.status(403).json('User could not be found.')
-      } else {
-        res.status(200).json(user)
+        res.status(403).json(`User with id ${stream.id} could not be found.`)
       }
     } else {
       res.status(400).json(`Recieved data (id) = ${JSON.stringify(req.body)} is invalid`)
     }
   } else {
-    res.status(400).json()
+    res.status(400).json('Bad Request')
   }
 }
 
@@ -153,7 +151,7 @@ export async function handleAdminAccess(req: Request, res: Response): Promise<vo
         res.status(403).json(`User with id: ${stream.id}  does not exist`)
       }
     } else {
-      res.status(400).json('OTP Validation failed')
+      res.status(400).json(`OTP Validation of ${JSON.stringify(req.body)} failed`)
     }
   } else {
     res.status(400).json('Bad request')
