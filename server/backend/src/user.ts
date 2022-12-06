@@ -207,7 +207,12 @@ export async function getAllActiveUsers(): Promise<number> {
   }
 }
 
-export async function getLatestEnabledUserRecords(amount?: number): Promise<UserRecord[] | undefined> {
+/**
+ * 
+ * @param amount optional: the amount of users returned
+ * @returns the latest amount of records for each user when the latest record was an ENTER
+ */
+export async function getLatestEnabledUserEntries(amount?: number): Promise<UserRecord[] | undefined> {
   const records = (
     await prisma.user.findMany({
       select: {
@@ -246,23 +251,44 @@ export async function getLatestEnabledUserRecords(amount?: number): Promise<User
   }
 }
 
-export async function getRangeRecords(s: DateTime, e: DateTime) {
-  return (
+/**
+ * 
+ * @param amount optional: the amount of users returned
+ * @returns the latest amount of records for each user
+ */
+export async function getLatestEnabledUserRecord(amount?: number): Promise<UserRecord[] | undefined> {
+  const records = (
     await prisma.user.findMany({
       select: {
         records: {
-          where: {
-            timestamp: {
-              lte: e.toString(),
-              gte: s.toString(),
-            },
-            state: 'ENTER',
-          },
           orderBy: {
             timestamp: 'desc',
           },
+          take: 1,
         },
       },
+      where: {
+        enabled: true,
+      },
+      take: amount,
     })
   ).filter(record => record.records.length !== 0)
+
+  if (records) {
+    return records.map(object => {
+      if (object.records.length > 1) {
+        console.warn('Latest userRecord has multiple records! Taking the first one.')
+      }
+
+      const record = {
+        id: object.records[0]?.userId,
+        timestamp: object.records[0]?.timestamp.toISOString(),
+        method: object.records[0]?.method,
+        state: object.records[0]?.state,
+      } as UserRecord
+
+      return record
+    })
+  }
 }
+

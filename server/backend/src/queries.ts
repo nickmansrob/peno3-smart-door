@@ -1,11 +1,13 @@
 import { DateTime, Interval } from 'luxon'
+import { getRangeRecords } from './record.js'
 import { LatestEntry } from './types.js'
-import { getAllActiveUsers, getLatestEnabledUserRecords, getRangeRecords, getUsers } from './user.js'
+import { getAllActiveUsers, getLatestEnabledUserEntries, getLatestEnabledUserRecord, getUsers } from './user.js'
 
 export async function getEntries(): Promise<{ inside: number; total: number }> {
   // Realtime monitor
   // NO disabled users
-  const records = await getLatestEnabledUserRecords()
+  const records = (await getLatestEnabledUserRecord())?.filter(record => record.state === 'ENTER')
+  console.log(records)
   const total = await getAllActiveUsers()
 
   if (records) {
@@ -52,7 +54,7 @@ export async function getRangeEntries(s: DateTime, e: DateTime): Promise<number[
 export async function getLatestEntries(amount: number): Promise<LatestEntry[]> {
   // NO disabled users
   // number validated in provider
-  const records = await getLatestEnabledUserRecords(amount)
+  const records = await getLatestEnabledUserEntries(amount)
 
   if (records) {
     return await Promise.all(

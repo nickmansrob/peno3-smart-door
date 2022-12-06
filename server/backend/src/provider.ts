@@ -5,7 +5,8 @@ import { handleAdminAccess, handleFace, handleGetName, handleOtp } from './acces
 import { getEntries, getLatestEntries, getRangeEntries } from './queries.js'
 import { handleRecordView } from './record.js'
 import {
-  getLatestEnabledUserRecords,
+  getLatestEnabledUserEntries,
+  getLatestEnabledUserRecord,
   handleAddFace,
   handleDeleteUser,
   handleEditUser,
@@ -107,5 +108,5 @@ async function handleRangeEntries(req: Request, res: Response): Promise<void> {
 }
 
 async function handleLatestStatus(_req: Request, res: Response): Promise<void> {
-  res.status(200).json(await getLatestEnabledUserRecords())
+  res.status(200).json(await getLatestEnabledUserRecord())
 }

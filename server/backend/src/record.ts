@@ -1,7 +1,8 @@
 import { Response, Request } from 'express'
+import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { UserRecord } from './types.js'
-import { getLatestEnabledUserRecords } from './user.js'
+import { getLatestEnabledUserEntries } from './user.js'
 import { findNextState } from './util.js'
 
 export async function handleRecordView(req: Request, res: Response): Promise<void> {
@@ -35,7 +36,7 @@ export async function getRecords(id?: number) {
  */
 export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Promise<boolean> {
   // no validation needed
-  const latestUserRecords = (await getLatestEnabledUserRecords()) as UserRecord[]
+  const latestUserRecords = (await getLatestEnabledUserEntries()) as UserRecord[]
   if (latestUserRecords) {
     const nextState = await findNextState(userId)
     try {
@@ -67,4 +68,25 @@ export async function createRecord(userId: number, method: 'TFA' | 'FACE'): Prom
     }
     return true
   }
+}
+
+export async function getRangeRecords(s: DateTime, e: DateTime) {
+  return (
+    await prisma.user.findMany({
+      select: {
+        records: {
+          where: {
+            timestamp: {
+              lte: e.toString(),
+              gte: s.toString(),
+            },
+            state: 'ENTER',
+          },
+          orderBy: {
+            timestamp: 'desc',
+          },
+        },
+      },
+    })
+  ).filter(record => record.records.length !== 0)
 }
