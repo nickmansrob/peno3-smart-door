@@ -114,10 +114,11 @@ export async function handleGetName(req: Request, res: Response): Promise<void> 
           lastName: true,
         },
       })
-      res.status(200).json(user)
       if (!user) {
         console.warn(`User with id ${stream.id} could not be found.`)
         res.status(403).json(`User with id ${stream.id} could not be found.`)
+      } else {
+        res.status(200).json(user)
       }
     } else {
       res.status(400).json(`Recieved data (id) = ${JSON.stringify(req.body)} is invalid`)
