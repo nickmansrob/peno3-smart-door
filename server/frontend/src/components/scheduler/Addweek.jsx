@@ -8,10 +8,10 @@ import { useParams, Link } from "react-router-dom";
 import DropdownList from "react-widgets/DropdownList";
 const Addweek = () => {
   const [day, setDay] = useState("");
-  const [hour, setHour] = useState(0);
-  const [minute, setMinute] = useState(0);
-  const [hourE, setHourE] = useState(0);
-  const [minuteE, setMinuteE] = useState(0);
+  const [starthour, setStarthour] = useState(0);
+  const [startminute, setStartminute] = useState(0);
+  const [endhour, setEndhour] = useState(0);
+  const [endminute, setEndminute] = useState(0);
   const [permissions, setPermissions] = useState([]);
 
   const minutes = [];
@@ -25,6 +25,7 @@ const Addweek = () => {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
   ];
+
   const id = useParams();
   useEffect(() => {
     const requestOptions = {
@@ -44,8 +45,8 @@ const Addweek = () => {
   const buttonPressed = () => {
     const bodydata = {
       id: Number(id.userId),
-      s: hour * 100 + minute,
-      e: hourE * 100 + minuteE,
+      s: starthour * 100 + startminute,
+      e: endhour * 100 + endminute,
       weekday: day,
     };
     console.log(bodydata);
@@ -114,14 +115,14 @@ const Addweek = () => {
                   <DropdownList
                     className="dropdown"
                     data={hours}
-                    value={hour}
-                    onChange={(hour) => setHour(hour)}
+                    value={starthour}
+                    onChange={(starthour) => setStarthour(starthour)}
                   />
                   <DropdownList
                     className="dropdown"
                     data={minutes}
-                    value={minute}
-                    onChange={(minute) => setMinute(minute)}
+                    value={startminute}
+                    onChange={(minute) => setStartminute(minute)}
                   />
                 </div>
               </div>
@@ -131,15 +132,19 @@ const Addweek = () => {
                 <div className="ddcontainer">
                   <DropdownList
                     className="dropdown"
-                    data={hours}
-                    value={hourE}
-                    onChange={(hourE) => setHourE(hourE)}
+                    data={hours.filter((hour) => hour >= starthour)}
+                    value={endhour}
+                    onChange={(endhour) => setEndhour(endhour)}
                   />
                   <DropdownList
                     className="dropdown"
-                    data={minutes}
-                    value={minuteE}
-                    onChange={(minuteE) => setMinuteE(minuteE)}
+                    data={
+                      endhour === starthour
+                        ? minutes.filter((minute) => minute > startminute)
+                        : minutes
+                    }
+                    value={endminute}
+                    onChange={(endminute) => setEndminute(endminute)}
                   />
                 </div>
               </div>

@@ -51,10 +51,20 @@ const Edit = () => {
   ];
 
   const buttonPressed = () => {
+    const payloadstarthour =
+      starthour === 0 ? Number(starthourprev) : starthour;
+    const payloadstartminute =
+      startminute === 0 ? Number(startminuteprev) : startminute;
+    const payloadendhour = endhour === 0 ? Number(endhourprev) : endhour;
+    const payloadendminute =
+      endminute === 0 ? Number(endminuteprev) : endminute;
+
+    console.log(payloadstarthour);
+
     const bodydata = {
       id: Number(userId),
-      s: starthour * 100 + startminute,
-      e: endhour * 100 + endminute,
+      s: payloadstarthour * 100 + payloadstartminute,
+      e: payloadendhour * 100 + payloadendminute,
       weekday: permissions.find((x) => x.id === permissionId).weekday,
     };
     fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
@@ -136,14 +146,28 @@ const Edit = () => {
                 <div className="ddcontainer">
                   <DropdownList
                     className="dropdown"
-                    data={hours}
+                    data={
+                      starthour === 0
+                        ? hours.filter((hour) => hour >= starthourprev)
+                        : hours.filter((hour) => hour >= starthour)
+                    }
                     value={endhour}
                     placeholder={endhourprev}
                     onChange={(endhour) => setEndhour(endhour)}
                   />
                   <DropdownList
                     className="dropdown"
-                    data={minutes}
+                    data={
+                      endhour === starthour
+                        ? minutes.filter(
+                            (minute) =>
+                              minute >
+                              (startminute === 0
+                                ? Number(startminuteprev)
+                                : startminute)
+                          )
+                        : minutes
+                    }
                     value={endminute}
                     placeholder={endminuteprev}
                     onChange={(endminute) => setEndminute(endminute)}
