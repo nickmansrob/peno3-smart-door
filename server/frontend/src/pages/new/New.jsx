@@ -91,7 +91,7 @@ const New = () => {
                 />
               </div>
 
-              <div>
+              <div className="roleselector">
                 <label>Role</label>
                 <DropdownList
                   data={rolenames}

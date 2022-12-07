@@ -75,7 +75,9 @@ const Single = () => {
                   to={`/weeklytable/${id.userId}`}
                   style={{ textDecoration: "none" }}
                 >
-                  <div className="schedulerButton"> Click to permissions</div>
+                  <button type="button" className="schedulerButton">
+                    Click to permissions
+                  </button>
                 </Link>
                 <button type="button" onClick={buttonClicked}>
                   {isShown ? "Hide QR" : "Get QR"}
