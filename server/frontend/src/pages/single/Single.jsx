@@ -87,7 +87,9 @@ const Single = () => {
           </div>
 
           <div className="right">
-            {isShown && <Qr secret_key={user.tfaToken}></Qr>}
+            {isShown && (
+              <Qr secret_key={user.tfaToken} name={user.firstName}></Qr>
+            )}
           </div>
         </div>
         <div className="bottom"></div>
