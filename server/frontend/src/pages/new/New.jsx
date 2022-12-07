@@ -105,7 +105,7 @@ const New = () => {
             </form>
           </div>
         </div>
-        <div className="bottom">Id: {ansId}</div>
+        {isShown && <div className="bottom">Id: {ansId}</div>}
       </div>
     </div>
   );
