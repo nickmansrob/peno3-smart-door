@@ -76,7 +76,7 @@ const Single = () => {
                   style={{ textDecoration: "none" }}
                 >
                   <button type="button" className="schedulerButton">
-                    Click to permissions
+                    See permissions
                   </button>
                 </Link>
                 <button type="button" onClick={buttonClicked}>

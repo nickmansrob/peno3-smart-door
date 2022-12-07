@@ -36,13 +36,13 @@ const Datatable = () => {
   }, []);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "firstName", headerName: "First name", width: 130 },
-    { field: "lastName", headerName: "Last name", width: 130 },
+    { field: "id", headerName: "ID", flex:1},
+    { field: "firstName", headerName: "First name", flex:2 },
+    { field: "lastName", headerName: "Last name", flex:2},
     {
       field: "roleId",
       headerName: "Role",
-      width: 130,
+      flex:2,
       renderCell: (params) => {
         return (
           <div>
@@ -56,7 +56,7 @@ const Datatable = () => {
     {
       field: "status",
       headerName: "Status",
-      width: 160,
+      flex:2,
       renderCell: (params) => {
         return (
           <div
