@@ -22,6 +22,14 @@
           flex: 4;
           display: flex;
           gap: 50px;
+          .daycontainer {
+            border: 1px solid rgba(122, 117, 117, 0.608);
+            border-radius: 10%;
+            width: 30px;
+            padding: 20px;
+            flex: 3;
+            align-self: center;
+          }
 
           .roller {
             display: block;

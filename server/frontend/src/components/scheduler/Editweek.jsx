@@ -6,14 +6,14 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { isDOMComponent } from "react-dom/test-utils";
 const Edit = () => {
   const id = useParams();
   const idArray = id.userId.split("-");
 
-  const userId = idArray[0];
-  const permissionId = idArray[1];
+  const userId = Number(idArray[0]);
+  const permissionId = Number(idArray[1]);
   const [permissions, setPermissions] = useState([]);
+
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -25,14 +25,12 @@ const Edit = () => {
     )
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
+        console.log(data.find((x) => x.id === permissionId));
         setPermissions(data);
-        console.log(permissions);
       });
   }, []);
 
-  const [user, setUser] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [day, setDay] = useState("");
   const [starthour, setStarthour] = useState(0);
   const [endhour, setEndhour] = useState(0);
   const [startminute, setStartminute] = useState(0);
@@ -52,7 +50,7 @@ const Edit = () => {
       id: Number(userId),
       s: starthour * 100 + startminute,
       e: endhour * 100 + endminute,
-      weekday: day,
+      weekday: permissions.find((x) => x.id === permissionId).weekday,
     };
     fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
       method: "PUT",
@@ -65,7 +63,6 @@ const Edit = () => {
       .then((data) => {
         console.log(data);
       });
-    console.log(bodydata);
     setEndhour(0);
     setEndminute(0);
     setStarthour(0);
@@ -103,17 +100,10 @@ const Edit = () => {
         <div className="bottom">
           <form className="weekform">
             <div className="right">
-              <div className="roller">
-                <label>Day</label>
-                <div className="ddcontainer">
-                  <DropdownList
-                    className="dropdown"
-                    data={days}
-                    placeholder="MON"
-                    value={day}
-                    onChange={(day) => setDay(day)}
-                  />
-                </div>
+              <div className="daycontainer">
+                {permissions.find((x) => x.id === permissionId)
+                  ? permissions.find((x) => x.id === permissionId).weekday
+                  : ""}
               </div>
 
               <div className="roller">
