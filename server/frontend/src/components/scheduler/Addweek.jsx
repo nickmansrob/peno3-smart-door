@@ -2,6 +2,7 @@ import "./addweek.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
 import { useState } from "react";
+import "react-widgets/styles.css";
 import { useParams, Link } from "react-router-dom";
 // import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
@@ -123,13 +124,16 @@ const Addweek = () => {
                   />
                 </div>
               </div>
-              <button
-                className="addbutton"
-                type="button"
-                onClick={buttonPressed}
-              >
-                Add
-              </button>
+
+              <Link to={`/weeklytable/${id.userId}`}>
+                <button
+                  className="addbutton"
+                  type="button"
+                  onClick={buttonPressed}
+                >
+                  Add
+                </button>
+              </Link>
             </div>
           </form>
         </div>
