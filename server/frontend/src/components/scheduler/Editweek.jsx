@@ -150,13 +150,18 @@ const Edit = () => {
                   />
                 </div>
               </div>
-              <button
-                className="addbutton"
-                type="button"
-                onClick={buttonPressed}
+              <Link
+                to={`/weeklytable/${userId}`}
+                style={{ textDecoration: "none" }}
               >
-                Edit
-              </button>
+                <button
+                  className="addbutton"
+                  type="button"
+                  onClick={buttonPressed}
+                >
+                  Edit
+                </button>
+              </Link>
             </div>
           </form>
         </div>
