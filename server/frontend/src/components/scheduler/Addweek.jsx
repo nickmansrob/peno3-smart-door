@@ -1,7 +1,7 @@
 import "./addweek.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "react-widgets/styles.css";
 import { useParams, Link } from "react-router-dom";
 // import "react-widgets/styles.css";
@@ -12,16 +12,35 @@ const Addweek = () => {
   const [minute, setMinute] = useState(0);
   const [hourE, setHourE] = useState(0);
   const [minuteE, setMinuteE] = useState(0);
+  const [permissions, setPermissions] = useState([]);
+
   const minutes = [];
   for (let i = 0; i < 61; i++) {
     minutes.push(i);
   }
-  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const permissiondays = permissions.map((a) => a.weekday);
+  const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const days = weekdays.filter((n) => !permissiondays.includes(n));
   const hours = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
   ];
   const id = useParams();
+  useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+    };
+
+    fetch(
+      `https://styx.rndevelopment.be/api/user_permissions/?id=${id.userId}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setPermissions(data);
+      });
+  }, []);
   const buttonPressed = () => {
     const bodydata = {
       id: Number(id.userId),
