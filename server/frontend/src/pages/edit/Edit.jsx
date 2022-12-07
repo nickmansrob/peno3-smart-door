@@ -106,9 +106,15 @@ const Edit = () => {
                   placeholder={user.lastName}
                 />
               </div>
-              <button type="button" onClick={buttonPressed}>
-                Edit
-              </button>
+              <Link to={`/users`}>
+                <button
+                  type="button"
+                  className="editbutton"
+                  onClick={buttonPressed}
+                >
+                  Edit
+                </button>
+              </Link>
             </form>
           </div>
         </div>
