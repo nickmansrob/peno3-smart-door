@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 const Weektable = () => {
   const userId = useParams();
   const [permissions, setPermissions] = useState([]);
+  const weekdayarray = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -30,6 +31,7 @@ const Weektable = () => {
       field: "weekday",
       headerName: "Day",
       flex: 3,
+
       renderCell: (params) => {
         if (params.row.weekday == "MON") return <div>Monday</div>;
         if (params.row.weekday == "TUE") return <div>Tuesday</div>;
@@ -39,6 +41,8 @@ const Weektable = () => {
         if (params.row.weekday == "SAT") return <div>Saturday</div>;
         if (params.row.weekday == "SUN") return <div>Sunday</div>;
       },
+      sortComparator: (v1, v2) =>
+        weekdayarray.indexOf(v1) < weekdayarray.indexOf(v2),
     },
     {
       field: "start",
