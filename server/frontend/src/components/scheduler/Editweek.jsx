@@ -3,7 +3,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Edit = () => {
@@ -13,7 +13,17 @@ const Edit = () => {
   const userId = Number(idArray[0]);
   const permissionId = Number(idArray[1]);
   const [permissions, setPermissions] = useState([]);
+  const starttimeprev = permissions.find((x) => x.id === permissionId)
+    ? permissions.find((x) => x.id === permissionId).start
+    : "1600";
+  const endtimeprev = permissions.find((x) => x.id === permissionId)
+    ? permissions.find((x) => x.id === permissionId).end
+    : "1600";
+  const starthourprev = JSON.stringify(starttimeprev).slice(0, -2);
+  const startminuteprev = JSON.stringify(starttimeprev).slice(-2);
 
+  const endhourprev = JSON.stringify(endtimeprev).slice(0, -2);
+  const endminuteprev = JSON.stringify(endtimeprev).slice(-2);
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -25,8 +35,6 @@ const Edit = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        console.log(data.find((x) => x.id === permissionId));
         setPermissions(data);
       });
   }, []);
@@ -39,7 +47,6 @@ const Edit = () => {
   for (let i = 0; i < 61; i++) {
     minutes.push(i);
   }
-  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const hours = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
@@ -113,13 +120,14 @@ const Edit = () => {
                     className="dropdown"
                     data={hours}
                     value={starthour}
-                    defaultValue="1"
+                    placeholder={starthourprev}
                     onChange={(starthour) => setStarthour(starthour)}
                   />
                   <DropdownList
                     className="dropdown"
                     data={minutes}
                     value={startminute}
+                    placeholder={startminuteprev}
                     onChange={(startminute) => setStartminute(startminute)}
                   />
                 </div>
@@ -132,12 +140,14 @@ const Edit = () => {
                     className="dropdown"
                     data={hours}
                     value={endhour}
+                    placeholder={endhourprev}
                     onChange={(endhour) => setEndhour(endhour)}
                   />
                   <DropdownList
                     className="dropdown"
                     data={minutes}
                     value={endminute}
+                    placeholder={endminuteprev}
                     onChange={(endminute) => setEndminute(endminute)}
                   />
                 </div>
@@ -152,6 +162,9 @@ const Edit = () => {
             </div>
           </form>
         </div>
+        <Link to={`/weeklytable/${userId}`} style={{ textDecoration: "none" }}>
+          <div className="link">All permissions</div>
+        </Link>
       </div>
     </div>
   );

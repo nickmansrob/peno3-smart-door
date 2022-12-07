@@ -117,14 +117,6 @@ const Weektable = () => {
   console.log(permissions);
   return (
     <div>
-      <div className="buttonzone">
-        <Link
-          to={`/addweekly/${userId.userId}`}
-          style={{ textDecoration: "none" }}
-        >
-          <button className="addButton">Add Permission</button>
-        </Link>
-      </div>
       <div className="datatable">
         <DataGrid
           rows={rows}
@@ -132,6 +124,16 @@ const Weektable = () => {
           pageSize={9}
           rowsPerPageOptions={[5]}
         />
+      </div>
+      <div className="buttonzone">
+        <Link
+          to={`/addweekly/${userId.userId}`}
+          style={{ textDecoration: "none" }}
+        >
+          <button type="button" className="addButton">
+            Add Permission
+          </button>
+        </Link>
       </div>
     </div>
   );

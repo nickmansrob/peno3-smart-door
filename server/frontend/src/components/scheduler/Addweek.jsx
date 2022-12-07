@@ -3,7 +3,7 @@ import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 // import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Addweek = () => {
@@ -134,6 +134,13 @@ const Addweek = () => {
             </div>
           </form>
         </div>
+
+        <Link
+          to={`/weeklytable/${id.userId}`}
+          style={{ textDecoration: "none" }}
+        >
+          <div className="link">All permissions</div>
+        </Link>
       </div>
     </div>
   );

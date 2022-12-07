@@ -1,11 +1,14 @@
-.buttonzone{
-  
-  align-self: center;
+.buttonzone {
+  margin-left: 50px;
+  align-items: center;
   size: 10px;
-  
+
   border-bottom: 10px;
-  .addButton{
-    height: 100px;
+  .addButton {
+    width: 150px;
+    background-color: rgb(29, 11, 163);
+    color: white;
+    cursor: pointer;
   }
 }
 
