@@ -1,6 +1,4 @@
 import "./editweek.scss";
-import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -152,13 +150,18 @@ const Edit = () => {
                   />
                 </div>
               </div>
-              <button
-                className="addbutton"
-                type="button"
-                onClick={buttonPressed}
+              <Link
+                to={`/weeklytable/${userId}`}
+                style={{ textDecoration: "none" }}
               >
-                Edit
-              </button>
+                <button
+                  className="addbutton"
+                  type="button"
+                  onClick={buttonPressed}
+                >
+                  Edit
+                </button>
+              </Link>
             </div>
           </form>
         </div>

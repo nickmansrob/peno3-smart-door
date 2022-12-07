@@ -2,10 +2,9 @@ import "./new.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import { useState, useEffect } from "react";
-import Qr from "../../components/qr/Qr";
 import base32Encode from "base32-encode";
-import DropdownList from "react-widgets/DropdownList";
 import "react-widgets/styles.css";
+import DropdownList from "react-widgets/DropdownList";
 const New = () => {
   const [roles, setRoles] = useState([]);
   const rolenames = Array.from(roles, (x) => x.name);

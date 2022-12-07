@@ -1,7 +1,6 @@
 import "./edit.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
