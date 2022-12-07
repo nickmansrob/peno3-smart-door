@@ -1,10 +1,7 @@
 import "./editweek.scss";
-import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Edit = () => {
   const id = useParams();

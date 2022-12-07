@@ -121,8 +121,8 @@ const Weektable = () => {
         <DataGrid
           rows={rows}
           columns={columns}
-          pageSize={9}
-          rowsPerPageOptions={[5]}
+          pageSize={7}
+          rowsPerPageOptions={[7]}
         />
       </div>
       <div className="buttonzone">
