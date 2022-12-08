@@ -42,7 +42,7 @@ const Weektable = () => {
         if (params.row.weekday == "SUN") return <div>Sunday</div>;
       },
       sortComparator: (v1, v2) =>
-        weekdayarray.indexOf(v1) < weekdayarray.indexOf(v2),
+        weekdayarray.indexOf(v1) - weekdayarray.indexOf(v2),
     },
     {
       field: "start",
@@ -123,6 +123,11 @@ const Weektable = () => {
     <div>
       <div className="datatable">
         <DataGrid
+          initialState={{
+            sorting: {
+              sortModel: [{ field: "weekday", sort: "asc" }],
+            },
+          }}
           rows={rows}
           columns={columns}
           pageSize={7}
