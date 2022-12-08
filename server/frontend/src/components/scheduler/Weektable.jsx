@@ -33,13 +33,36 @@ const Weektable = () => {
       flex: 3,
 
       renderCell: (params) => {
-        if (params.row.weekday == "MON") return <div>Monday</div>;
-        if (params.row.weekday == "TUE") return <div>Tuesday</div>;
-        if (params.row.weekday == "WED") return <div>Wednesday</div>;
-        if (params.row.weekday == "THU") return <div>Thursday</div>;
-        if (params.row.weekday == "FRI") return <div>Friday</div>;
-        if (params.row.weekday == "SAT") return <div>Saturday</div>;
-        if (params.row.weekday == "SUN") return <div>Sunday</div>;
+        switch (params.row.weekday) {
+          case "MON":
+            return <div>Monday</div>;
+            break;
+          case "TUE":
+            return <div>Tuesday</div>;
+            break;
+          case "WED":
+            return <div>Wednesday</div>;
+            break;
+          case "THU":
+            return <div>Thursday</div>;
+            break;
+          case "FRI":
+            return <div>Friday</div>;
+            break;
+          case "SAT":
+            return <div>Saturday</div>;
+            break;
+          default:
+            return <div>Sunday</div>;
+        }
+
+        // if (params.row.weekday === "MON") return <div>Monday</div>;
+        // if (params.row.weekday === "TUE") return <div>Tuesday</div>;
+        // if (params.row.weekday === "WED") return <div>Wednesday</div>;
+        // if (params.row.weekday === "THU") return <div>Thursday</div>;
+        // if (params.row.weekday === "FRI") return <div>Friday</div>;
+        // if (params.row.weekday === "SAT") return <div>Saturday</div>;
+        // if (params.row.weekday === "SUN") return <div>Sunday</div>;
       },
       sortComparator: (v1, v2) =>
         weekdayarray.indexOf(v1) - weekdayarray.indexOf(v2),
