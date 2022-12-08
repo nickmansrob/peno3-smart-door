@@ -1,7 +1,6 @@
 import "./weektable.scss";
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-//import { act } from "react-dom/test-utils";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -36,22 +35,16 @@ const Weektable = () => {
         switch (params.row.weekday) {
           case "MON":
             return <div>Monday</div>;
-            break;
           case "TUE":
             return <div>Tuesday</div>;
-            break;
           case "WED":
             return <div>Wednesday</div>;
-            break;
           case "THU":
             return <div>Thursday</div>;
-            break;
           case "FRI":
             return <div>Friday</div>;
-            break;
           case "SAT":
             return <div>Saturday</div>;
-            break;
           default:
             return <div>Sunday</div>;
         }
