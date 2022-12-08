@@ -76,8 +76,9 @@ const Weektable = () => {
     },
     {
       field: "edit",
-      headerName: "Edit",
+      headerName: "Actions",
       flex: 2,
+      sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
           fetch("https://styx.rndevelopment.be/api/user_permissions", {
