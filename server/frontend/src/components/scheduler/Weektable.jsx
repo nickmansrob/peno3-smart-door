@@ -100,7 +100,8 @@ const Weektable = () => {
           fetch("https://styx.rndevelopment.be/api/user_permissions", {
             method: "DELETE",
             body: JSON.stringify({
-              weekday: params.row.id,
+              weekday: params.row.weekday,
+              id: userId.userId,
             }),
             headers: {
               "Content-Type": "application/json",
