@@ -6,7 +6,7 @@ import { getAllActiveUsers, getLatestEnabledUserEntries, getLatestEnabledUserRec
 export async function getEntries(): Promise<{ inside: number; total: number }> {
   // Realtime monitor
   // NO disabled users
-  const records = (await getLatestEnabledUserEntries())?.filter(record => record.state === 'ENTER')
+  const records = (await getLatestEnabledUserRecord())?.filter(record => record.state === 'ENTER') // Take all latest records first, then filter the enters
   const total = await getAllActiveUsers()
 
   if (records) {
