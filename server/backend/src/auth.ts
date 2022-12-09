@@ -2,27 +2,28 @@ import jwt from 'jsonwebtoken'
 
 export function verifyToken(token: string, env: string): boolean {
   if (env === 'frontend') {
-    const decoded = jwt.verify(token, process.env.JWT_FRONTEND ?? 'fakeSecret', (err, decoded) => {
-      const payload = decoded as {data: string}
-      if (!err && payload.data === 'frontend') {
-        // Correct token
+    try {
+      const res = jwt.verify(token, process.env.JWT_FRONTEND ?? 'fakeSecret') as jwt.JwtPayload
+      if (res['data'] === 'frontend') {
         return true
       } else {
         return false
       }
-    })
+    } catch (error) {
+      console.log(error)
+      return false
+    }
   } else {
-    console.log('here')
-    const decoded = jwt.verify(token, process.env.JWT_PYTHON ?? 'fakeSecret', (err, decoded) => {
-      const payload = decoded as {data: string}
-      if (!err && payload.data === 'python') {
-        // Correct token
+    try {
+      const res = jwt.verify(token, process.env.JWT_PYTHON ?? 'fakeSecret') as jwt.JwtPayload
+      if (res['data'] === 'python') {
         return true
       } else {
         return false
       }
-    })
+    } catch (error) {
+      console.log(error)
+      return false
+    }
   }
-
-  return false
 }
