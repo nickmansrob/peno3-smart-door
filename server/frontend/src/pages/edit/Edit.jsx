@@ -1,10 +1,9 @@
-import "./new.scss";
+import "./edit.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
 const Edit = () => {
@@ -20,6 +19,7 @@ const Edit = () => {
     const requestOptions = {
       method: "GET",
     };
+
     fetch(
       `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,
       requestOptions
@@ -39,8 +39,8 @@ const Edit = () => {
   const buttonPressed = () => {
     const bodydata = {
       id: Number(id.userId),
-      firstName: firstName,
-      lastName: lastName,
+      firstName: firstName ? firstName : user.firstName,
+      lastName: lastName ? lastName : user.lastName,
       role: { name: group },
     };
     fetch(`https://styx.rndevelopment.be/api/users`, {
@@ -55,6 +55,9 @@ const Edit = () => {
         console.log(data);
       });
     console.log(bodydata);
+    setFirstName("");
+    setLastName("");
+    setGroup("");
   };
 
   return (
@@ -85,12 +88,13 @@ const Edit = () => {
                   placeholder={user.firstName}
                 />
               </div>
-              <div>
+              <div className="dropdowncontainer">
                 <label>Role</label>
                 <DropdownList
                   data={rolenames}
                   value={group}
                   onChange={(group) => setGroup(group)}
+                  placeholder="Role"
                 />
               </div>
               <div className="formInput">
@@ -102,9 +106,15 @@ const Edit = () => {
                   placeholder={user.lastName}
                 />
               </div>
-              <button type="button" onClick={buttonPressed}>
-                Edit
-              </button>
+              <Link to={`/users`}>
+                <button
+                  type="button"
+                  className="editbutton"
+                  onClick={buttonPressed}
+                >
+                  Edit
+                </button>
+              </Link>
             </form>
           </div>
         </div>

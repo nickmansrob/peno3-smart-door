@@ -75,7 +75,9 @@ const Single = () => {
                   to={`/weeklytable/${id.userId}`}
                   style={{ textDecoration: "none" }}
                 >
-                  <div className="schedulerButton"> Click to permissions</div>
+                  <button type="button" className="schedulerButton">
+                    See permissions
+                  </button>
                 </Link>
                 <button type="button" onClick={buttonClicked}>
                   {isShown ? "Hide QR" : "Get QR"}
@@ -85,7 +87,9 @@ const Single = () => {
           </div>
 
           <div className="right">
-            {isShown && <Qr secret_key={user.tfaToken}></Qr>}
+            {isShown && (
+              <Qr secret_key={user.tfaToken} name={user.firstName}></Qr>
+            )}
           </div>
         </div>
         <div className="bottom"></div>

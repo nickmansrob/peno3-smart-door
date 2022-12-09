@@ -30,6 +30,9 @@
 
       .right {
         flex: 2;
+        .dropdowncontainer {
+          width: 150px;
+        }
         form {
           display: flex;
           flex-wrap: wrap;
@@ -51,13 +54,16 @@
               border-bottom: 1px solid;
             }
           }
-          
+          .editbutton {
+            width: 150px;
+            height: 65px;
+          }
         }
-        button{
+        button {
           width: 50%;
           background-color: rgb(11, 11, 163);
           color: white;
-          cursor:pointer;
+          cursor: pointer;
         }
       }
     }
