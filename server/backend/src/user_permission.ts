@@ -136,7 +136,7 @@ export async function handleDeleteUserPermission(req: Request, res: Response): P
           await prisma.userPermission.delete({
             where: { id: permissionsId },
           })
-          res.status(200).send('permissions deleted')
+          res.status(200).json('permissions deleted')
         } catch (e) {
           console.error(e)
           res.status(500).json('permissions could not be deleted')
