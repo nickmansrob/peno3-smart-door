@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { prisma } from './database.js'
 import { IncomingPermission } from './types.js'
-import { validatePermission } from './validation.js'
+import { validateDeletePermission, validatePermission } from './validation.js'
 
 export async function handleUserPermissionView(req: Request, res: Response): Promise<void> {
   // no validation needed
@@ -123,7 +123,7 @@ export async function handleDeleteUserPermission(req: Request, res: Response): P
   if (req.body) {
     const permissions = req.body as {id: number, weekday: string}
 
-    if (validatePermission(permissions)) {
+    if (validateDeletePermission(permissions)) {
       // validation input
       const permissionsIdArray = await findUserPermission(permissions)
 
@@ -136,7 +136,7 @@ export async function handleDeleteUserPermission(req: Request, res: Response): P
           await prisma.userPermission.delete({
             where: { id: permissionsId },
           })
-          res.status(200).send('permissions deleted')
+          res.status(200).json('permissions deleted')
         } catch (e) {
           console.error(e)
           res.status(500).json('permissions could not be deleted')

@@ -33,8 +33,12 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
         if (matchedUser.distance <= THRESHOLD) {
           if (await isPermitted(matchedUser.id, matchedUser.roleId)) {
             // Can access
-            createRecord(matchedUser.id, 'FACE')
-            res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName, await findCurrentState(matchedUser.id)))
+            const recordCheck = await createRecord(matchedUser.id, 'FACE')
+            if (recordCheck) {
+              res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName, await findCurrentState(matchedUser.id)))
+            } else {
+              res.status(500).json(evaluateAccess('ERROR', matchedUser.firstName))
+            }
           } else {
             // Permitted
             res.status(401).json(evaluateAccess('RESTRICTED', matchedUser.firstName))
@@ -72,8 +76,8 @@ export async function handleOtp(req: Request, res: Response): Promise<void> {
         if (validateToken(otpHelper, stream.otp) != null) {
           if (await isPermitted(user.id, user.roleId)) {
             // User allowed
-            const recordCheck = createRecord(user.id, 'TFA') // admin contacteer probleem
-            if (await recordCheck) {
+            const recordCheck = await createRecord(user.id, 'TFA') // admin contacteer probleem
+            if (recordCheck) {
               res.status(200).json(evaluateAccess('GRANTED', user.firstName, await findCurrentState(user.id)))
             } else {
               res.status(500).json(evaluateAccess('ERROR', user.firstName))
