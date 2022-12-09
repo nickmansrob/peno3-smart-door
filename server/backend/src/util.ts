@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { prisma } from './database.js'
 import { CustomInterval, OutgoingAccess, OutgoingAdminAccess, Role, UserRecord } from './types.js'
-import { getLatestEnabledUserEntries } from './user.js'
+import { getLatestEnabledUserEntries, getLatestEnabledUserRecord } from './user.js'
 
 export function euclidDistance(point1: number[], point2: number[]): number {
   const sum = point1
@@ -60,7 +60,7 @@ export async function findNextState(userId: number): Promise<'ENTER' | 'LEAVE'> 
  * @returns the current state of the user
  */
 export async function findCurrentState(userId: number): Promise<'ENTER' | 'LEAVE'> {
-  const latestUserRecords = (await getLatestEnabledUserEntries()) as UserRecord[]
+  const latestUserRecords = (await getLatestEnabledUserRecord()) as UserRecord[]
 
   const lastUserState = latestUserRecords.filter(record => record.id === userId)
   if (lastUserState.length > 0) {
