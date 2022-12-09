@@ -1,19 +1,27 @@
 import "./editweek.scss";
-import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { isDOMComponent } from "react-dom/test-utils";
 const Edit = () => {
   const id = useParams();
   const idArray = id.userId.split("-");
 
-  const userId = idArray[0];
-  const permissionId = idArray[1];
+  const userId = Number(idArray[0]);
+  const permissionId = Number(idArray[1]);
   const [permissions, setPermissions] = useState([]);
+  const starttimeprev = permissions.find((x) => x.id === permissionId)
+    ? permissions.find((x) => x.id === permissionId).start
+    : "1600";
+  const endtimeprev = permissions.find((x) => x.id === permissionId)
+    ? permissions.find((x) => x.id === permissionId).end
+    : "1600";
+  const starthourprev = JSON.stringify(starttimeprev).slice(0, -2);
+  const startminuteprev = JSON.stringify(starttimeprev).slice(-2);
+
+  const endhourprev = JSON.stringify(endtimeprev).slice(0, -2);
+  const endminuteprev = JSON.stringify(endtimeprev).slice(-2);
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -26,13 +34,9 @@ const Edit = () => {
       .then((res) => res.json())
       .then((data) => {
         setPermissions(data);
-        console.log(permissions);
       });
   }, []);
 
-  const [user, setUser] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [day, setDay] = useState("");
   const [starthour, setStarthour] = useState(0);
   const [endhour, setEndhour] = useState(0);
   const [startminute, setStartminute] = useState(0);
@@ -41,18 +45,27 @@ const Edit = () => {
   for (let i = 0; i < 61; i++) {
     minutes.push(i);
   }
-  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const hours = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 0,
   ];
 
   const buttonPressed = () => {
+    const payloadstarthour =
+      starthour === 0 ? Number(starthourprev) : starthour;
+    const payloadstartminute =
+      startminute === 0 ? Number(startminuteprev) : startminute;
+    const payloadendhour = endhour === 0 ? Number(endhourprev) : endhour;
+    const payloadendminute =
+      endminute === 0 ? Number(endminuteprev) : endminute;
+
+    console.log(payloadstarthour);
+
     const bodydata = {
       id: Number(userId),
-      s: starthour * 100 + startminute,
-      e: endhour * 100 + endminute,
-      weekday: day,
+      s: payloadstarthour * 100 + payloadstartminute,
+      e: payloadendhour * 100 + payloadendminute,
+      weekday: permissions.find((x) => x.id === permissionId).weekday,
     };
     fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
       method: "PUT",
@@ -65,7 +78,10 @@ const Edit = () => {
       .then((data) => {
         console.log(data);
       });
-    console.log(bodydata);
+    setEndhour(0);
+    setEndminute(0);
+    setStarthour(0);
+    setStartminute(0);
   };
 
   // useEffect(() => {
@@ -92,59 +108,90 @@ const Edit = () => {
 
   return (
     <div className="new">
-      
       <div className="newContainer">
-       
         <div className="top">
           <h1>Edit Timeperiod (id:{permissionId})</h1>
         </div>
         <div className="bottom">
-          <form>
-            <div className="day">
-              <label>Day</label>
-              <DropdownList
-                data={days}
-                placeholder="MON"
-                value={day}
-                onChange={(day) => setDay(day)}
-              />
-            </div>
-
+          <form className="weekform">
             <div className="right">
+              <div className="daycontainer">
+                {permissions.find((x) => x.id === permissionId)
+                  ? permissions.find((x) => x.id === permissionId).weekday
+                  : ""}
+              </div>
+
               <div className="roller">
                 <label>Start</label>
-                <DropdownList
-                  data={hours}
-                  value={starthour}
-                  defaultValue="1"
-                  onChange={(starthour) => setStarthour(starthour)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={startminute}
-                  onChange={(startminute) => setStartminute(startminute)}
-                />
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={hours}
+                    value={starthour}
+                    placeholder={starthourprev}
+                    onChange={(starthour) => setStarthour(starthour)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={minutes}
+                    value={startminute}
+                    placeholder={startminuteprev}
+                    onChange={(startminute) => setStartminute(startminute)}
+                  />
+                </div>
               </div>
 
               <div className="roller">
                 <label>End</label>
-                <DropdownList
-                  data={hours}
-                  value={endhour}
-                  onChange={(endhour) => setEndhour(endhour)}
-                />
-                <DropdownList
-                  data={minutes}
-                  value={endminute}
-                  onChange={(endminute) => setEndminute(endminute)}
-                />
+                <div className="ddcontainer">
+                  <DropdownList
+                    className="dropdown"
+                    data={
+                      starthour === 0
+                        ? hours.filter((hour) => hour >= starthourprev)
+                        : hours.filter((hour) => hour >= starthour)
+                    }
+                    value={endhour}
+                    placeholder={endhourprev}
+                    onChange={(endhour) => setEndhour(endhour)}
+                  />
+                  <DropdownList
+                    className="dropdown"
+                    data={
+                      endhour === starthour
+                        ? minutes.filter(
+                            (minute) =>
+                              minute >
+                              (startminute === 0
+                                ? Number(startminuteprev)
+                                : startminute)
+                          )
+                        : minutes
+                    }
+                    value={endminute}
+                    placeholder={endminuteprev}
+                    onChange={(endminute) => setEndminute(endminute)}
+                  />
+                </div>
               </div>
-              <button type="button" onClick={buttonPressed}>
-                Edit
-              </button>
+              <Link
+                to={`/weeklytable/${userId}`}
+                style={{ textDecoration: "none" }}
+              >
+                <button
+                  className="addbutton"
+                  type="button"
+                  onClick={buttonPressed}
+                >
+                  Edit
+                </button>
+              </Link>
             </div>
           </form>
         </div>
+        <Link to={`/weeklytable/${userId}`} style={{ textDecoration: "none" }}>
+          <div className="link">All permissions</div>
+        </Link>
       </div>
     </div>
   );

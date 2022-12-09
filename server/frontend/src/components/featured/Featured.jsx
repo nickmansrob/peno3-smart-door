@@ -34,7 +34,7 @@ const Featured = () => {
         <div className="featuredChart">
           <CircularProgressbar
             value={percentage}
-            text={Employees_in}
+            text={Employees_in === 0 ? "0" : Employees_in}
             strokeWidth={5}
           />
         </div>

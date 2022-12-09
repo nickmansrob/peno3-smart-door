@@ -50,7 +50,7 @@ const List = () => {
             <TableCell className="tableCell">Surname</TableCell>
             <TableCell className="tableCell">Date</TableCell>
             <TableCell className="tableCell">Timestamp</TableCell>
-            <TableCell className="tableCell">Group</TableCell>
+            <TableCell className="tableCell">Role</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

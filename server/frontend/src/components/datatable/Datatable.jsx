@@ -36,13 +36,14 @@ const Datatable = () => {
   }, []);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "firstName", headerName: "First name", width: 130 },
-    { field: "lastName", headerName: "Last name", width: 130 },
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "firstName", headerName: "First name", flex: 2 },
+    { field: "lastName", headerName: "Last name", flex: 2 },
     {
       field: "roleId",
       headerName: "Role",
-      width: 130,
+      flex: 2,
+      sortable: false,
       renderCell: (params) => {
         return (
           <div>
@@ -56,7 +57,8 @@ const Datatable = () => {
     {
       field: "status",
       headerName: "Status",
-      width: 160,
+      flex: 2,
+      sortable: false,
       renderCell: (params) => {
         return (
           <div
@@ -79,6 +81,7 @@ const Datatable = () => {
       field: "action",
       headerName: "Action",
       width: 200,
+      sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
           fetch("https://styx.rndevelopment.be/api/users", {
@@ -123,9 +126,8 @@ const Datatable = () => {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={9}
-        rowsPerPageOptions={[9]}
-        checkboxSelection
+        pageSize={5}
+        rowsPerPageOptions={[5]}
       />
     </div>
   );

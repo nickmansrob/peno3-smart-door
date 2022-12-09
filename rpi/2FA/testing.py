@@ -20,7 +20,7 @@ def GenerateSecretKey():
 def GenerateURL(secret_key):
     #Deze functie maakt op basis van de base32 token een url, die kan worden omgezet naar een URL zodat een cliëntele app
     #zoals Google Authenticator deze kan scannen.
-    return pyotp.totp.TOTP(secret_key, interval=30).provisioning_uri()
+    return pyotp.totp.TOTP(secret_key, interval=30).provisioning_uri(name = 'Martijn', issuer_name = 'Styx')
 
 def GetTOTP(secret_key):
     #Deze functie genereert de huidige OTP, op basis van de base32 key
@@ -28,11 +28,6 @@ def GetTOTP(secret_key):
     return totp.now()
 
 
-print(GenerateURL('FZKAKFARK23'))
-#Notitie aan mezelf, de volgende stap is het creëren van een class 'Employee' waarin al deze functionaliteiten gecombineerd worden
-#en die gestructureerd de data bijhoudt per werknemer.
-
-
-#Example code
+print(GenerateURL('FZKAKFARK23RFDDR4GT6YT3FG'))
 
 # In de werkmap komt een PNG met de QR die door de authenticator app gescand dient te worden.
