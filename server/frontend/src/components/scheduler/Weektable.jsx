@@ -30,6 +30,7 @@ const Weektable = () => {
       field: "weekday",
       headerName: "Day",
       flex: 3,
+      sortingOrder: ["desc", "asc"],
 
       renderCell: (params) => {
         switch (params.row.weekday) {
@@ -101,7 +102,7 @@ const Weektable = () => {
             method: "DELETE",
             body: JSON.stringify({
               weekday: params.row.weekday,
-              id: userId.userId,
+              id: Number(userId.userId),
             }),
             headers: {
               "Content-Type": "application/json",
@@ -114,7 +115,9 @@ const Weektable = () => {
             .catch((error) => {
               console.error("Error:", error);
             });
+          window.location.reload(true);
         };
+
         return (
           <div className="cellAction">
             <Link
