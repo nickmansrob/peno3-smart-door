@@ -27,6 +27,21 @@ export function validatePermission(permissions: IncomingPermission): boolean {
     (permissions.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
     typeof permissions.e === 'number' &&
     typeof permissions.s === 'number' &&
+    typeof permissions.id === 'number' &&
+    permissions.s < permissions.e
+  ) {
+    return true
+  } else {
+    return false
+  }
+}
+
+export function validateDeletePermission(permissions: {id: number, weekday: string}): boolean {
+  // checking if the permissions from frontend is valid format
+  if (
+    permissions.id &&
+    permissions.weekday &&
+    (permissions.weekday === 'MON' || 'TUE' || 'WED' || 'THU' || 'FRI' || 'SAT' || 'SUN') &&
     typeof permissions.id === 'number'
   ) {
     return true

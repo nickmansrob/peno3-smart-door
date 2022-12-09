@@ -59,7 +59,7 @@ export async function handleNewUserPermission(req: Request, res: Response): Prom
   }
 }
 
-async function findUserPermission(permissions: IncomingPermission) {
+async function findUserPermission(permissions: {id: number, weekday: string} | IncomingPermission) {
   const restricionIdArray = await prisma.userPermission.findMany({
     where: {
       userId: permissions.id,
@@ -121,7 +121,7 @@ export async function handleDeleteUserPermission(req: Request, res: Response): P
   // find id of permissions that needs to be deleted
 
   if (req.body) {
-    const permissions = req.body as IncomingPermission
+    const permissions = req.body as {id: number, weekday: string}
 
     if (validatePermission(permissions)) {
       // validation input
