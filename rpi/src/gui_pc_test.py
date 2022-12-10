@@ -6,8 +6,29 @@ import cv2
 import keyboard
 import dlib
 import requests
+import time
 
 current_dir = os.path.dirname(__file__)
+
+from dotenv import dotenv_values
+import jwt
+
+env = dotenv_values(os.path.join(current_dir, ".env"))  # take environment variables from .env.
+
+# Usage
+
+# Use an Authorization header in each request
+# which contains the value
+# "Bearer " + getToken()
+# for example requests.get(<url>, headers={"Authorization": "Bearer " + getToken()})
+
+def getToken():
+  if "JWT_SECRET" in env:
+    secret = env["JWT_SECRET"]
+  else:
+    secret = "fakesecret"
+
+  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret)
 
 URL = "https://styx.rndevelopment.be/api"
 #URL = "http://localhost:3000"
@@ -238,7 +259,7 @@ class FaceRecognition(Fragment):
   
   def sendAccessRequest(self, faceDescriptor):
     body = {"faceDescriptor": faceDescriptor.tolist()}
-    r = requests.post(url=URL+"/access_face", json=body)
+    r = requests.post(url=URL+"/access_face", json=body, headers={"Authorization": "Bearer " + getToken()})
 
     print(r.status_code)
     if r.status_code in [200, 401]: 
@@ -246,7 +267,7 @@ class FaceRecognition(Fragment):
       print(msg)
 
       if msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"])
+        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -258,7 +279,7 @@ class FaceRecognition(Fragment):
 
   def sendAddFaceRequest(self, id, faceDescriptor):
     body = {"id": id, "faceDescriptor": faceDescriptor.tolist()}
-    r = requests.post(url=URL+"/add_face", json=body)
+    r = requests.post(url=URL+"/add_face", json=body, headers={"Authorization": "Bearer " + getToken()})
 
     print(r.status_code)
     print(r.json())
@@ -278,7 +299,7 @@ class FaceRecognition(Fragment):
     elif self.kwargs["status"] == "add_user":
       self.waiting_for_confirmation = True
       self.tempFaceDescriptor = faceDescriptor
-      self.label_2.setText("Dis foto gud?")
+      self.label_2.setText("Proceed with this photo?")
 
   def onActivate(self):
     self.waiting_for_confirmation = False
@@ -375,7 +396,7 @@ class ID(NumberInput):
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
-    r = requests.post(url=URL+"/get_name", json=body)
+    r = requests.post(url=URL+"/get_name", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 403]:
@@ -419,7 +440,7 @@ class OTP(NumberInput):
   def sendAccessRequest(self, id, otp):
     body = {"id": id,
             "otp": otp}
-    r = requests.post(url=URL+"/access_otp", json=body)
+    r = requests.post(url=URL+"/access_otp", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 401, 403]:
@@ -429,7 +450,7 @@ class OTP(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       elif msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"])
+        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -442,7 +463,7 @@ class OTP(NumberInput):
   def sendRoleRequest(self, id, otp):
     body = {"id": id,
             "otp": otp}
-    r = requests.post(url=URL+"/access_admin", json=body)
+    r = requests.post(url=URL+"/access_admin", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 401, 403]:
@@ -494,7 +515,10 @@ class Verified(Fragment):
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
   
   def onActivate(self):
-    self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
+    if self.kwargs["state"] == "ENTER":
+      self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
+    else:
+      self.textlabel.setText("Bye {}!".format(self.kwargs["name"]))
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
 
 
@@ -544,7 +568,7 @@ class AddUserID(NumberInput):
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
-    r = requests.post(url=URL+"/get_name", json=body)
+    r = requests.post(url=URL+"/get_name", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 403]:
