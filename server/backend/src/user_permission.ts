@@ -46,20 +46,18 @@ export async function handleNewUserPermission(req: Request, res: Response): Prom
           console.error(e)
           res.status(500).json('The permissions could not be created')
         }
-      }
-      else {
+      } else {
         res.status(409).json(`There already is a permissions for this user with id: ${permissions.id}`)
       }
     } else {
       res.status(400).json(`IncomingPermission: ${JSON.stringify(req.body)} invalid`)
     }
-  }
-  else {
+  } else {
     res.status(400).json('Bad Request')
   }
 }
 
-async function findUserPermission(permissions: {id: number, weekday: string} | IncomingPermission) {
+async function findUserPermission(permissions: { id: number; weekday: string } | IncomingPermission) {
   const restricionIdArray = await prisma.userPermission.findMany({
     where: {
       userId: permissions.id,
@@ -121,7 +119,7 @@ export async function handleDeleteUserPermission(req: Request, res: Response): P
   // find id of permissions that needs to be deleted
 
   if (req.body) {
-    const permissions = req.body as {id: number, weekday: string}
+    const permissions = req.body as { id: number; weekday: string }
 
     if (validateDeletePermission(permissions)) {
       // validation input

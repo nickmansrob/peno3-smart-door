@@ -27,7 +27,7 @@ export async function getRolePermissions(id?: number) {
 }
 
 export async function handleNewRolePermission(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const permissions = req.body as IncomingPermission
     if (validatePermission(permissions)) {
       // validation input
@@ -53,8 +53,7 @@ export async function handleNewRolePermission(req: Request, res: Response): Prom
     } else {
       res.status(400).json(`IncomingPermission: ${JSON.stringify(req.body)} invalid`)
     }
-  }
-  else {
+  } else {
     res.status(400).json('Bad Request')
   }
 }
