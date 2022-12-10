@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 //import { act } from "react-dom/test-utils";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { createJWT } from "../../App";
 
 const Datatable = () => {
   const [status, setStatus] = useState([]);
@@ -13,6 +14,9 @@ const Datatable = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
 
     fetch("https://styx.rndevelopment.be/api/users", requestOptions)
@@ -91,6 +95,7 @@ const Datatable = () => {
             }),
             headers: {
               "Content-Type": "application/json",
+              Authorization: createJWT(),
             },
           })
             .then((response) => response.json())

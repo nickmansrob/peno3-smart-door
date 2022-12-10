@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
+import { createJWT } from "../../App";
+
 const Edit = () => {
   const [user, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -18,7 +20,12 @@ const Edit = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
+
+    console.log();
 
     fetch(
       `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,

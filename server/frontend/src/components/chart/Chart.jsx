@@ -1,4 +1,6 @@
 import "./chart.scss";
+import { createJWT } from "../../App";
+
 import {
   AreaChart,
   Area,
@@ -14,20 +16,19 @@ const Chart = () => {
   const [info, setInfo] = useState([]);
 
   var dayminuszero = new Date();
-  
+
   var dd = String(dayminuszero.getDate()).padStart(2, "0");
   var mm = String(dayminuszero.getMonth() + 1).padStart(2, "0");
   var yy = String(dayminuszero.getYear() + 1900);
   const lastdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
-  console.log(lastdate)
+  console.log(lastdate);
 
   var dayminusone = new Date();
   dayminusone.setDate(dayminusone.getDate() - 1);
- 
-  var dd = String(dayminusone.getDate() ).padStart(2, "0");
+
+  var dd = String(dayminusone.getDate()).padStart(2, "0");
   var mm = String(dayminusone.getMonth() + 1).padStart(2, "0");
   var yy = String(dayminusone.getYear() + 1900);
-  
 
   dayminusone = dd + "/" + mm;
 
@@ -50,29 +51,32 @@ const Chart = () => {
   dayminusfour = dd + "/" + mm;
 
   var dayminusfive = new Date();
-  dayminusfive.setDate(dayminusfive.getDate()-5);
+  dayminusfive.setDate(dayminusfive.getDate() - 5);
   var dd = String(dayminusfive.getDate()).padStart(2, "0");
   var mm = String(dayminusfive.getMonth() + 1).padStart(2, "0");
   dayminusfive = dd + "/" + mm;
 
   var dayminussix = new Date();
   dayminussix.setDate(dayminussix.getDate() - 6);
-  var dd = String(dayminussix.getDate() ).padStart(2, "0");
+  var dd = String(dayminussix.getDate()).padStart(2, "0");
   var mm = String(dayminussix.getMonth() + 1).padStart(2, "0");
   dayminussix = dd + "/" + mm;
 
   var dayminusseven = new Date();
   dayminusseven.setDate(dayminusseven.getDate() - 7);
-  var dd = String(dayminusseven.getDate() ).padStart(2, "0");
+  var dd = String(dayminusseven.getDate()).padStart(2, "0");
   var mm = String(dayminusseven.getMonth() + 1).padStart(2, "0");
   var yy = String(dayminusseven.getYear() + 1900);
   const firstdate = new Date(yy + "-" + mm + "-" + dd).toISOString();
-  console.log(firstdate)
+  console.log(firstdate);
   dayminusseven = dd + "/" + mm;
 
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
     fetch(
       `https://styx.rndevelopment.be/api/range_entries/?s=${firstdate}&e=${lastdate}`,
