@@ -5,31 +5,33 @@ import numpy as np
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import RPi.GPIO as GPIO
-from gpiozero import Servo
 import time
 import dlib
 import requests
-"""
+import pigpio
+
+
+current_dir = os.path.dirname(__file__)
+
 from dotenv import dotenv_values
 import jwt
 
-env = dotenv_values(".env")  # take environment variables from .env.
+env = dotenv_values(os.path.join(current_dir, ".env"))  # take environment variables from .env.
 
 # Usage
 
 # Use an Authorization header in each request
 # which contains the value
 # "Bearer " + getToken()
+# for example requests.get(<url>, headers={"Authorization": "Bearer " + getToken()})
 
 def getToken():
-  if env["secret"]:
-    secret = env["secret"]
+  if "JWT_SECRET" in env:
+    secret = env["JWT_SECRET"]
   else:
-    secret = 'fakesecret'
+    secret = "fakesecret"
 
-  return jwt.encode({"data": "python", "exp": 5}, secret)"""
-
-current_dir = os.path.dirname(__file__)
+  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret)
 
 URL = "https://styx.rndevelopment.be/api"
 #URL = "http://localhost:3000"
@@ -119,6 +121,7 @@ class FragmentManager:
   def start(self, width, height):
     self.stackedWidget.resize(width, height)
     self.stackedWidget.showFullScreen()
+    self.stackedWidget.setCursor(QtCore.Qt.BlankCursor)
 
     keyPad = KeyPad()
     keyPad.keyPressed.connect(lambda key: self.stackedWidget.currentWidget().onKeyPress(key))
@@ -264,7 +267,7 @@ class FaceRecognition(Fragment):
     self.label_2.setAlignment(QtCore.Qt.AlignCenter)
 
     self.label_3 = QtWidgets.QLabel(self)
-    self.label_3.setGeometry(QtCore.QRect(200, 120, 400, 300))
+    self.label_3.setGeometry(QtCore.QRect(240, 110, 320, 320))
     self.label_3.setScaledContents(True)
 
     self.camera = Camera()
@@ -275,7 +278,7 @@ class FaceRecognition(Fragment):
   
   def sendAccessRequest(self, faceDescriptor):
     body = {"faceDescriptor": faceDescriptor.tolist()}
-    r = requests.post(url=URL+"/access_face", json=body)
+    r = requests.post(url=URL+"/access_face", json=body, headers={"Authorization": "Bearer " + getToken()})
 
     print(r.status_code)
     if r.status_code in [200, 401]: 
@@ -283,7 +286,7 @@ class FaceRecognition(Fragment):
       print(msg)
 
       if msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"])
+        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -295,7 +298,7 @@ class FaceRecognition(Fragment):
 
   def sendAddFaceRequest(self, id, faceDescriptor):
     body = {"id": id, "faceDescriptor": faceDescriptor.tolist()}
-    r = requests.post(url=URL+"/add_face", json=body)
+    r = requests.post(url=URL+"/add_face", json=body, headers={"Authorization": "Bearer " + getToken()})
 
     print(r.status_code)
     print(r.json())
@@ -315,7 +318,7 @@ class FaceRecognition(Fragment):
     elif self.kwargs["status"] == "add_user":
       self.waiting_for_confirmation = True
       self.tempFaceDescriptor = faceDescriptor
-      self.label_2.setText("Dis foto gud?")
+      self.label_2.setText("Proceed with this photo?")
 
   def onActivate(self):
     self.waiting_for_confirmation = False
@@ -412,7 +415,7 @@ class ID(NumberInput):
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
-    r = requests.post(url=URL+"/get_name", json=body)
+    r = requests.post(url=URL+"/get_name", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 403]:
@@ -456,7 +459,7 @@ class OTP(NumberInput):
   def sendAccessRequest(self, id, otp):
     body = {"id": id,
             "otp": otp}
-    r = requests.post(url=URL+"/access_otp", json=body)
+    r = requests.post(url=URL+"/access_otp", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 401, 403]:
@@ -466,7 +469,7 @@ class OTP(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       elif msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"])
+        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -479,7 +482,7 @@ class OTP(NumberInput):
   def sendRoleRequest(self, id, otp):
     body = {"id": id,
             "otp": otp}
-    r = requests.post(url=URL+"/access_admin", json=body)
+    r = requests.post(url=URL+"/access_admin", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 401, 403]:
@@ -536,24 +539,29 @@ class Verified(Fragment):
     self.buzzerPin = 23
     GPIO.setup(self.buzzerPin, GPIO.OUT)
     GPIO.output(self.buzzerPin, GPIO.LOW)
-    """
-    self.servo = Servo(24)
-    self.servo.min()"""
-    GPIO.setup(24, GPIO.OUT)
-    self.pwm = GPIO.PWM(24, 1000)
-    self.pwm.start(50)
+    self.servoPin = 24
+    self.pwm = pigpio.pi()
+    self.pwm.set_mode(self.servoPin, pigpio.OUTPUT)
+    self.pwm.set_PWM_frequency(self.servoPin, 50)
+
+  def servo_min(self):
+    self.pwm.set_servo_pulsewidth(self.servoPin, 820)
+
+  def servo_max(self):
+    self.pwm.set_servo_pulsewidth(self.servoPin, 2500)
   
   def onActivate(self):
-    # self.servo.max()
-    self.pwm.ChangeFrequency(2000)
-    self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
+    self.servo_max()
+    if self.kwargs["state"] == "ENTER":
+      self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
+    else:
+      self.textlabel.setText("Bye {}!".format(self.kwargs["name"]))
     QtCore.QTimer.singleShot(2000, lambda: Fragment.manager.activate("home"))
     GPIO.output(self.buzzerPin, GPIO.HIGH)
     QtCore.QTimer.singleShot(150, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
     QtCore.QTimer.singleShot(275, lambda: GPIO.output(self.buzzerPin, GPIO.HIGH))
     QtCore.QTimer.singleShot(425, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
-    QtCore.QTimer.singleShot(1800, lambda: self.servo.min())
-    self.pwm.ChangeFrequency(1000)
+    QtCore.QTimer.singleShot(2800, lambda: self.servo_min())
     
 
 class Error(Fragment):
@@ -611,7 +619,7 @@ class AddUserID(NumberInput):
 
   def sendGetFirstNameRequest(self, id):
     body = {"id": id}
-    r = requests.post(url=URL+"/get_name", json=body)
+    r = requests.post(url=URL+"/get_name", json=body, headers={"Authorization": "Bearer " + getToken()})
     
     print(r.status_code)
     if r.status_code in [200, 403]:
@@ -645,7 +653,10 @@ class AddUserID(NumberInput):
       elif key == KeyPad.KEY_BACKWARD:
         self.onActivate()
     else:
-      super().onKeyPress(key)
+      if len(self.code) == 0 and key == KeyPad.KEY_BACKWARD:
+        Fragment.manager.activate("home")
+      else:
+        super().onKeyPress(key)
     
 
 def main():
