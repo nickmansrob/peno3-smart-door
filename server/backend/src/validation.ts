@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 import { IncomingFace, IncomingOtp, IncomingPermission, IncomingUserEdit, User } from './types.js'
 import { serializeFaceDescriptor } from './util.js'
+import { Request, Response } from 'express'
+import { verifyToken } from './auth.js'
 
 // Custom type constraints validation
 export function validateFaceDescriptor(arr: string | number[]): boolean {
@@ -36,7 +38,7 @@ export function validatePermission(permissions: IncomingPermission): boolean {
   }
 }
 
-export function validateDeletePermission(permissions: {id: number, weekday: string}): boolean {
+export function validateDeletePermission(permissions: { id: number; weekday: string }): boolean {
   // checking if the permissions from frontend is valid format
   if (
     permissions.id &&
@@ -121,10 +123,32 @@ export function validateIncomingUserEdit(userEdit: IncomingUserEdit): boolean {
     typeof userEdit.id === 'number' &&
     typeof userEdit.firstName === 'string' &&
     typeof userEdit.lastName === 'string'
-    
   ) {
     return true
   } else {
     return false
+  }
+}
+
+export async function validateJWT(
+  req: Request,
+  res: Response,
+  handler: (req: Request, res: Response) => Promise<void>,
+  env: 'frontend' | 'python',
+): Promise<void> {
+  const auth = req.headers.authorization
+
+  if (auth && auth.startsWith('Bearer ')) {
+    const jwt = auth.split(' ')[1]
+
+    if (verifyToken(jwt, env)) {
+      // Token is valid
+      return handler(req, res)
+    } else {
+      // Invalid token
+      res.json('Invalid JWT')
+    }
+  } else {
+    res.json('Invalid Authorization header')
   }
 }

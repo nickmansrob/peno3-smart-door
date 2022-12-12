@@ -8,14 +8,15 @@ export async function handleUserView(req: Request, res: Response): Promise<void>
 }
 
 export async function handleAddFace(req: Request, res: Response): Promise<void> {
-  if (req.body){
+  if (req.body) {
     const face = req.body as IncomingNewFace
 
     const user = (await getUsers(face.id)) as User
 
-    if (user && validateFaceDescriptor(face.faceDescriptor)) { // the existence of the user is already checkend on the RPI, so is not really needed here
-      if(user.faceDescriptor === '[]'){
-      // validation input
+    if (user && validateFaceDescriptor(face.faceDescriptor)) {
+      // the existence of the user is already checkend on the RPI, so is not really needed here
+      if (user.faceDescriptor === '[]') {
+        // validation input
         try {
           const result = await prisma.user.update({
             where: {
@@ -31,19 +32,15 @@ export async function handleAddFace(req: Request, res: Response): Promise<void> 
           console.error(e)
           res.status(500).json('Facedescriptor could not be updated.')
         }
-      }
-      else {
+      } else {
         res.status(400).json('There already a nonempty faceDescriptor of this User')
       }
-    }
-    else {
+    } else {
       res.status(400).json(`Invalid facedescriptor: ${JSON.stringify(req.body)}`)
     }
-  }
-  else {
+  } else {
     res.status(400).json('Bad Request')
   }
-
 }
 
 export async function handleRolesView(_req: Request, res: Response): Promise<void> {
@@ -182,7 +179,7 @@ export async function handleDeleteUser(req: Request, res: Response): Promise<voi
         })
         res.status(200).json(result)
       } catch (e) {
-        console.error(e)  
+        console.error(e)
         res.status(500).json('User could not be deleted')
       }
     } else {
@@ -207,7 +204,7 @@ export async function getAllActiveUsers(): Promise<number> {
 }
 
 /**
- * 
+ *
  * @param amount optional: the amount of users returned
  * @returns the latest amount of records for each user when the latest record was an ENTER
  */
@@ -251,7 +248,7 @@ export async function getLatestEnabledUserEntries(amount?: number): Promise<User
 }
 
 /**
- * 
+ *
  * @param amount optional: the amount of users returned
  * @returns the latest amount of records for each user
  */
@@ -290,4 +287,3 @@ export async function getLatestEnabledUserRecord(amount?: number): Promise<UserR
     })
   }
 }
-

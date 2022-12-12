@@ -4,7 +4,14 @@ import { createOtp, validateToken } from './otp.js'
 import { createRecord } from './record.js'
 import { isPermitted } from './permission.js'
 import { IncomingFace, IncomingOtp, Id } from './types.js'
-import { euclidDistance, evaluateAccess, evaluateAdminAccess, findCurrentState, getRole, serializeFaceDescriptor } from './util.js'
+import {
+  euclidDistance,
+  evaluateAccess,
+  evaluateAdminAccess,
+  findCurrentState,
+  getRole,
+  serializeFaceDescriptor,
+} from './util.js'
 import { validateIncomingFace, validateIncomingOtp } from './validation.js'
 
 export async function handleFace(req: Request, res: Response): Promise<void> {
@@ -35,7 +42,9 @@ export async function handleFace(req: Request, res: Response): Promise<void> {
             // Can access
             const recordCheck = await createRecord(matchedUser.id, 'FACE')
             if (recordCheck) {
-              res.status(200).json(evaluateAccess('GRANTED', matchedUser.firstName, await findCurrentState(matchedUser.id)))
+              res
+                .status(200)
+                .json(evaluateAccess('GRANTED', matchedUser.firstName, await findCurrentState(matchedUser.id)))
             } else {
               res.status(500).json(evaluateAccess('ERROR', matchedUser.firstName))
             }

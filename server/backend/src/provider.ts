@@ -13,7 +13,7 @@ import {
   handleRolesView,
   handleUserView,
 } from './user.js'
-import { validateEndBiggerThanStart } from './validation.js'
+import { validateEndBiggerThanStart, validateJWT } from './validation.js'
 import {
   handleRolePermissionView,
   handleNewRolePermission,
@@ -42,35 +42,35 @@ export async function start(): Promise<void> {
 
   app.get('/', handleRoot)
 
-  app.get('/roles', handleRolesView)
+  app.get('/roles', (req, res) => validateJWT(req, res, handleRolesView, 'frontend'))
 
-  app.get('/users', handleUserView)
-  app.post('/users', handleNewUser)
-  app.put('/users', handleEditUser)
-  app.delete('/users', handleDeleteUser)
+  app.get('/users', (req, res) => validateJWT(req, res, handleUserView, 'frontend'))
+  app.post('/users', (req, res) => validateJWT(req, res, handleNewUser, 'frontend'))
+  app.put('/users', (req, res) => validateJWT(req, res, handleEditUser, 'frontend'))
+  app.delete('/users', (req, res) => validateJWT(req, res, handleDeleteUser, 'frontend'))
 
-  app.get('/records', handleRecordView)
+  app.get('/records', (req, res) => validateJWT(req, res, handleRecordView, 'frontend'))
 
-  app.get('/user_permissions', handleUserPermissionView)
-  app.post('/user_permissions', handleNewUserPermission)
-  app.put('/user_permissions', handleEditUserPermission)
-  app.delete('/user_permissions', handleDeleteUserPermission)
+  app.get('/user_permissions', (req, res) => validateJWT(req, res, handleUserPermissionView, 'frontend'))
+  app.post('/user_permissions', (req, res) => validateJWT(req, res, handleNewUserPermission, 'frontend'))
+  app.put('/user_permissions', (req, res) => validateJWT(req, res, handleEditUserPermission, 'frontend'))
+  app.delete('/user_permissions', (req, res) => validateJWT(req, res, handleDeleteUserPermission, 'frontend'))
 
-  app.get('/role_permissions', handleRolePermissionView)
-  app.post('/role_permissions', handleNewRolePermission)
-  app.put('/role_permissions', handleEditRolePermission)
-  app.delete('/role_permissions', handleDeleteRolePermission)
+  app.get('/role_permissions', (req, res) => validateJWT(req, res, handleRolePermissionView, 'frontend'))
+  app.post('/role_permissions', (req, res) => validateJWT(req, res, handleNewRolePermission, 'frontend'))
+  app.put('/role_permissions', (req, res) => validateJWT(req, res, handleEditRolePermission, 'frontend'))
+  app.delete('/role_permissions', (req, res) => validateJWT(req, res, handleDeleteRolePermission, 'frontend'))
 
-  app.post('/access_face', handleFace)
-  app.post('/access_otp', handleOtp)
-  app.post('/add_face', handleAddFace)
-  app.post('/access_admin', handleAdminAccess)
-  app.post('/get_name', handleGetName)
+  app.post('/access_face', (req, res) => validateJWT(req, res, handleFace, 'python'))
+  app.post('/access_otp', (req, res) => validateJWT(req, res, handleOtp, 'python'))
+  app.post('/add_face', (req, res) => validateJWT(req, res, handleAddFace, 'python'))
+  app.post('/access_admin', (req, res) => validateJWT(req, res, handleAdminAccess, 'python'))
+  app.post('/get_name', (req, res) => validateJWT(req, res, handleGetName, 'python'))
 
-  app.get('/entries', handleGetEntries)
-  app.get('/latest_entries', handleLatestEntries)
-  app.get('/range_entries', handleRangeEntries)
-  app.get('/latest_status', handleLatestStatus)
+  app.get('/entries', (req, res) => validateJWT(req, res, handleGetEntries, 'frontend'))
+  app.get('/latest_entries', (req, res) => validateJWT(req, res, handleLatestEntries, 'frontend'))
+  app.get('/range_entries', (req, res) => validateJWT(req, res, handleRangeEntries, 'frontend'))
+  app.get('/latest_status', (req, res) => validateJWT(req, res, handleLatestStatus, 'frontend'))
 
   server.listen(3000, () => console.info('Backend running!'))
 }

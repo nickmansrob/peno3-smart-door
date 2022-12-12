@@ -19,7 +19,7 @@ export function serializeFaceDescriptor(arr: string): number[] {
 export function evaluateAccess(
   access: 'GRANTED' | 'DENIED' | 'ERROR' | 'RESTRICTED',
   firstName: string,
-  status?: string
+  status?: string,
 ): OutgoingAccess {
   const date = DateTime.now().setZone('Europe/Brussels').toString()
   return { firstName, timestamp: date, access, status }
