@@ -3,7 +3,7 @@ import List from "./pages/list/List";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single"
 import Addweekly from "./pages/weekly/Addweekly";
-import Edit from "./pages/edit/Edit";
+import Edit, { dummySecret } from "./pages/edit/Edit";
 import Login from "./pages/login/Login"
 import Weeklytable from "./pages/weekly/Weeklytable"
 import Editweekly from "./pages/weekly/Editweekly";
@@ -18,7 +18,6 @@ import {
 //import { Schema } from "@mui/icons-material";
 
 export function createJWT() {
-  const dummySecret = 'BNPZFR26krtjPNYxDg1S6HZ4p9JzwwFQKnHLbVdfYCwu3dtmFcx5F2VQ4YR35sTXk1V1P2NRvzT28sWBY2kcpg5HehJj73pA'
   return `Bearer ${jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? dummySecret)}`
 }
 
