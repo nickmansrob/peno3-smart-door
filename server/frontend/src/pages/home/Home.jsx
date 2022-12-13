@@ -16,7 +16,7 @@ const Home = () => {
           <Chart />
         </div>
         <div className="listContainer">
-          <div className="listTitle">Latest entries</div>
+          <div className="listTitle">`Latest entries ${process.env.REACT_APP_JWT_SECRET}`</div>
           <Table />
         </div>
       </div>
