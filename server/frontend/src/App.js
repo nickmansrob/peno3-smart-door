@@ -18,6 +18,7 @@ import {
 //import { Schema } from "@mui/icons-material";
 
 export function createJWT() {
+  console.log(process.env.REACT_APP_JWT_SECRET)
   return `Bearer ${jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? 'fakeSecret')}`
 }
 
