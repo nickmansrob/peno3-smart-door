@@ -146,9 +146,9 @@ export async function validateJWT(
       return handler(req, res)
     } else {
       // Invalid token
-      res.json('Invalid JWT')
+      res.status(401).json('Invalid JWT')
     }
   } else {
-    res.json('Invalid Authorization header')
+    res.status(401).json('Invalid Authorization header')
   }
 }
