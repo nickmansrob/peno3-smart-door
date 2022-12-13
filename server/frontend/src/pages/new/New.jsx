@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import base32Encode from "base32-encode";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
+import { createJWT } from "../../App";
 const New = () => {
   const [roles, setRoles] = useState([]);
   const rolenames = Array.from(roles, (x) => x.name);
@@ -20,6 +21,9 @@ const New = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
     fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
       .then((res) => res.json())
@@ -44,6 +48,7 @@ const New = () => {
       body: JSON.stringify(bodydata),
       headers: {
         "Content-Type": "application/json",
+        Authorization: createJWT(),
       },
     })
       .then((response) => response.json())

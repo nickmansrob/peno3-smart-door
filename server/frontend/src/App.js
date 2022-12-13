@@ -7,6 +7,7 @@ import Edit from "./pages/edit/Edit";
 import Login from "./pages/login/Login"
 import Weeklytable from "./pages/weekly/Weeklytable"
 import Editweekly from "./pages/weekly/Editweekly";
+import * as jsrsasign from "jsrsasign"
 
 import {
   BrowserRouter,
@@ -15,6 +16,10 @@ import {
 } from 'react-router-dom'
 
 //import { Schema } from "@mui/icons-material";
+
+export function createJWT() {
+  return jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? 'fakeSecret')
+}
 
 
 function App() {

@@ -9,6 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useState } from "react";
 import { useEffect } from "react";
+import { createJWT } from "../../App";
 
 const List = () => {
   const [users, setUsers] = useState([]);
@@ -17,6 +18,9 @@ const List = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
     fetch(
       "https://styx.rndevelopment.be/api/latest_entries/?amount=5",

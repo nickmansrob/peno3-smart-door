@@ -17,6 +17,8 @@
     "base32-encode": "^2.0.0",
     "crypto-browserify": "^3.12.0",
     "daypilot-pro-react": "https://npm.daypilot.org/daypilot-pro-react/trial/2021.2.4990.tar.gz",
+    "jsrsasign": "^10.6.1",
+    "jsrsasign-util": "^1.0.5",
     "luxon": "^3.1.0",
     "react": "^18.2.0",
     "react-circular-progressbar": "^2.1.0",

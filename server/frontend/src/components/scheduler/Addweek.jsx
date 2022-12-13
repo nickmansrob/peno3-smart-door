@@ -6,6 +6,8 @@ import "react-widgets/styles.css";
 import { useParams, Link } from "react-router-dom";
 // import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
+import { createJWT } from "../../App";
+
 const Addweek = () => {
   const [day, setDay] = useState("");
   const [starthour, setStarthour] = useState(0);
@@ -30,6 +32,9 @@ const Addweek = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
 
     fetch(
@@ -54,6 +59,7 @@ const Addweek = () => {
       method: "POST",
       body: JSON.stringify(bodydata),
       headers: {
+        Authorization: createJWT(),
         "Content-Type": "application/json",
       },
     })
@@ -65,27 +71,6 @@ const Addweek = () => {
         console.error("Error:", error);
       });
   };
-  // useEffect(() => {
-  //   const requestOptions = {
-  //     method: "GET",
-  //   };
-  //   fetch(
-  //     `https://styx.rndevelopment.be/api/users/?id=${userId}`,
-  //     requestOptions
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setUser(data);
-  //     });
-
-  //   fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setRoles(data);
-  //     });
-  // }, []);
 
   return (
     <div className="new">

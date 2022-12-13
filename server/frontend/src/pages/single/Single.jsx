@@ -4,6 +4,7 @@ import "./single.scss";
 import { Link, useParams } from "react-router-dom";
 import Qr from "../../components/qr/Qr";
 import { useState, useEffect } from "react";
+import { createJWT } from "../../App";
 
 const Single = () => {
   const [user, setUser] = useState([]);
@@ -14,6 +15,9 @@ const Single = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
     fetch(
       `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,

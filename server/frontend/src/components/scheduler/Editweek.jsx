@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
+import { createJWT } from "../../App";
+
 const Edit = () => {
   const id = useParams();
   const idArray = id.userId.split("-");
@@ -25,6 +27,9 @@ const Edit = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
 
     fetch(
@@ -70,6 +75,7 @@ const Edit = () => {
     fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
       method: "PUT",
       headers: {
+        Authorization: createJWT(),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(bodydata),
@@ -83,28 +89,6 @@ const Edit = () => {
     setStarthour(0);
     setStartminute(0);
   };
-
-  // useEffect(() => {
-  //   const requestOptions = {
-  //     method: "GET",
-  //   };
-  //   fetch(
-  //     `https://styx.rndevelopment.be/api/users/?id=${userId}`,
-  //     requestOptions
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setUser(data);
-  //     });
-
-  //   fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setRoles(data);
-  //     });
-  // }, []);
 
   return (
     <div className="new">

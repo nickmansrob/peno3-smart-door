@@ -3,6 +3,7 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { createJWT } from "../../App";
 
 const Weektable = () => {
   const userId = useParams();
@@ -11,6 +12,9 @@ const Weektable = () => {
   useEffect(() => {
     const requestOptions = {
       method: "GET",
+      headers: {
+        Authorization: createJWT(),
+      },
     };
 
     fetch(
@@ -105,6 +109,7 @@ const Weektable = () => {
               id: Number(userId.userId),
             }),
             headers: {
+              Authorization: createJWT(),
               "Content-Type": "application/json",
             },
           })
