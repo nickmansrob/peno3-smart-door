@@ -21,6 +21,8 @@ export function createJWT() {
   return `Bearer ${jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? dummySecret)}`
 }
 
+export const url = process.env.REACT_APP_URL ?? 'https://styx.rndevelopment.be'
+
 
 function App() {
   return (

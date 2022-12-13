@@ -5,7 +5,6 @@ echo "Starting $1 server"
 if [ $1 == "frontend" ]
 then
     npm install -g serve
-    echo "JWT_FRONTEND=BNPZFR26krtjPNYxDg1S6HZ4p9JzwwFQKnHLbVdfYCwu3dtmFcx5F2VQ4YR35sTXk1V1P2NRvzT28sWBY2kcpg5HehJj73pA" >> .env #Needed for Create React App
     serve -s build
 elif [ $1 == "backend" ]
 then

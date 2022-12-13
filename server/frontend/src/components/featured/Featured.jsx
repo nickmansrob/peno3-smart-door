@@ -3,7 +3,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useState, useEffect } from "react";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Featured = () => {
   const [info, setInfo] = useState([]);
@@ -15,7 +15,7 @@ const Featured = () => {
         Authorization: createJWT(),
       },
     };
-    fetch("https://styx.rndevelopment.be/api/entries", requestOptions)
+    fetch("${url}/api/entries", requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

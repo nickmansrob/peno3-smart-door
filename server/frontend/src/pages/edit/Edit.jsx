@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Edit = () => {
   const [user, setUser] = useState([]);
@@ -28,7 +28,7 @@ const Edit = () => {
     console.log();
 
     fetch(
-      `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,
+      `${url}/api/users/?id=${id.userId}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -36,7 +36,7 @@ const Edit = () => {
         setUser(data);
       });
 
-    fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
+    fetch(`${url}/api/roles`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -50,7 +50,7 @@ const Edit = () => {
       lastName: lastName ? lastName : user.lastName,
       role: { name: group },
     };
-    fetch(`https://styx.rndevelopment.be/api/users`, {
+    fetch(`${url}/api/users`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

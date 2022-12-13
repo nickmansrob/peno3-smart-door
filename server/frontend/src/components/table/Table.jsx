@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useState } from "react";
 import { useEffect } from "react";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const List = () => {
   const [users, setUsers] = useState([]);
@@ -23,7 +23,7 @@ const List = () => {
       },
     };
     fetch(
-      "https://styx.rndevelopment.be/api/latest_entries/?amount=5",
+      "${url}/api/latest_entries/?amount=5",
       requestOptions
     )
       .then((res) => res.json())
@@ -35,7 +35,7 @@ const List = () => {
         setUsers(data);
       });
 
-    fetch("https://styx.rndevelopment.be/api/roles", requestOptions)
+    fetch("${url}/api/roles", requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

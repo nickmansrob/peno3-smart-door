@@ -1,5 +1,5 @@
 import "./chart.scss";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 import {
   AreaChart,
@@ -79,7 +79,7 @@ const Chart = () => {
       },
     };
     fetch(
-      `https://styx.rndevelopment.be/api/range_entries/?s=${firstdate}&e=${lastdate}`,
+      `${url}/api/range_entries/?s=${firstdate}&e=${lastdate}`,
       requestOptions
     )
       .then((res) => res.json())

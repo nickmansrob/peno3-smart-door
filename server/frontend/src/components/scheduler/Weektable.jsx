@@ -3,7 +3,7 @@ import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Weektable = () => {
   const userId = useParams();
@@ -18,7 +18,7 @@ const Weektable = () => {
     };
 
     fetch(
-      `https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`,
+      `${url}/api/user_permissions/?id=${userId.userId}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -102,7 +102,7 @@ const Weektable = () => {
       sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
-          fetch("https://styx.rndevelopment.be/api/user_permissions", {
+          fetch("${url}/api/user_permissions", {
             method: "DELETE",
             body: JSON.stringify({
               weekday: params.row.weekday,

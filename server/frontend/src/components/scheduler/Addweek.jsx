@@ -6,7 +6,7 @@ import "react-widgets/styles.css";
 import { useParams, Link } from "react-router-dom";
 // import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Addweek = () => {
   const [day, setDay] = useState("");
@@ -38,7 +38,7 @@ const Addweek = () => {
     };
 
     fetch(
-      `https://styx.rndevelopment.be/api/user_permissions/?id=${id.userId}`,
+      `${url}/api/user_permissions/?id=${id.userId}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -55,7 +55,7 @@ const Addweek = () => {
       weekday: day,
     };
     console.log(bodydata);
-    fetch("https://styx.rndevelopment.be/api/user_permissions", {
+    fetch("${url}/api/user_permissions", {
       method: "POST",
       body: JSON.stringify(bodydata),
       headers: {

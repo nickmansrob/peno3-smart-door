@@ -4,7 +4,7 @@ import "./single.scss";
 import { Link, useParams } from "react-router-dom";
 import Qr from "../../components/qr/Qr";
 import { useState, useEffect } from "react";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Single = () => {
   const [user, setUser] = useState([]);
@@ -20,7 +20,7 @@ const Single = () => {
       },
     };
     fetch(
-      `https://styx.rndevelopment.be/api/users/?id=${id.userId}`,
+      `${url}/api/users/?id=${id.userId}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -29,7 +29,7 @@ const Single = () => {
         setUser(data);
       });
 
-    fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
+    fetch(`${url}/api/roles`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

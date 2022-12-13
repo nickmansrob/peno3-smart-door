@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 
 const Edit = () => {
   const id = useParams();
@@ -33,7 +33,7 @@ const Edit = () => {
     };
 
     fetch(
-      `https://styx.rndevelopment.be/api/user_permissions/?id=${userId.userId}`,
+      `${url}/api/user_permissions/?id=${userId.userId}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -72,7 +72,7 @@ const Edit = () => {
       e: payloadendhour * 100 + payloadendminute,
       weekday: permissions.find((x) => x.id === permissionId).weekday,
     };
-    fetch(`https://styx.rndevelopment.be/api/user_permissions`, {
+    fetch(`${url}/api/user_permissions`, {
       method: "PUT",
       headers: {
         Authorization: createJWT(),

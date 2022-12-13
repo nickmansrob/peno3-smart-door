@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import base32Encode from "base32-encode";
 import "react-widgets/styles.css";
 import DropdownList from "react-widgets/DropdownList";
-import { createJWT } from "../../App";
+import { createJWT, url } from "../../App";
 const New = () => {
   const [roles, setRoles] = useState([]);
   const rolenames = Array.from(roles, (x) => x.name);
@@ -25,7 +25,7 @@ const New = () => {
         Authorization: createJWT(),
       },
     };
-    fetch(`https://styx.rndevelopment.be/api/roles`, requestOptions)
+    fetch(`${url}/api/roles`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         setRoles(data);
@@ -43,7 +43,7 @@ const New = () => {
       tfaToken: base32Encode(rand, "RFC4648"),
     };
 
-    fetch("https://styx.rndevelopment.be/api/users", {
+    fetch("${url}/api/users", {
       method: "POST",
       body: JSON.stringify(bodydata),
       headers: {
