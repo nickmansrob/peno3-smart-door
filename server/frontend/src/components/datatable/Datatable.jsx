@@ -19,20 +19,20 @@ const Datatable = () => {
       },
     };
 
-    fetch("${url}/api/users", requestOptions)
+    fetch(`${url}/api/users`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         setUsers(data);
       });
 
-    fetch("${url}/api/latest_status", requestOptions)
+    fetch(`${url}/api/latest_status`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         setStatus(data);
       });
 
-    fetch("${url}/api/roles", requestOptions)
+    fetch(`${url}/api/roles`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         setRoles(data);
@@ -88,7 +88,7 @@ const Datatable = () => {
       sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
-          fetch("${url}/api/users", {
+          fetch`${url}/api/users`, {
             method: "DELETE",
             body: JSON.stringify({
               id: params.row.id,

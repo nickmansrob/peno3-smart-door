@@ -23,7 +23,7 @@ const List = () => {
       },
     };
     fetch(
-      "${url}/api/latest_entries/?amount=5",
+      `${url}/api/latest_entries/?amount=5`,
       requestOptions
     )
       .then((res) => res.json())
@@ -35,7 +35,7 @@ const List = () => {
         setUsers(data);
       });
 
-    fetch("${url}/api/roles", requestOptions)
+    fetch(`${url}/api/roles`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

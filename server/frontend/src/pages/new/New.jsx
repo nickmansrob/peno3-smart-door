@@ -43,7 +43,7 @@ const New = () => {
       tfaToken: base32Encode(rand, "RFC4648"),
     };
 
-    fetch("${url}/api/users", {
+    fetch(`${url}/api/users`, {
       method: "POST",
       body: JSON.stringify(bodydata),
       headers: {

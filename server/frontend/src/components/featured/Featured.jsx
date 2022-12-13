@@ -15,7 +15,7 @@ const Featured = () => {
         Authorization: createJWT(),
       },
     };
-    fetch("${url}/api/entries", requestOptions)
+    fetch(`${url}/api/entries`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

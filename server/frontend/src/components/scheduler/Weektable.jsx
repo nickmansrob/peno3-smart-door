@@ -102,7 +102,7 @@ const Weektable = () => {
       sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
-          fetch("${url}/api/user_permissions", {
+          fetch(`${url}/api/user_permissions`, {
             method: "DELETE",
             body: JSON.stringify({
               weekday: params.row.weekday,

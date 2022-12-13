@@ -55,7 +55,7 @@ const Addweek = () => {
       weekday: day,
     };
     console.log(bodydata);
-    fetch("${url}/api/user_permissions", {
+    fetch(`${url}/api/user_permissions`, {
       method: "POST",
       body: JSON.stringify(bodydata),
       headers: {
