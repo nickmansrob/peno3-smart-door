@@ -18,7 +18,8 @@ import {
 //import { Schema } from "@mui/icons-material";
 
 export function createJWT() {
-  return `Bearer ${jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? 'fakeSecret')}`
+  const dummySecret = 'BNPZFR26krtjPNYxDg1S6HZ4p9JzwwFQKnHLbVdfYCwu3dtmFcx5F2VQ4YR35sTXk1V1P2NRvzT28sWBY2kcpg5HehJj73pA'
+  return `Bearer ${jsrsasign.KJUR.jws.JWS.sign(null, {alg: 'HS256'}, {data: 'frontend', exp: Date.now() + 5 }, process.env.REACT_APP_JWT_SECRET ?? dummySecret)}`
 }
 
 
