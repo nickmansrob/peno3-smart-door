@@ -137,6 +137,7 @@ export async function validateJWT(
   env: 'frontend' | 'python',
 ): Promise<void> {
   const auth = req.headers.authorization
+  console.log(auth)
 
   if (auth && auth.startsWith('Bearer ')) {
     const jwt = auth.split(' ')[1]
