@@ -88,7 +88,7 @@ const Datatable = () => {
       sortable: false,
       renderCell: (params) => {
         const buttonClicked = () => {
-          fetch`${url}/api/users`, {
+          fetch(`${url}/api/users`, {
             method: "DELETE",
             body: JSON.stringify({
               id: params.row.id,
