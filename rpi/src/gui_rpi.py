@@ -286,7 +286,7 @@ class FaceRecognition(Fragment):
       print(msg)
 
       if msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
+        Fragment.manager.activate("verified", name=msg["firstName"], status=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -469,7 +469,7 @@ class OTP(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       elif msg["access"] == "GRANTED":
-        Fragment.manager.activate("verified", name=msg["firstName"], state=msg["status"])
+        Fragment.manager.activate("verified", name=msg["firstName"], status=msg["status"])
       elif msg["access"] == "ERROR":
         Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
       elif msg["access"] == "RESTRICTED":
@@ -552,7 +552,7 @@ class Verified(Fragment):
   
   def onActivate(self):
     self.servo_max()
-    if self.kwargs["state"] == "ENTER":
+    if self.kwargs["status"] == "ENTER":
       self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
     else:
       self.textlabel.setText("Bye {}!".format(self.kwargs["name"]))
