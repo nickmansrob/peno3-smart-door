@@ -131,5 +131,3 @@ const Edit = () => {
 };
 
 export default Edit;
-
-export const dummySecret = 'BNPZFR26krtjPNYxDg1S6HZ4p9JzwwFQKnHLbVdfYCwu3dtmFcx5F2VQ4YR35sTXk1V1P2NRvzT28sWBY2kcpg5HehJj73pA'
