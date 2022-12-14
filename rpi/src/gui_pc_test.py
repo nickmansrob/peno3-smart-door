@@ -473,7 +473,7 @@ class OTP(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       elif msg["access"] == "GRANTED":
-        Fragment.manager.activate("add_user_ID")
+        Fragment.manager.activate("admin_panel")
       else:
         Fragment.manager.activate("error", message="Access denied.")
     else:
@@ -551,6 +551,88 @@ class Error(Fragment):
     QtCore.QTimer.singleShot(3000, lambda: Fragment.manager.activate("home"))  
 
 
+class AdminPanel(Fragment):
+
+  def __init__(self) -> None:
+    super().__init__("admin_panel")
+
+    self.label_background = QtWidgets.QLabel(self)
+    self.label_background.setGeometry(QtCore.QRect(0, 0, 800, 480))
+    self.label_background.setText("")
+    self.label_background.setPixmap(QtGui.QPixmap(os.path.join(current_dir, "background2-small.png")))
+
+    self.textlabel = QtWidgets.QLabel(self)
+    self.textlabel.setGeometry(QtCore.QRect(0, 90, 800, 51))
+    self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
+    self.textlabel.setFont(QtGui.QFont("Roboto", 24))
+    self.textlabel.setStyleSheet("color: rgb(231, 242, 255);")
+    self.textlabel.setText("What would you like to do?")
+
+    self.label_go_back = QtWidgets.QLabel(self)
+    self.label_go_back.setGeometry(QtCore.QRect(115, 220, 150, 150))
+    self.label_go_back.setText("Go back\n1")
+
+    self.label_add_user = QtWidgets.QLabel(self)
+    self.label_add_user.setGeometry(QtCore.QRect(325, 220, 150, 150))
+    self.label_add_user.setText("Add user\n2")
+
+    self.label_exit_app = QtWidgets.QLabel(self)
+    self.label_exit_app.setGeometry(QtCore.QRect(535, 220, 150, 150))
+    self.label_exit_app.setText("Exit app\n3")
+
+    self.labels = [self.label_go_back, self.label_add_user, self.label_exit_app]
+    self.selected = -1
+
+    font = QtGui.QFont("Roboto", 20)
+    for label in self.labels:
+      label.setFont(font)
+      label.setAlignment(QtCore.Qt.AlignCenter)
+
+  def select(self, num):
+    if self.selected != num:
+      if self.selected != -1:
+        self.labels[self.selected].setStyleSheet("border: 4px solid rgb(84, 165, 124);"
+                              "color: rgb(157, 206, 191);"
+                              "border-top-left-radius :9px;"
+                              "border-top-right-radius : 9px; "
+                              "border-bottom-left-radius : 9px; "
+                              "border-bottom-right-radius : 9px")
+      self.selected = num
+      self.labels[self.selected].setStyleSheet("border: 4px solid rgb(157, 206, 191);"
+                            "background-color: rgb(157, 206, 191);"
+                            "color: rgb(84, 165, 124);"
+                            "border-top-left-radius :9px;"
+                            "border-top-right-radius : 9px; "
+                            "border-bottom-left-radius : 9px; "
+                            "border-bottom-right-radius : 9px")
+
+  def onActivate(self):
+    self.selected = -1
+
+    for label in self.labels:
+      label.setStyleSheet("border: 4px solid rgb(84, 165, 124);"
+                          "color: rgb(157, 206, 191);"
+                          "border-top-left-radius :9px;"
+                          "border-top-right-radius : 9px; "
+                          "border-bottom-left-radius : 9px; "
+                          "border-bottom-right-radius : 9px")
+  
+  def onKeyPress(self, key: str):
+    if key == KeyPad.KEY_FORWARD:
+      if self.selected == 0:
+        Fragment.manager.activate("home")
+      elif self.selected == 1:
+        Fragment.manager.activate("add_user_ID")
+      elif self.selected == 2:
+        QtCore.QCoreApplication.quit()
+        exit()
+    elif key == '1':
+      self.select(0)
+    elif key == '2':
+      self.select(1)
+    elif key == '3':
+      self.select(2)
+
 class AddUserID(NumberInput):
 
   def __init__(self) -> None:
@@ -559,7 +641,7 @@ class AddUserID(NumberInput):
     self.waiting_for_confirmation = False
 
     self.label_1 = QtWidgets.QLabel(self)
-    self.label_1.setGeometry(QtCore.QRect(0, 100, 800, 51))
+    self.label_1.setGeometry(QtCore.QRect(0, 90, 800, 51))
     font = QtGui.QFont("Roboto", 24)
     self.label_1.setFont(font)
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
@@ -609,6 +691,7 @@ def main():
 
     QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf"))
 
+    admin_panel = AdminPanel() # move to bottom
     home = Home()
     face_recognition = FaceRecognition()
     id = ID()
