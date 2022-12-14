@@ -159,7 +159,7 @@ class Home(Fragment):
 
     self.adminModeCombination = ''.join([KeyPad.KEY_BACKWARD, KeyPad.KEY_FORWARD])
     self.gotAdminModeCombination = False
-    self.movie.finished.connect(lambda: Fragment.manager.activate("id", status="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition", status="normal"))
+    self.movie.finished.connect(lambda: Fragment.manager.activate("id", mode="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition", mode="normal"))
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
@@ -292,7 +292,7 @@ class FaceRecognition(Fragment):
       elif msg["access"] == "RESTRICTED":
         Fragment.manager.activate("error", message="Access denied at the moment.")
       else:
-        Fragment.manager.activate("id", status="normal")
+        Fragment.manager.activate("id", mode="normal")
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
@@ -313,9 +313,9 @@ class FaceRecognition(Fragment):
 
   def onFaceDescriptorAvailable(self, faceDescriptor):
     self.camera.signals.exit_loop.emit()
-    if self.kwargs["status"] == "normal":
+    if self.kwargs["mode"] == "normal":
       self.sendAccessRequest(faceDescriptor)
-    elif self.kwargs["status"] == "add_user":
+    elif self.kwargs["mode"] == "add_user":
       self.waiting_for_confirmation = True
       self.tempFaceDescriptor = faceDescriptor
       self.label_2.setText("Proceed with this photo?")
@@ -503,9 +503,9 @@ class OTP(NumberInput):
     self.label_1.setText("Hello {}".format(self.kwargs["firstName"]))
   
   def onCodeEntered(self):
-    if self.kwargs["status"] == "normal":
+    if self.kwargs["mode"] == "normal":
       self.sendAccessRequest(self.kwargs["idCode"], self.code)
-    elif self.kwargs["status"] == "add_user":
+    elif self.kwargs["mode"] == "add_user":
       self.sendRoleRequest(self.kwargs["idCode"], self.code)
       
 
@@ -649,7 +649,7 @@ class AddUserID(NumberInput):
   def onKeyPress(self, key: str):
     if self.waiting_for_confirmation:
       if key == KeyPad.KEY_FORWARD:
-        Fragment.manager.activate("face_recognition", status="add_user", idCode=int(self.code))
+        Fragment.manager.activate("face_recognition", mode="add_user", idCode=int(self.code))
       elif key == KeyPad.KEY_BACKWARD:
         self.onActivate()
     else:
