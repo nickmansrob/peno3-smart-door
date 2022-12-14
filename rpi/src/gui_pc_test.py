@@ -691,7 +691,6 @@ def main():
 
     QtGui.QFontDatabase.addApplicationFont(os.path.join(current_dir, "Roboto-Regular.ttf"))
 
-    admin_panel = AdminPanel() # move to bottom
     home = Home()
     face_recognition = FaceRecognition()
     id = ID()
@@ -699,6 +698,7 @@ def main():
     verified = Verified()
     error = Error()
     add_user_ID = AddUserID()
+    admin_panel = AdminPanel() # move to bottom
 
     Fragment.manager.start(800, 480)
 
