@@ -753,6 +753,7 @@ def main():
     verified = Verified()
     error = Error()
     add_user_ID = AddUserID()
+    admin_panel = AdminPanel()
 
     Fragment.manager.start(800, 480)
 
