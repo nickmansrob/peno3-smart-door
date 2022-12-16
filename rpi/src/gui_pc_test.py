@@ -27,8 +27,12 @@ def getToken():
     secret = env["JWT_SECRET"]
   else:
     secret = "fakesecret"
-
-  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret)
+  print(secret)
+  print(int(time.time()) + 5)
+  token = jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret)
+  print(type(token))
+  print(token)
+  return token
 
 URL = "https://styx.rndevelopment.be/api"
 #URL = "http://localhost:3000"
@@ -406,7 +410,7 @@ class ID(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       else:
-        Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], status=self.kwargs["status"])
+        Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], mode=self.kwargs["mode"])
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 

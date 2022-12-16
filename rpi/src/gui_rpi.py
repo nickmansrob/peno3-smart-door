@@ -31,7 +31,7 @@ def getToken():
   else:
     secret = "fakesecret"
 
-  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret)
+  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret).decode("utf-8")
 
 URL = "https://styx.rndevelopment.be/api"
 #URL = "http://localhost:3000"
@@ -159,7 +159,7 @@ class Home(Fragment):
 
     self.adminModeCombination = ''.join([KeyPad.KEY_BACKWARD, KeyPad.KEY_FORWARD])
     self.gotAdminModeCombination = False
-    self.movie.finished.connect(lambda: Fragment.manager.activate("id", mode="add_user") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition", mode="normal"))
+    self.movie.finished.connect(lambda: Fragment.manager.activate("id", mode="admin") if self.gotAdminModeCombination else Fragment.manager.activate("face_recognition", mode="normal"))
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
@@ -315,7 +315,7 @@ class FaceRecognition(Fragment):
     self.camera.signals.exit_loop.emit()
     if self.kwargs["mode"] == "normal":
       self.sendAccessRequest(faceDescriptor)
-    elif self.kwargs["mode"] == "add_user":
+    elif self.kwargs["mode"] == "admin":
       self.waiting_for_confirmation = True
       self.tempFaceDescriptor = faceDescriptor
       self.label_2.setText("Proceed with this photo?")
@@ -425,7 +425,7 @@ class ID(NumberInput):
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
       else:
-        Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], status=self.kwargs["status"])
+        Fragment.manager.activate("otp", idCode=id, firstName=msg["firstName"], mode=self.kwargs["mode"])
     else:
       Fragment.manager.activate("error", message="Something went wrong, please contact the helpdesk.")
 
@@ -505,7 +505,7 @@ class OTP(NumberInput):
   def onCodeEntered(self):
     if self.kwargs["mode"] == "normal":
       self.sendAccessRequest(self.kwargs["idCode"], self.code)
-    elif self.kwargs["mode"] == "add_user":
+    elif self.kwargs["mode"] == "admin":
       self.sendRoleRequest(self.kwargs["idCode"], self.code)
       
 
@@ -732,7 +732,7 @@ class AddUserID(NumberInput):
   def onKeyPress(self, key: str):
     if self.waiting_for_confirmation:
       if key == KeyPad.KEY_FORWARD:
-        Fragment.manager.activate("face_recognition", mode="add_user", idCode=int(self.code))
+        Fragment.manager.activate("face_recognition", mode="admin", idCode=int(self.code))
       elif key == KeyPad.KEY_BACKWARD:
         self.onActivate()
     else:
@@ -753,6 +753,7 @@ def main():
     verified = Verified()
     error = Error()
     add_user_ID = AddUserID()
+    admin_panel = AdminPanel()
 
     Fragment.manager.start(800, 480)
 
