@@ -274,6 +274,7 @@ class FaceRecognition(Fragment):
     self.camera.signals.pixmap_available.connect(self.label_3.setPixmap)
     self.camera.signals.descriptor_available.connect(self.onFaceDescriptorAvailable)
 
+    self.isTimedOut = False
     self.tempFaceDescriptor = None
   
   def sendAccessRequest(self, faceDescriptor):
@@ -314,17 +315,28 @@ class FaceRecognition(Fragment):
   def onFaceDescriptorAvailable(self, faceDescriptor):
     self.camera.signals.exit_loop.emit()
     if self.kwargs["mode"] == "normal":
-      self.sendAccessRequest(faceDescriptor)
+      if not self.isTimedOut:
+        self.isTimedOut = True
+        self.sendAccessRequest(faceDescriptor)
     elif self.kwargs["mode"] == "admin":
       self.waiting_for_confirmation = True
       self.tempFaceDescriptor = faceDescriptor
       self.label_2.setText("Proceed with this photo?")
 
+  def timeOut(self):
+    if not self.isTimedOut and self.kwargs["mode"] == "normal":
+      self.isTimedOut = True
+      self.camera.signals.exit_loop.emit()
+      Fragment.manager.activate("id", mode="normal")
+
   def onActivate(self):
     self.waiting_for_confirmation = False
+    self.isTimedOut = False
     self.tempFaceDescriptor = None
     self.label_2.setText("Please stand in front of the camera")
     QtCore.QThreadPool.globalInstance().tryStart(self.camera)
+    if self.kwargs["mode"] == "normal":
+      QtCore.QTimer.singleShot(10000, self.timeOut)
 
   def onKeyPress(self, key: str):
     if self.waiting_for_confirmation:
