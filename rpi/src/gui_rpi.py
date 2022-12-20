@@ -30,8 +30,8 @@ def getToken():
     secret = env["JWT_SECRET"]
   else:
     secret = "fakesecret"
-
-  return jwt.encode({"data": "python", "exp": int(time.time()) + 5}, secret).decode("utf-8")
+  token = jwt.encode({"data": "python", "exp": int(time.time()) + 30}, secret).decode("utf-8")
+  return token
 
 URL = "https://styx.rndevelopment.be/api"
 #URL = "http://localhost:3000"
@@ -543,15 +543,16 @@ class Verified(Fragment):
     self.pwm = pigpio.pi()
     self.pwm.set_mode(self.servoPin, pigpio.OUTPUT)
     self.pwm.set_PWM_frequency(self.servoPin, 50)
+    self.servo_close()
 
-  def servo_min(self):
-    self.pwm.set_servo_pulsewidth(self.servoPin, 820)
+  def servo_close(self):
+    self.pwm.set_servo_pulsewidth(self.servoPin, 870)
 
-  def servo_max(self):
-    self.pwm.set_servo_pulsewidth(self.servoPin, 2500)
+  def servo_open(self):
+    self.pwm.set_servo_pulsewidth(self.servoPin, 1680)
   
   def onActivate(self):
-    self.servo_max()
+    self.servo_open()
     if self.kwargs["status"] == "ENTER":
       self.textlabel.setText("Welcome {}!".format(self.kwargs["name"]))
     else:
@@ -561,7 +562,7 @@ class Verified(Fragment):
     QtCore.QTimer.singleShot(150, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
     QtCore.QTimer.singleShot(275, lambda: GPIO.output(self.buzzerPin, GPIO.HIGH))
     QtCore.QTimer.singleShot(425, lambda: GPIO.output(self.buzzerPin, GPIO.LOW))
-    QtCore.QTimer.singleShot(2800, lambda: self.servo_min())
+    QtCore.QTimer.singleShot(2800, lambda: self.servo_close())
     
 
 class Error(Fragment):
