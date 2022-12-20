@@ -54,6 +54,7 @@ const Edit = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: createJWT(),
       },
       body: JSON.stringify(bodydata),
     })
