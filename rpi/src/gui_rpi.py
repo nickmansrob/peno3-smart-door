@@ -503,7 +503,7 @@ class OTP(NumberInput):
 
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
-      elif msg["access"] == "GRANTED":
+      elif msg["role"] == "ADMIN":
         Fragment.manager.activate("admin_panel")
       else:
         Fragment.manager.activate("error", message="Access denied.")
