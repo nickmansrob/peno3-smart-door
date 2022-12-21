@@ -145,7 +145,7 @@ class Home(Fragment):
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.label_1.setFont(font)
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_1.setText("Press any key to start ...")
@@ -245,7 +245,7 @@ class FaceRecognition(Fragment):
 
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 30, 800, 51))
-    font = QtGui.QFont("Roboto", 16)
+    font = QtGui.QFont("Roboto", 10)
     self.label_2.setFont(font)
     self.label_2.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_2.setText("Please stand in front of the camera")
@@ -350,7 +350,7 @@ class NumberInput(Fragment):
       textlabel = QtWidgets.QLabel(self)
       textlabel.setGeometry(QtCore.QRect(labelPositions[i][0], labelPositions[i][1], 96, 96))
       textlabel.setAlignment(QtCore.Qt.AlignCenter)
-      textlabel.setFont(QtGui.QFont("Roboto", 36))
+      textlabel.setFont(QtGui.QFont("Roboto", 24))
 
       self.labels.append(textlabel)
     
@@ -405,7 +405,7 @@ class ID(NumberInput):
     
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 100, 800, 51))
-    self.label_1.setFont(QtGui.QFont("Roboto", 24))
+    self.label_1.setFont(QtGui.QFont("Roboto", 16))
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_1.setText("Fill in your employee-ID please")
     self.label_1.setAlignment(QtCore.Qt.AlignCenter)
@@ -440,14 +440,14 @@ class OTP(NumberInput):
     
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 50, 800, 51))
-    font = QtGui.QFont("Roboto", 36)
+    font = QtGui.QFont("Roboto", 24)
     self.label_1.setFont(font)
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_1.setAlignment(QtCore.Qt.AlignCenter)
 
     self.label_2 = QtWidgets.QLabel(self)
     self.label_2.setGeometry(QtCore.QRect(0, 100, 800, 51))
-    font2 = QtGui.QFont("Roboto", 24)
+    font2 = QtGui.QFont("Roboto", 16)
     self.label_2.setFont(font2)
     self.label_2.setStyleSheet("color: rgb(162, 198, 234);")
     self.label_2.setText("Enter the 6-digit code from your authenticator app")
@@ -488,7 +488,7 @@ class OTP(NumberInput):
 
       if r.status_code == 403:
         Fragment.manager.activate("error", message="Access denied.")
-      elif msg["access"] == "GRANTED":
+      elif msg["role"] == "ADMIN":
         Fragment.manager.activate("admin_panel")
       else:
         Fragment.manager.activate("error", message="Access denied.")
@@ -526,7 +526,7 @@ class Verified(Fragment):
     self.textlabel = QtWidgets.QLabel(self)
     self.textlabel.setGeometry(QtCore.QRect(0, 330, 800, 130))
     self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
-    font = QtGui.QFont("Roboto", 30)
+    font = QtGui.QFont("Roboto", 20)
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
   
@@ -558,7 +558,7 @@ class Error(Fragment):
     self.textlabel = QtWidgets.QLabel(self)
     self.textlabel.setGeometry(QtCore.QRect(0, 0, 800, 150))
     self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.textlabel.setFont(font)
     self.textlabel.setStyleSheet("color: rgb(255, 255, 255);")
 
@@ -580,7 +580,7 @@ class AdminPanel(Fragment):
     self.textlabel = QtWidgets.QLabel(self)
     self.textlabel.setGeometry(QtCore.QRect(0, 90, 800, 51))
     self.textlabel.setAlignment(QtCore.Qt.AlignCenter)
-    self.textlabel.setFont(QtGui.QFont("Roboto", 24))
+    self.textlabel.setFont(QtGui.QFont("Roboto", 16))
     self.textlabel.setStyleSheet("color: rgb(231, 242, 255);")
     self.textlabel.setText("What would you like to do?")
 
@@ -599,7 +599,7 @@ class AdminPanel(Fragment):
     self.labels = [self.label_go_back, self.label_add_user, self.label_exit_app]
     self.selected = -1
 
-    font = QtGui.QFont("Roboto", 20)
+    font = QtGui.QFont("Roboto", 13)
     for label in self.labels:
       label.setFont(font)
       label.setAlignment(QtCore.Qt.AlignCenter)
@@ -658,7 +658,7 @@ class AddUserID(NumberInput):
 
     self.label_1 = QtWidgets.QLabel(self)
     self.label_1.setGeometry(QtCore.QRect(0, 90, 800, 51))
-    font = QtGui.QFont("Roboto", 24)
+    font = QtGui.QFont("Roboto", 16)
     self.label_1.setFont(font)
     self.label_1.setStyleSheet("color: rgb(231, 242, 255);")
     self.label_1.setText("Enter the ID of the user you would like to add.")
